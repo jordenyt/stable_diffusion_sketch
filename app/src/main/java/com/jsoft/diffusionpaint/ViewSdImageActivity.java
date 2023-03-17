@@ -157,9 +157,9 @@ public class ViewSdImageActivity extends AppCompatActivity {
             JSONObject cnArgObject = new JSONObject();
             cnArgObject.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
             //cnArgObject.put("mask", "");
-            cnArgObject.put("module", "scribble");
+            cnArgObject.put("module", "none");
             cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-            cnArgObject.put("weight", 0);
+            cnArgObject.put("weight", 0.2);
             cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
             cnArgObject.put("lowvram", false);
             cnArgObject.put("processor_res", 64);
