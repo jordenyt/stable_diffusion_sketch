@@ -64,9 +64,7 @@ public class GridViewImageAdapter extends BaseAdapter {
             textViewItem.setText(promptDateFormat.format(currentSketch.getCreateDate()));
         }
         textViewItem.setTextColor(Color.WHITE);
-        imageView.setOnClickListener(view -> {
-            activity.gotoDrawingActivity(currentSketch.getId());
-        });
+        imageView.setOnClickListener(view -> activity.gotoDrawingActivity(currentSketch.getId()));
 
         return convertView;
     }

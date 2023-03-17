@@ -1,13 +1,10 @@
 package com.jsoft.diffusionpaint.helper;
 
 import android.graphics.Bitmap;
-import android.graphics.Paint;
-import android.graphics.Path;
 
 import com.google.gson.Gson;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Sketch implements Serializable {

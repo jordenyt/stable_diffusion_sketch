@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.jsoft.diffusionpaint.component.DrawingView;
-import com.jsoft.diffusionpaint.component.SizePickerFragment;
 import com.jsoft.diffusionpaint.helper.CircleView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.Sketch;
@@ -107,9 +105,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         });
 
         FloatingActionButton sdButton = findViewById(R.id.fab_stable_diffusion);
-        sdButton.setOnClickListener(view -> {
-            showInputDialog();
-        });
+        sdButton.setOnClickListener(view -> showInputDialog());
     }
 
     private void showInputDialog() {

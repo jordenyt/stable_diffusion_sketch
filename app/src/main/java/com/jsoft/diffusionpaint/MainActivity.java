@@ -145,15 +145,12 @@ public class MainActivity extends AppCompatActivity {
         editText.setHint(hint);
         editText.setText(sharedPreferences.getString(key, defaultValue));
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String inputText = editText.getText().toString();
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(key,inputText);
-                editor.apply();
-                dialog.dismiss();
-            }
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String inputText = editText.getText().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(key,inputText);
+            editor.apply();
+            dialog.dismiss();
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
