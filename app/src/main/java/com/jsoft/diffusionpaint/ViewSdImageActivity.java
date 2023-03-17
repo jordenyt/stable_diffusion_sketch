@@ -114,7 +114,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
         //sendPostRequest("cntxt2img", baseUrl + "/controlnet/txt2img", jsonObject);
 
         JSONObject jsonObject = getControlnetImg2imgJSON(mCurrentSketch.getPrompt());
-        sendPostRequest("cnimg2img", baseUrl + "/controlnet/img2img", jsonObject);
+        sendPostRequest("cnimg2img", baseUrl + "/sdapi/v1/img2img", jsonObject);
     }
 
 
@@ -223,7 +223,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
             controlnet_unit.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
             //controlnet_unit.put("mask", "");
             controlnet_unit.put("module", "scribble");
-            controlnet_unit.put("model", "control_sd15_scribble [fef5e48e]");
+            controlnet_unit.put("model", sharedPreferences.getString("negativePrompt","control_sd15_scribble [fef5e48e]"));
             controlnet_unit.put("weight", 1);
             controlnet_unit.put("resize_mode", "Scale to Fit (Inner Fit)");
             controlnet_unit.put("lowvram", false);
@@ -292,25 +292,29 @@ public class ViewSdImageActivity extends AppCompatActivity {
             //jsonObject.put("script_name", "string");
             jsonObject.put("send_images", true);
             jsonObject.put("save_images", false);
-            jsonObject.put("alwayson_scripts", new JSONObject());
-            JSONArray controlnet_units = new JSONArray();
-            JSONObject controlnet_unit = new JSONObject();
-            controlnet_unit.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
-            //controlnet_unit.put("mask", "");
-            controlnet_unit.put("module", "scribble");
-            controlnet_unit.put("model", "control_sd15_scribble [fef5e48e]");
-            controlnet_unit.put("weight", 0);
-            controlnet_unit.put("resize_mode", "Scale to Fit (Inner Fit)");
-            controlnet_unit.put("lowvram", false);
-            controlnet_unit.put("processor_res", 64);
-            controlnet_unit.put("threshold_a", 64);
-            controlnet_unit.put("threshold_b", 64);
-            controlnet_unit.put("guidance", 1);
-            controlnet_unit.put("guidance_start", 0);
-            controlnet_unit.put("guidance_end", 1);
-            controlnet_unit.put("guessmode", false);
-            controlnet_units.put(controlnet_unit);
-            jsonObject.put("controlnet_units",controlnet_units);
+            JSONObject alwayson_scripts = new JSONObject();
+            JSONObject controlnet = new JSONObject();
+            JSONArray args = new JSONArray();
+            JSONObject cnArgObject = new JSONObject();
+            cnArgObject.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
+            //cnArgObject.put("mask", "");
+            cnArgObject.put("module", "scribble");
+            cnArgObject.put("model", "control_sd15_scribble [fef5e48e]");
+            cnArgObject.put("weight", 0);
+            cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
+            cnArgObject.put("lowvram", false);
+            cnArgObject.put("processor_res", 64);
+            cnArgObject.put("threshold_a", 64);
+            cnArgObject.put("threshold_b", 64);
+            cnArgObject.put("guidance", 1);
+            cnArgObject.put("guidance_start", 0);
+            cnArgObject.put("guidance_end", 1);
+            cnArgObject.put("guessmode", false);
+            args.put(cnArgObject);
+            controlnet.put("args", args);
+            alwayson_scripts.put("controlnet", controlnet);
+            jsonObject.put("alwayson_scripts", alwayson_scripts);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

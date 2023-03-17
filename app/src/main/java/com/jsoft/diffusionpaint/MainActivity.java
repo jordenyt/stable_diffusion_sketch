@@ -125,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.mi_negative_prompt:
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
                 return true;
+            case R.id.mi_cn_scribble:
+                showTextInputDialog("cnScribbleModel", "ControlNet Scribble Model:", "control_sd15_scribble [fef5e48e]", "control_sd15_scribble [fef5e48e]");
             default:
                 return super.onOptionsItemSelected(item);
         }
