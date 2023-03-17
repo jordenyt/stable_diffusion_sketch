@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Stable Diffusion Sketch</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="add_paint">Add Paint</string>
+    <string name="title_activity_drawing">DrawingActivity</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="stroke_width">Stroke Width</string>
+    <string name="stroke_color">Stroke Color</string>
+    <string name="save_sketch">Save Sketch</string>
+    <string name="delete_sketch">Delete Sketch</string>
+    <string name="ok">OK</string>
+
+</resources>

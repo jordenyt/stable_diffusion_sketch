@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/mi_sd_server_address" android:title="Stable Diffusion Server Address"/>
+    <item android:title="Prompt Settings">
+        <menu>
+            <item android:id="@+id/mi_prompt_prefix" android:title="Prompt prefix"/>
+            <item android:id="@+id/mi_prompt_postfix" android:title="Prompt postfix"/>
+            <item android:id="@+id/mi_negative_prompt" android:title="Negative prompt"/>
+        </menu>
+    </item>
+</menu>
