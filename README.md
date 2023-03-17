@@ -1,6 +1,10 @@
 #  Stable Diffusion Sketch
 Stable Diffusion Sketch is an Android app that uses the Stable Diffusion algorithm to generate AI-powered sketches.
 
+## Demo Video
+https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
+
+
 ## Prerequisites
 Before using Stable Diffusion Sketch, you need to install and set up the following:
 
