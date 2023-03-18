@@ -24,4 +24,4 @@ Here's how to use Stable Diffusion Sketch:
 4. Start sketching and let Stable Diffusion do the magic!
 
 ## License
-Stable Diffusion Sketch is licensed under the MIT License.
+Stable Diffusion Sketch is licensed under the [GNU General Public License v3.0](https://github.com/jordenyt/stable_diffusion_sketch/blob/main/LICENSE).
