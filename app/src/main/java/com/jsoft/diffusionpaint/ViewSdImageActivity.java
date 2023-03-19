@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -181,7 +183,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
     }
 
     private void handleResponse(String requestType, String responseBody) throws IOException, JSONException {
-        Log.d("diffusionPaint", responseBody);
+        //Log.d("diffusionPaint", responseBody);
         if ("cnimg2img".equals(requestType)) {
             JSONObject jsonObject = new JSONObject(responseBody);
             JSONArray images = jsonObject.getJSONArray("images");
@@ -195,13 +197,22 @@ public class ViewSdImageActivity extends AppCompatActivity {
             backButton.setVisibility(View.VISIBLE);
         }
     }
+
+    private void callSDFailure() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Fail to call Stable Diffusion Server.")
+                .setTitle("Magic Failed")
+                .setPositiveButton("OK", (dialog, id) -> ViewSdImageActivity.this.onBackPressed());
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
     private void sendPostRequest(String requestType, String url, JSONObject jsonObject) {
 
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
         client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
                 .url(url)
@@ -212,14 +223,14 @@ public class ViewSdImageActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-                ViewSdImageActivity.this.runOnUiThread(ViewSdImageActivity.this::onBackPressed);
+                ViewSdImageActivity.this.runOnUiThread(() -> callSDFailure());
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        ViewSdImageActivity.this.runOnUiThread(ViewSdImageActivity.this::onBackPressed);
+                        ViewSdImageActivity.this.runOnUiThread(() -> callSDFailure());
                     }
 
                     Headers responseHeaders = response.headers();
@@ -234,13 +245,13 @@ public class ViewSdImageActivity extends AppCompatActivity {
                             handleResponse(requestType, responseString);
                         } catch (IOException | JSONException e) {
                             e.printStackTrace();
-                            ViewSdImageActivity.this.onBackPressed();
+                            callSDFailure();
                         }
                     });
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    ViewSdImageActivity.this.runOnUiThread(ViewSdImageActivity.this::onBackPressed);
+                    ViewSdImageActivity.this.runOnUiThread(() -> callSDFailure());
                 }
             }
         });
