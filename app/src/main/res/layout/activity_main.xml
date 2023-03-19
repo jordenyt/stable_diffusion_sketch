@@ -10,7 +10,7 @@
         android:id="@+id/gridview_sketch_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="#222222"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"

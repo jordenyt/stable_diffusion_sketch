@@ -200,7 +200,8 @@ public class ViewSdImageActivity extends AppCompatActivity {
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
         client = new OkHttpClient.Builder()
-                .connectTimeout(20, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
                 .url(url)
