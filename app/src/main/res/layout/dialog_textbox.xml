@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/black_overlay"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -11,15 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="What is it?"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@color/white" />
+        android:textAppearance="?android:textAppearanceMedium" />
 
     <EditText
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
         android:hint="Input here..."
-        android:textColor="@color/white"
         android:textColorHint="#FF666666" />
 </LinearLayout>
