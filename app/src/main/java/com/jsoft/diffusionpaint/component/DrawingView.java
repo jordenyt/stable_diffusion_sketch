@@ -66,7 +66,7 @@ public class DrawingView extends View
 			mBackgroundPaint.setStyle(Paint.Style.FILL);
 			canvas.drawRect(0, 0, this.getWidth(), this.getHeight(), mBackgroundPaint);
 		} else {
-			canvas.drawBitmap(mBaseBitmap, 0, 0, mDrawPaint);
+			canvas.drawBitmap(mBaseBitmap, 0, 0, mBackgroundPaint);
 		}
 	}
 

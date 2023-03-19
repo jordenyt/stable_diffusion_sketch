@@ -30,18 +30,6 @@ public class Sketch implements Serializable {
         this.imgPreview = null;
     }
 
-    public static String sketch2Json(Sketch s) {
-        Gson gson = new Gson();
-        String j = gson.toJson(s);
-        return j;
-    }
-
-    public static Sketch json2Sketch(String jsonString) {
-        Gson gson = new Gson();
-        Sketch s = gson.fromJson(jsonString, Sketch.class);
-        return s;
-    }
-
     public Bitmap getImgPreview() {
         return imgPreview;
     }
