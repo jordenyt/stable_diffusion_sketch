@@ -14,7 +14,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,8 +58,11 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton addSketchButton = findViewById(R.id.fab_add);
         addSketchButton.setOnClickListener(view -> gotoDrawingActivity(-1));
 
-        isReadStoragePermissionGranted();
-        isWriteStoragePermissionGranted();
+        FloatingActionButton addCameraButton = findViewById(R.id.fab_add_camera);
+        addCameraButton.setOnClickListener(view -> gotoDrawingActivity(-2));
+
+        isPermissionGranted();
+        //db.clearSketch();
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
@@ -159,21 +164,16 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public boolean isReadStoragePermissionGranted() {
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+    public boolean isPermissionGranted() {
+        if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             return true;
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+            String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+            ActivityCompat.requestPermissions(this, permissions, 100);
             return false;
         }
     }
 
-    public boolean isWriteStoragePermissionGranted() {
-        if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
-            return false;
-        }
-    }
 }

@@ -51,7 +51,7 @@ public class Utils {
 
     public static String bitmap2Base64String(Bitmap bm) {
         ByteArrayOutputStream byteArrayOutputStream  = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream ); //bm is the bitmap object
+        bm.compress(Bitmap.CompressFormat.JPEG, 90, byteArrayOutputStream ); //bm is the bitmap object
         byte[] b = byteArrayOutputStream .toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
     }

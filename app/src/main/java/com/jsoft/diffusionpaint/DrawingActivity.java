@@ -3,12 +3,22 @@ package com.jsoft.diffusionpaint;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import androidx.exifinterface.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -22,6 +32,10 @@ import com.jsoft.diffusionpaint.helper.CircleView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.Sketch;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener
 {
     private DrawingView mDrawingView;
@@ -31,6 +45,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private PaintDb db;
     private Sketch mCurrentSketch;
     private SeekBar seekWidth;
+    private File mImageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +63,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         mCurrentSketch = new Sketch();
         circleView = findViewById(R.id.circle_pen);
         circleView.setColor(mCurrentColor);
-        circleView.setRadius(mCurrentStroke/2);
+        circleView.setRadius(mCurrentStroke/2f);
 
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
@@ -58,6 +73,28 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 mCurrentSketch = dbSketch;
                 mDrawingView.setmBaseBitmap(mCurrentSketch.getImgPreview());
             }
+        } else if (sketchId == -2) {
+            mCurrentSketch.setId(sketchId);
+            mImageFile = new File(getExternalFilesDir(null), "captured_image.jpg");
+            // Launch the camera app to capture an image
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                // Get the URI for the saved image file using a FileProvider
+                Uri imageUri = FileProvider.getUriForFile(this, "com.example.myapplication.fileprovider", mImageFile);
+
+                // Add the URI to the intent as an extra
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+                // Grant permission to the receiving app to access the saved image file
+                List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+
+                cameraResultLauncher.launch(intent);
+            }
+
         }
         initButtons();
     }
@@ -78,7 +115,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mCurrentStroke = i;
                 mDrawingView.setPaintStrokeWidth(mCurrentStroke);
-                circleView.setRadius(mCurrentStroke/2);
+                circleView.setRadius(mCurrentStroke/2f);
             }
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
@@ -107,6 +144,43 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         FloatingActionButton sdButton = findViewById(R.id.fab_stable_diffusion);
         sdButton.setOnClickListener(view -> showInputDialog());
     }
+
+    ActivityResultLauncher<Intent> cameraResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    Bitmap imageBitmap = BitmapFactory.decodeFile(mImageFile.getAbsolutePath());
+
+                    ExifInterface exif = null;
+                    try {
+                        exif = new ExifInterface(mImageFile.getAbsolutePath());
+                    } catch (IOException e) {
+                        Log.e("diffusionpaint", "IOException get from returned camera file.");
+                    }
+                    assert exif != null;
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+// Rotate the bitmap to correct the orientation
+                    Matrix matrix = new Matrix();
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            matrix.postRotate(90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            matrix.postRotate(180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            matrix.postRotate(270);
+                            break;
+                        default:
+                            break;
+                    }
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+                    //mCurrentSketch = dbSketch;
+                    mDrawingView.setmBaseBitmap(rotatedBitmap);
+                }
+            });
 
     private void showInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -146,7 +220,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     public void saveSketch()  {
         mCurrentSketch = mDrawingView.getSketch(mCurrentSketch);
-
         if (mCurrentSketch.getId() < 0) {
             long rowId  = db.insertSketch(mCurrentSketch);
             int sketchID = db.getId4rowid(rowId);

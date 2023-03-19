@@ -76,6 +76,10 @@ public class PaintDb {
         return db.delete(SketchEntry.TABLE_NAME, SketchEntry._ID + "=" + sketchId, null) > 0;
     }
 
+    public boolean clearSketch() {
+        return db.delete(SketchEntry.TABLE_NAME, null, null) > 0;
+    }
+
     public long insertSketch(Sketch sketch) {
         ContentValues values = new ContentValues();
         values.put(SketchEntry.CREATE_DATE, PaintDbHelper.getDateTime(new Date()));
