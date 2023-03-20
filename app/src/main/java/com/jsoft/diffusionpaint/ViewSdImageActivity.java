@@ -122,9 +122,9 @@ public class ViewSdImageActivity extends AppCompatActivity {
 
     public void setScreenRotation() {
         if (aspectRatio.equals("portrait")) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         } else if (aspectRatio.equals("landscape")) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
     }
 
@@ -164,7 +164,6 @@ public class ViewSdImageActivity extends AppCompatActivity {
             //jsonObject.put("sampler_name", "string");
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
-            jsonObject.put("steps", 40);
             jsonObject.put("cfg_scale", 7);
             if (aspectRatio.equals("portrait")) {
                 jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
@@ -189,7 +188,13 @@ public class ViewSdImageActivity extends AppCompatActivity {
             jsonObject.put("override_settings", new JSONObject());
             jsonObject.put("override_settings_restore_afterwards", true);
             jsonObject.put("script_args", new JSONArray());
-            jsonObject.put("sampler_index", "Euler a");
+            if (cnMode.equals("depth")) {
+                jsonObject.put("steps", 35);
+                jsonObject.put("sampler_index", "DPM++ 2S a Karras");
+            } else {
+                jsonObject.put("steps", 40);
+                jsonObject.put("sampler_index", "Euler a");
+            }
             jsonObject.put("include_init_images", false);
             //jsonObject.put("script_name", "string");
             jsonObject.put("send_images", true);

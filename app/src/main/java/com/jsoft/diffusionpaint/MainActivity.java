@@ -1,9 +1,11 @@
 package com.jsoft.diffusionpaint;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
@@ -12,8 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +37,7 @@ import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,11 +47,13 @@ public class MainActivity extends AppCompatActivity {
     private Utils utils;
     private List<Sketch> sketches;
     private SharedPreferences sharedPreferences;
+    private static File mImageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (mImageFile==null) mImageFile = new File(getExternalFilesDir(null), "captured_image.jpg");
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         db = new PaintDb(this);
@@ -57,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         addSketchButton.setOnClickListener(view -> gotoDrawingActivity(-1));
 
         FloatingActionButton addCameraButton = findViewById(R.id.fab_add_camera);
-        addCameraButton.setOnClickListener(view -> gotoDrawingActivity(-2));
+        addCameraButton.setOnClickListener(view -> launchCamera());
 
         isPermissionGranted();
         //db.clearSketch();
@@ -202,6 +210,33 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    private void launchCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            Uri imageUri = FileProvider.getUriForFile(this, "com.jsoft.diffusionpaint.fileprovider", mImageFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo resolveInfo : resInfoList) {
+                String packageName = resolveInfo.activityInfo.packageName;
+                grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+            cameraResultLauncher.launch(intent);
+        }
+    }
+
+    ActivityResultLauncher<Intent> cameraResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            (ActivityResult result) -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    //Intent data = result.getData();
+                    Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
+                    intent.putExtra("sketchId", -2);
+                    intent.putExtra("bitmapPath", mImageFile.getAbsolutePath());
+                    drawingActivityResultLauncher.launch(intent);
+                }
+            });
+
 
     public void isPermissionGranted() {
         if (!(checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
