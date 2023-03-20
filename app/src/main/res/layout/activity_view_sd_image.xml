@@ -49,11 +49,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@android:color/white" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/spinner_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#44000000">
+        android:background="#CC000000"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/spinner"
@@ -61,10 +63,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:backgroundTint="#00000000"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_gravity="center"
+            android:backgroundTint="#00000000" />
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
