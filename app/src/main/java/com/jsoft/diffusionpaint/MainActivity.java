@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -68,7 +69,30 @@ public class MainActivity extends AppCompatActivity {
         addCameraButton.setOnClickListener(view -> launchCamera());
 
         isPermissionGranted();
-        //db.clearSketch();
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEND.equals(intent.getAction())) {
+            Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            Intent drawIntent = new Intent(MainActivity.this, DrawingActivity.class);
+            drawIntent.putExtra("sketchId", -2);
+            drawIntent.putExtra("bitmapPath", getPathFromUri(uri));
+            drawingActivityResultLauncher.launch(drawIntent);
+        }
+    }
+
+    private String getPathFromUri(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            if (cursor.moveToFirst()) {
+                String path = cursor.getString(column_index);
+                cursor.close();
+                return path;
+            }
+            cursor.close();
+        }
+        return null;
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
@@ -91,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
         sketches = db.getSketchList();
         GridViewImageAdapter adapter = new GridViewImageAdapter(this, sketches);
         gridView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     private GridView initGridLayout() {

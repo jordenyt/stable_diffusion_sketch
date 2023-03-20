@@ -51,7 +51,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("diffusionPaint", "Debug 1");
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         mCurrentSketch = new Sketch();
         db = new PaintDb(this);
@@ -59,14 +58,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         int sketchId = i.getIntExtra("sketchId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
         aspectRatio = sharedPreferences.getString("sdImageAspect", "square");
-
+        Bitmap rotatedBitmap = null;
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
                 mCurrentSketch = dbSketch;
-                if (mCurrentSketch.getImgPreview().getWidth() > mCurrentSketch.getImgPreview().getHeight()) {
+                if (mCurrentSketch.getImgPreview().getWidth() * 3 / 4 >= mCurrentSketch.getImgPreview().getHeight()) {
                     aspectRatio = "landscape";
-                } else if (mCurrentSketch.getImgPreview().getWidth() < mCurrentSketch.getImgPreview().getHeight()) {
+                } else if (mCurrentSketch.getImgPreview().getWidth() <= mCurrentSketch.getImgPreview().getHeight() * 3 / 4) {
                     aspectRatio = "portrait";
                 } else {
                     aspectRatio = "square";
@@ -74,7 +73,42 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             }
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
+            Bitmap imageBitmap = BitmapFactory.decodeFile(bitmapPath);
+
+            ExifInterface exif = null;
+            try {
+                exif = new ExifInterface(bitmapPath);
+            } catch (IOException e) {
+                Log.e("diffusionpaint", "IOException get from returned camera file.");
+            }
+            assert exif != null;
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+            // Rotate the bitmap to correct the orientation
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(270);
+                    break;
+                default:
+                    break;
+            }
+            rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+            if (rotatedBitmap.getWidth() * 3 / 4 >= rotatedBitmap.getHeight()) {
+                aspectRatio = "landscape";
+            } else if (rotatedBitmap.getWidth() <= rotatedBitmap.getHeight() * 3 / 4) {
+                aspectRatio = "portrait";
+            } else {
+                aspectRatio = "square";
+            }
         }
+
         setScreenRotation();
 
         setContentView(R.layout.activity_drawing);
@@ -109,33 +143,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         initButtons();
 
         if (sketchId == -2) {
-            Bitmap imageBitmap = BitmapFactory.decodeFile(bitmapPath);
-
-            ExifInterface exif = null;
-            try {
-                exif = new ExifInterface(bitmapPath);
-            } catch (IOException e) {
-                Log.e("diffusionpaint", "IOException get from returned camera file.");
-            }
-            assert exif != null;
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-
-            // Rotate the bitmap to correct the orientation
-            Matrix matrix = new Matrix();
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    matrix.postRotate(90);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    matrix.postRotate(180);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    matrix.postRotate(270);
-                    break;
-                default:
-                    break;
-            }
-            Bitmap rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
             mDrawingView.setmBaseBitmap(rotatedBitmap);
         }
 
@@ -172,7 +179,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         FloatingActionButton saveButton = findViewById(R.id.fab_save);
         saveButton.setOnClickListener(view -> {
             saveSketch();
-            this.onBackPressed();
+            gotoMainActivity();
         });
 
         FloatingActionButton deleteButton = findViewById(R.id.fab_delete);
@@ -180,11 +187,17 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             if (mCurrentSketch.getId() >= 0) {
                 db.deleteSketch(mCurrentSketch.getId());
             }
-            this.onBackPressed();
+            gotoMainActivity();
         });
 
         FloatingActionButton sdButton = findViewById(R.id.fab_stable_diffusion);
         sdButton.setOnClickListener(view -> showInputDialog());
+    }
+
+    public void gotoMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override
@@ -195,6 +208,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void setScreenRotation() {
+
         if (aspectRatio.equals("portrait")) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         } else if (aspectRatio.equals("landscape")) {
