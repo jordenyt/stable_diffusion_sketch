@@ -53,7 +53,7 @@
         android:id="@+id/spinner_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:backgroundTint="#CC000000">
+        android:background="#44000000">
 
         <ProgressBar
             android:id="@+id/spinner"
