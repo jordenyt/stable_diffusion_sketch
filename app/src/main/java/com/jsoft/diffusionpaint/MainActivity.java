@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -117,25 +118,62 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.mi_sd_server_address:
                 showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
-                return true;
+                break;
             case R.id.mi_prompt_prefix:
                 showTextInputDialog("promptPrefix", "Prompt Prefix:", "Color drawing of ", "");
-                return true;
+                break;
             case R.id.mi_prompt_postfix:
                 showTextInputDialog("promptPostfix", "Prompt Postfix:", "colorful background", "");
-                return true;
+                break;
             case R.id.mi_negative_prompt:
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
-                return true;
+                break;
             case R.id.mi_cn_scribble:
                 showTextInputDialog("cnScribbleModel", "ControlNet Scribble Model:", "control_sd15_scribble [fef5e48e]", "control_sd15_scribble [fef5e48e]");
+                break;
             case R.id.mi_cn_depth:
                 showTextInputDialog("cnDepthModel", "ControlNet Depth Model:", "control_sd15_depth [fef5e48e]", "control_sd15_depth [fef5e48e]");
+                break;
             case R.id.mi_cn_pose:
                 showTextInputDialog("cnPoseModel", "ControlNet Pose Model:", "control_sd15_openpose [fef5e48e]", "control_sd15_openpose [fef5e48e]");
+                break;
+            case R.id.mi_sd_output_dim:
+                showOutputDimenDialog();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
+    }
+
+    private void showOutputDimenDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_frame_dim, null);
+        builder.setView(dialogView);
+
+        Spinner spSize = dialogView.findViewById(R.id.sd_size_selection);
+        int prefSize = sharedPreferences.getInt("sdImageSize", 512);
+        spSize.setSelection(prefSize == 768 ? 1 : prefSize == 1024 ? 2 : 0);
+
+        Spinner spAspect = dialogView.findViewById(R.id.sd_aspect_selection);
+        String prefAspect = sharedPreferences.getString("sdImageAspect", "square");
+        spAspect.setSelection(prefAspect.equals("landscape") ? 2 : prefAspect.equals("portrait") ? 1 : 0);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            int ipSize = (spSize.getSelectedItemPosition() == 1 ? 768 : spSize.getSelectedItemPosition() == 2 ? 1024 : 512);
+            String ipAspect = (spAspect.getSelectedItemPosition() == 1 ? "portrait" : spAspect.getSelectedItemPosition() == 2 ? "landscape" : "square");
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("sdImageAspect",ipAspect);
+            editor.putInt("sdImageSize", ipSize);
+            editor.apply();
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showTextInputDialog(String key, String title, String hint, String defaultValue) {

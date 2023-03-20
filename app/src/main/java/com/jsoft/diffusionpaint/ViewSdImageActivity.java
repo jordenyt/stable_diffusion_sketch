@@ -7,6 +7,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,32 +55,46 @@ public class ViewSdImageActivity extends AppCompatActivity {
     OkHttpClient client = new OkHttpClient();
     private String baseUrl;
     private SharedPreferences sharedPreferences;
+    private String aspectRatio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_sd_image);
-        sdImage = findViewById(R.id.sd_image);
-        db = new PaintDb(this);
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        baseUrl = sharedPreferences.getString("sdServerAddress", "");
-
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
         String cnMode = i.getStringExtra("cnMode");
+
+
+        db = new PaintDb(this);
+        baseUrl = sharedPreferences.getString("sdServerAddress", "");
+
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
                 mCurrentSketch = dbSketch;
                 mCurrentSketch.setCnMode(cnMode);
                 mBitmap = mCurrentSketch.getImgPreview();
-                sdImage.setImageBitmap(mBitmap);
+                if (mCurrentSketch.getImgPreview().getWidth() > mCurrentSketch.getImgPreview().getHeight()) {
+                    aspectRatio = "landscape";
+                } else if (mCurrentSketch.getImgPreview().getWidth() < mCurrentSketch.getImgPreview().getHeight()) {
+                    aspectRatio = "portrait";
+                } else {
+                    aspectRatio = "square";
+                }
             }
         }
         if (mCurrentSketch==null) {
             mCurrentSketch=new Sketch();
         }
+        setScreenRotation();
 
+        setContentView(R.layout.activity_view_sd_image);
+        sdImage = findViewById(R.id.sd_image);
+
+        if (mBitmap != null) {
+            sdImage.setImageBitmap(mBitmap);
+        }
 
         spinner_bg = findViewById(R.id.spinner_bg);
         sdButton = findViewById(R.id.fab_stable_diffusion2);
@@ -95,6 +111,21 @@ public class ViewSdImageActivity extends AppCompatActivity {
         });
 
         callSD(mCurrentSketch.getCnMode());
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Lock the orientation to portrait
+        setScreenRotation();
+    }
+
+    public void setScreenRotation() {
+        if (aspectRatio.equals("portrait")) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else if (aspectRatio.equals("landscape")) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
     }
 
     private void callSD(String cnMode) {
@@ -135,8 +166,16 @@ public class ViewSdImageActivity extends AppCompatActivity {
             jsonObject.put("n_iter", 1);
             jsonObject.put("steps", 40);
             jsonObject.put("cfg_scale", 7);
-            jsonObject.put("width", 512);
-            jsonObject.put("height", 512);
+            if (aspectRatio.equals("portrait")) {
+                jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
+            } else {
+                jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512));
+            }
+            if (aspectRatio.equals("landscape")) {
+                jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
+            } else {
+                jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512));
+            }
             jsonObject.put("restore_faces", false);
             jsonObject.put("tiling", false);
             jsonObject.put("do_not_save_samples", false);

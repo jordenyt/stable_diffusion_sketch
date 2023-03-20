@@ -22,12 +22,12 @@
         tools:targetApi="31">
         <activity
             android:name=".ViewSdImageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="keyboardHidden|screenSize"
             android:exported="false"
             android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".DrawingActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="keyboardHidden|screenSize"
             android:exported="false"
             android:theme="@style/FullscreenTheme" />
         <activity
@@ -42,7 +42,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.myapplication.fileprovider"
+            android:authorities="com.jsoft.diffusionpaint.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

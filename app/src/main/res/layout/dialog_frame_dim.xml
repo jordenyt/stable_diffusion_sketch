@@ -8,23 +8,21 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="What is it?"
+        android:text="Output Image Size:"
         android:textAppearance="?android:textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/sd_prompt"
+    <Spinner
+        android:id="@+id/sd_size_selection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Input here..."
-        android:textColorHint="#FF666666" />
+        android:entries="@array/sd_size_options" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text= "Magic you want to cast:"
+        android:text= "Aspect Ratio:"
         android:textAppearance="?android:textAppearanceMedium" />
     <Spinner
-        android:id="@+id/sd_mode_selection"
+        android:id="@+id/sd_aspect_selection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/cnmode_options" />
+        android:entries="@array/sd_aspect_options" />
 </LinearLayout>

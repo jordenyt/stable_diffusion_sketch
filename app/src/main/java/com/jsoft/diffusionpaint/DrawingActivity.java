@@ -3,13 +3,18 @@ package com.jsoft.diffusionpaint;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -21,6 +26,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -47,13 +53,36 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private Sketch mCurrentSketch;
     private SeekBar seekWidth;
     private File mImageFile;
+    private String aspectRatio;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_drawing);
-
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        mCurrentSketch = new Sketch();
         db = new PaintDb(this);
+        Intent i = getIntent();
+        int sketchId = i.getIntExtra("sketchId", -1);
+        aspectRatio = sharedPreferences.getString("sdImageAspect", "square");
+        if (sketchId >= 0) {
+            Sketch dbSketch = db.getSketch(sketchId);
+            if (dbSketch != null) {
+                mCurrentSketch = dbSketch;
+                if (mCurrentSketch.getImgPreview().getWidth() > mCurrentSketch.getImgPreview().getHeight()) {
+                    aspectRatio = "landscape";
+                } else if (mCurrentSketch.getImgPreview().getWidth() < mCurrentSketch.getImgPreview().getHeight()) {
+                    aspectRatio = "portrait";
+                } else {
+                    aspectRatio = "square";
+                }
+            }
+        } else if (sketchId == -2) {
+            mCurrentSketch.setId(sketchId);
+        }
+        setScreenRotation();
+
+        setContentView(R.layout.activity_drawing);
 
         mDrawingView = findViewById(R.id.drawing_view);
         mCurrentColor = Color.BLUE;
@@ -61,27 +90,32 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         seekWidth = findViewById(R.id.seek_width);
         mCurrentStroke = seekWidth.getProgress();
         mDrawingView.setPaintStrokeWidth(mCurrentStroke);
-        mCurrentSketch = new Sketch();
+
         circleView = findViewById(R.id.circle_pen);
         circleView.setColor(mCurrentColor);
         circleView.setRadius(mCurrentStroke/2f);
 
-        Intent i = getIntent();
-        int sketchId = i.getIntExtra("sketchId", -1);
+
+        ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
+        if (aspectRatio.equals("landscape")) {
+            loParam.dimensionRatio = "4:3";
+        } else if (aspectRatio.equals("portrait")) {
+            loParam.dimensionRatio = "3:4";
+        } else {
+            loParam.dimensionRatio = "1:1";
+        }
+
         if (sketchId >= 0) {
-            Sketch dbSketch = db.getSketch(sketchId);
-            if (dbSketch != null) {
-                mCurrentSketch = dbSketch;
+            if (mCurrentSketch.getImgPreview() != null) {
                 mDrawingView.setmBaseBitmap(mCurrentSketch.getImgPreview());
             }
         } else if (sketchId == -2) {
-            mCurrentSketch.setId(sketchId);
             mImageFile = new File(getExternalFilesDir(null), "captured_image.jpg");
             // Launch the camera app to capture an image
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (intent.resolveActivity(getPackageManager()) != null) {
                 // Get the URI for the saved image file using a FileProvider
-                Uri imageUri = FileProvider.getUriForFile(this, "com.example.myapplication.fileprovider", mImageFile);
+                Uri imageUri = FileProvider.getUriForFile(this, "com.jsoft.diffusionpaint.fileprovider", mImageFile);
 
                 // Add the URI to the intent as an extra
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -92,11 +126,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     String packageName = resolveInfo.activityInfo.packageName;
                     grantUriPermission(packageName, imageUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
-
                 cameraResultLauncher.launch(intent);
             }
-
         }
+
         initButtons();
     }
 
@@ -182,6 +215,21 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     mDrawingView.setmBaseBitmap(rotatedBitmap);
                 }
             });
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Lock the orientation to portrait
+        setScreenRotation();
+    }
+
+    public void setScreenRotation() {
+        if (aspectRatio.equals("portrait")) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else if (aspectRatio.equals("landscape")) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
 
     private void showInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

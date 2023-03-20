@@ -9,7 +9,8 @@
     <ImageView
         android:id="@+id/sketch_preview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
         android:adjustViewBounds="true" />
 
     <TextView
