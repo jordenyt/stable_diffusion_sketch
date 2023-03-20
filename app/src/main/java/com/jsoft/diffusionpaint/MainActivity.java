@@ -9,14 +9,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -132,6 +129,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.mi_cn_scribble:
                 showTextInputDialog("cnScribbleModel", "ControlNet Scribble Model:", "control_sd15_scribble [fef5e48e]", "control_sd15_scribble [fef5e48e]");
+            case R.id.mi_cn_depth:
+                showTextInputDialog("cnDepthModel", "ControlNet Depth Model:", "control_sd15_depth [fef5e48e]", "control_sd15_depth [fef5e48e]");
+            case R.id.mi_cn_pose:
+                showTextInputDialog("cnPoseModel", "ControlNet Pose Model:", "control_sd15_openpose [fef5e48e]", "control_sd15_openpose [fef5e48e]");
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -164,15 +165,12 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public boolean isPermissionGranted() {
-        if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+    public void isPermissionGranted() {
+        if (!(checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
+                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
             ActivityCompat.requestPermissions(this, permissions, 100);
-            return false;
         }
     }
 

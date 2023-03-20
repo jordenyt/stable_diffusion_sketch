@@ -11,6 +11,8 @@
     <item android:title="Model Settings">
         <menu>
             <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
+            <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
+            <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
         </menu>
     </item>
 </menu>

@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
@@ -185,17 +186,41 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private void showInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_textbox, null);
+        View dialogView = inflater.inflate(R.layout.dialog_prompt_mode, null);
         builder.setView(dialogView);
 
-        final EditText editText = dialogView.findViewById(R.id.edit_text);
+        final EditText editText = dialogView.findViewById(R.id.sd_prompt);
         editText.setText(mCurrentSketch.getPrompt());
+
+        Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
+        switch (mCurrentSketch.getCnMode()) {
+            case Sketch.CN_MODE_DEPTH:
+                sdMode.setSelection(1);
+                break;
+            case Sketch.CN_MODE_POSE:
+                sdMode.setSelection(2);
+                break;
+            default:
+                sdMode.setSelection(0);
+                break;
+        }
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = editText.getText().toString();
             mCurrentSketch.setPrompt(inputText);
+            switch (sdMode.getSelectedItem().toString()) {
+                case "Scribble":
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_SCRIBBLE);
+                    break;
+                case "Depth":
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_DEPTH);
+                    break;
+                case "Pose":
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_POSE);
+                    break;
+            }
             saveSketch();
-            gotoViewSdImageActivity(mCurrentSketch.getId());
+            gotoViewSdImageActivity(mCurrentSketch.getId(), mCurrentSketch.getCnMode());
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -212,9 +237,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 }
             });
 
-    public void gotoViewSdImageActivity(int sketchID) {
+    public void gotoViewSdImageActivity(int sketchID, String cnMode) {
         Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
         intent.putExtra("sketchId", sketchID);
+        intent.putExtra("cnMode", cnMode);
         sdViewerActivityResultLauncher.launch(intent);
     }
 

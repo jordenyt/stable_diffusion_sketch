@@ -2,7 +2,6 @@ package com.jsoft.diffusionpaint;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jsoft.diffusionpaint.helper.PaintDb;
@@ -44,7 +44,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
     private Sketch mCurrentSketch;
     private PaintDb db;
     private ImageView sdImage;
-    private ConstraintLayout spinner_bg;
+    private LinearLayout spinner_bg;
     private FloatingActionButton sdButton;
     private FloatingActionButton saveButton;
     private FloatingActionButton backButton;
@@ -65,10 +65,12 @@ public class ViewSdImageActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
+        String cnMode = i.getStringExtra("cnMode");
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
                 mCurrentSketch = dbSketch;
+                mCurrentSketch.setCnMode(cnMode);
                 mBitmap = mCurrentSketch.getImgPreview();
                 sdImage.setImageBitmap(mBitmap);
             }
@@ -77,12 +79,13 @@ public class ViewSdImageActivity extends AppCompatActivity {
             mCurrentSketch=new Sketch();
         }
 
+
         spinner_bg = findViewById(R.id.spinner_bg);
         sdButton = findViewById(R.id.fab_stable_diffusion2);
         saveButton = findViewById(R.id.fab_save2);
         backButton = findViewById(R.id.fab_back);
 
-        sdButton.setOnClickListener(view -> callSD());
+        sdButton.setOnClickListener(view -> callSD(mCurrentSketch.getCnMode()));
 
         backButton.setOnClickListener(view -> this.onBackPressed());
 
@@ -91,20 +94,20 @@ public class ViewSdImageActivity extends AppCompatActivity {
             saveButton.setVisibility(View.GONE);
         });
 
-        callSD();
+        callSD(mCurrentSketch.getCnMode());
     }
 
-    private void callSD() {
+    private void callSD(String cnMode) {
         spinner_bg.setVisibility(View.VISIBLE);
         sdButton.setVisibility(View.GONE);
         saveButton.setVisibility(View.GONE);
         backButton.setVisibility(View.GONE);
 
-        JSONObject jsonObject = getControlnetImg2imgJSON(mCurrentSketch.getPrompt());
+        JSONObject jsonObject = getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), cnMode);
         sendPostRequest("cnimg2img", baseUrl + "/sdapi/v1/img2img", jsonObject);
     }
 
-    private JSONObject getControlnetImg2imgJSON(String prompt) {
+    private JSONObject getControlnetImg2imgJSON(String prompt, String cnMode) {
         JSONObject jsonObject = new JSONObject();
         try {
             JSONArray init_images = new JSONArray();
@@ -158,9 +161,23 @@ public class ViewSdImageActivity extends AppCompatActivity {
             JSONObject cnArgObject = new JSONObject();
             cnArgObject.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
             //cnArgObject.put("mask", "");
-            cnArgObject.put("module", "none");
-            cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-            cnArgObject.put("weight", 0.2);
+            switch (cnMode) {
+                case Sketch.CN_MODE_SCRIBBLE:
+                    cnArgObject.put("module", "none");
+                    cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
+                    cnArgObject.put("weight", 0.2);
+                    break;
+                case Sketch.CN_MODE_DEPTH:
+                    cnArgObject.put("module", "depth");
+                    cnArgObject.put("model", sharedPreferences.getString("cnDepthModel","control_sd15_depth [fef5e48e]"));
+                    cnArgObject.put("weight", 0.7);
+                    break;
+                case Sketch.CN_MODE_POSE:
+                    cnArgObject.put("module", "openpose");
+                    cnArgObject.put("model", sharedPreferences.getString("cnPoseModel","control_sd15_openpose [fef5e48e]"));
+                    cnArgObject.put("weight", 1);
+                    break;
+            }
             cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
             cnArgObject.put("lowvram", false);
             cnArgObject.put("processor_res", 64);

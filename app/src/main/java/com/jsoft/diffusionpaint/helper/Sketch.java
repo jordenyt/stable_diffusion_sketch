@@ -2,8 +2,6 @@ package com.jsoft.diffusionpaint.helper;
 
 import android.graphics.Bitmap;
 
-import com.google.gson.Gson;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,13 +12,11 @@ public class Sketch implements Serializable {
     private String prompt;
     private Bitmap imgPreview;
 
-    public Sketch(int id, Date createDate, Date lastUpdateDate, String prompt, Bitmap imgPreview) {
-        this.id = id;
-        this.createDate = createDate;
-        this.lastUpdateDate = lastUpdateDate;
-        this.prompt = prompt;
-        this.imgPreview = imgPreview;
-    }
+    private String cnMode;
+
+    public static final String CN_MODE_SCRIBBLE = "scribble";
+    public static final String CN_MODE_DEPTH = "depth";
+    public static final String CN_MODE_POSE = "pose";
 
     public Sketch() {
         this.id = -1;
@@ -28,6 +24,7 @@ public class Sketch implements Serializable {
         this.lastUpdateDate = new Date();
         this.prompt = "";
         this.imgPreview = null;
+        this.cnMode = CN_MODE_SCRIBBLE;
     }
 
     public Bitmap getImgPreview() {
@@ -36,6 +33,14 @@ public class Sketch implements Serializable {
 
     public void setImgPreview(Bitmap imgPreview) {
         this.imgPreview = imgPreview;
+    }
+
+    public String getCnMode() {
+        return cnMode;
+    }
+
+    public void setCnMode(String cnMode) {
+        this.cnMode = cnMode;
     }
 
     public Date getCreateDate() {

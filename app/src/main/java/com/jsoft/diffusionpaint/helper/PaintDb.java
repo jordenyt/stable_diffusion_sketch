@@ -72,8 +72,8 @@ public class PaintDb {
         }
     }
 
-    public boolean deleteSketch(int sketchId) {
-        return db.delete(SketchEntry.TABLE_NAME, SketchEntry._ID + "=" + sketchId, null) > 0;
+    public void deleteSketch(int sketchId) {
+        db.delete(SketchEntry.TABLE_NAME, SketchEntry._ID + "=" + sketchId, null);
     }
 
     public boolean clearSketch() {
@@ -90,7 +90,7 @@ public class PaintDb {
         return db.insert(SketchEntry.TABLE_NAME,null,values);
     }
 
-    public long updateSketch(Sketch sketch) {
+    public void updateSketch(Sketch sketch) {
         ContentValues values = new ContentValues();
         values.put(SketchEntry.LAST_UPDATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.PROMPT, sketch.getPrompt());
@@ -105,7 +105,6 @@ public class PaintDb {
                 values,
                 selection,
                 selectionArgs);
-        return sketch.getId();
     }
 
     public int getId4rowid(long rowid) {

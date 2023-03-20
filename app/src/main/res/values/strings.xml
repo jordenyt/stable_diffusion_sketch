@@ -10,5 +10,9 @@
     <string name="save_sketch">Save Sketch</string>
     <string name="delete_sketch">Delete Sketch</string>
     <string name="ok">OK</string>
-
+    <string-array name="sdmode_options">
+        <item>Scribble</item>
+        <item>Depth</item>
+        <item>Pose</item>
+    </string-array>
 </resources>
