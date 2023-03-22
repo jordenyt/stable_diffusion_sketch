@@ -30,13 +30,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.jsoft.diffusionpaint.component.DrawingView;
+import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.helper.CircleView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.Sketch;
 
 import java.io.IOException;
 
-public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener
+public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener
 {
     private DrawingView mDrawingView;
     private CircleView circleView;
@@ -47,6 +48,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private SeekBar seekWidth;
     private String aspectRatio;
     private SharedPreferences sharedPreferences;
+    FloatingActionButton paletteButton;
+    FloatingActionButton undoButton;
+    FloatingActionButton redoButton;
+    FloatingActionButton sdButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +122,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         mDrawingView = findViewById(R.id.drawing_view);
         mCurrentColor = Color.BLUE;
         mDrawingView.setPaintColor(mCurrentColor);
+        mDrawingView.setListener(this);
         seekWidth = findViewById(R.id.seek_width);
         mCurrentStroke = seekWidth.getProgress();
         mDrawingView.setPaintStrokeWidth(mCurrentStroke);
@@ -151,7 +157,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     protected void initButtons() {
 
-        FloatingActionButton paletteButton = findViewById(R.id.fab_color);
+        paletteButton = findViewById(R.id.fab_color);
         paletteButton.setOnClickListener(view -> ColorPickerDialog.newBuilder()
                 .setDialogType(ColorPickerDialog.TYPE_PRESETS)
                 .setAllowPresets(true)
@@ -171,10 +177,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        FloatingActionButton undoButton = findViewById(R.id.fab_undo);
+        undoButton = findViewById(R.id.fab_undo);
         undoButton.setOnClickListener(view -> mDrawingView.undo());
 
-        FloatingActionButton redoButton = findViewById(R.id.fab_redo);
+        redoButton = findViewById(R.id.fab_redo);
         redoButton.setOnClickListener(view -> mDrawingView.redo());
 
         FloatingActionButton saveButton = findViewById(R.id.fab_save);
@@ -191,8 +197,18 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             gotoMainActivity();
         });
 
-        FloatingActionButton sdButton = findViewById(R.id.fab_stable_diffusion);
+        sdButton = findViewById(R.id.fab_stable_diffusion);
         sdButton.setOnClickListener(view -> showInputDialog());
+
+        circleView.setOnClickListener(view -> {
+            sdButton.setVisibility(View.GONE);
+            undoButton.setVisibility(View.GONE);
+            redoButton.setVisibility(View.GONE);
+            paletteButton.setVisibility(View.GONE);
+            seekWidth.setVisibility(View.GONE);
+            circleView.setVisibility(View.GONE);
+            mDrawingView.setEyedropper(true);
+        });
     }
 
     public void gotoMainActivity() {
@@ -283,11 +299,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                }
-            });
+            result -> {});
 
     public void gotoViewSdImageActivity(int sketchID, String cnMode) {
         Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
@@ -318,7 +330,19 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     @Override
-    public void onDialogDismissed(int dialogId) {
+    public void onDialogDismissed(int dialogId) {}
 
+    @Override
+    public void onEyedropperResult(int color) {
+        sdButton.setVisibility(View.VISIBLE);
+        undoButton.setVisibility(View.VISIBLE);
+        redoButton.setVisibility(View.VISIBLE);
+        paletteButton.setVisibility(View.VISIBLE);
+        seekWidth.setVisibility(View.VISIBLE);
+        circleView.setVisibility(View.VISIBLE);
+        mDrawingView.setEyedropper(false);
+        mCurrentColor = color;
+        mDrawingView.setPaintColor(mCurrentColor);
+        circleView.setColor(mCurrentColor);
     }
 }

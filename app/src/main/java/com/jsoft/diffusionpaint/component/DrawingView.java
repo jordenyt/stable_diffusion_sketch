@@ -34,11 +34,21 @@ public class DrawingView extends View
 	private int mBackgroundColor = 0xFFFFFFFF;
 	private int mPaintColor = 0xFF666666;
 	private int mStrokeWidth = 10;
+	private boolean isEyedropper = false;
+	private DrawingViewListener listener;
 
 	public DrawingView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		init();
+	}
+
+	public void setListener(DrawingViewListener listener) {
+		this.listener = listener;
+	}
+
+	public void setEyedropper(boolean eyedropper) {
+		isEyedropper = eyedropper;
 	}
 
 	private void init()
@@ -134,18 +144,27 @@ public class DrawingView extends View
 		switch (event.getAction())
 		{
 			case MotionEvent.ACTION_DOWN:
-				mDrawPath.moveTo(touchX, touchY);
+				if (!isEyedropper) {
+					mDrawPath.moveTo(touchX, touchY);
+				}
 				//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				mDrawPath.lineTo(touchX, touchY);
+				if (!isEyedropper) {
+					mDrawPath.lineTo(touchX, touchY);
+				}
 				break;
 			case MotionEvent.ACTION_UP:
-				mDrawPath.lineTo(touchX, touchY);
-				mPaths.add(mDrawPath);
-				mPaints.add(mDrawPaint);
-				mDrawPath = new Path();
-				initPaint();
+				if (!isEyedropper) {
+					mDrawPath.lineTo(touchX, touchY);
+					mPaths.add(mDrawPath);
+					mPaints.add(mDrawPaint);
+					mDrawPath = new Path();
+					initPaint();
+				} else {
+					int eyedropperColor = getBitmap().getPixel((int)touchX, (int)touchY);
+					listener.onEyedropperResult(eyedropperColor);
+				}
 				break;
 			default:
 				return false;

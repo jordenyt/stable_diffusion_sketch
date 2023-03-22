@@ -94,11 +94,10 @@
 
     <SeekBar
         android:id="@+id/seek_width"
-        android:layout_width="143dp"
+        android:layout_width="127dp"
         android:layout_height="57dp"
-        android:layout_marginEnd="0dp"
         android:layout_marginBottom="20dp"
-        android:max="100"
+        android:max="200"
         android:min="10"
         android:progress="50"
         android:progressBackgroundTint="@color/white"
@@ -110,7 +109,7 @@
         android:layout_width="57dp"
         android:layout_height="57dp"
         android:layout_marginBottom="20dp"
-        android:background="#222222"
+        android:background="#00000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/seek_width" />
 
@@ -126,5 +125,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@android:color/white" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
