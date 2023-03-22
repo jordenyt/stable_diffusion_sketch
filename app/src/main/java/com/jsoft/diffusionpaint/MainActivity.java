@@ -203,6 +203,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.mi_cn_pose:
                 showTextInputDialog("cnPoseModel", "ControlNet Pose Model:", "control_sd15_openpose [fef5e48e]", "control_sd15_openpose [fef5e48e]");
                 break;
+            case R.id.mi_cn_canny:
+                showTextInputDialog("cnCannyModel", "ControlNet Canny Model:", "control_sd15_canny [fef5e48e]", "control_sd15_canny [fef5e48e]");
+                break;
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
                 break;

@@ -234,6 +234,15 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             case Sketch.CN_MODE_POSE:
                 sdMode.setSelection(2);
                 break;
+            case Sketch.CN_MODE_TXT_CANNY:
+                sdMode.setSelection(3);
+                break;
+            case Sketch.CN_MODE_TXT_SCRIBBLE:
+                sdMode.setSelection(4);
+                break;
+            case Sketch.CN_MODE_TXT_DEPTH:
+                sdMode.setSelection(5);
+                break;
             default:
                 sdMode.setSelection(0);
                 break;
@@ -242,15 +251,24 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = editText.getText().toString();
             mCurrentSketch.setPrompt(inputText);
-            switch (sdMode.getSelectedItem().toString()) {
-                case "Scribble":
+            switch (sdMode.getSelectedItemPosition()) {
+                case 0:
                     mCurrentSketch.setCnMode(Sketch.CN_MODE_SCRIBBLE);
                     break;
-                case "Depth":
+                case 1:
                     mCurrentSketch.setCnMode(Sketch.CN_MODE_DEPTH);
                     break;
-                case "Pose":
+                case 2:
                     mCurrentSketch.setCnMode(Sketch.CN_MODE_POSE);
+                    break;
+                case 3:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT_CANNY);
+                    break;
+                case 4:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT_SCRIBBLE);
+                    break;
+                case 5:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT_DEPTH);
                     break;
             }
             saveSketch();

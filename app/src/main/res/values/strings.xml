@@ -14,6 +14,10 @@
         <item>Scribble</item>
         <item>Depth</item>
         <item>Pose</item>
+        <item>Canny Coloring</item>
+        <item>Scribble Coloring</item>
+        <item>Depth Coloring</item>
+        <item></item>
     </string-array>
     <string-array name="sd_size_options">
         <item>512px</item>
