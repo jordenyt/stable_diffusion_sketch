@@ -149,18 +149,18 @@ public class ViewSdImageActivity extends AppCompatActivity {
             jsonObject.put("image_cfg_scale", 7);
             //jsonObject.put("mask", "string");
             jsonObject.put("mask_blur", 4);
-            jsonObject.put("inpainting_fill", 0);
-            jsonObject.put("inpaint_full_res", true);
-            jsonObject.put("inpaint_full_res_padding", 0);
-            jsonObject.put("inpainting_mask_invert", 0);
+            //jsonObject.put("inpainting_fill", 0);
+            //jsonObject.put("inpaint_full_res", true);
+            //jsonObject.put("inpaint_full_res_padding", 0);
+            //jsonObject.put("inpainting_mask_invert", 0);
             //jsonObject.put("initial_noise_multiplier", 0);
             jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
-            jsonObject.put("styles", new JSONArray());
+            //jsonObject.put("styles", new JSONArray());
             jsonObject.put("seed", -1);
-            jsonObject.put("subseed", -1);
-            jsonObject.put("subseed_strength", 1);
-            jsonObject.put("seed_resize_from_h", -1);
-            jsonObject.put("seed_resize_from_w", -1);
+            //jsonObject.put("subseed", -1);
+            //jsonObject.put("subseed_strength", 1);
+            //jsonObject.put("seed_resize_from_h", -1);
+            //jsonObject.put("seed_resize_from_w", -1);
             //jsonObject.put("sampler_name", "string");
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
@@ -177,27 +177,22 @@ public class ViewSdImageActivity extends AppCompatActivity {
             }
             jsonObject.put("restore_faces", false);
             jsonObject.put("tiling", false);
-            jsonObject.put("do_not_save_samples", false);
+            jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", ""));
-            jsonObject.put("eta", 0);
-            jsonObject.put("s_churn", 0);
-            jsonObject.put("s_tmax", 0);
-            jsonObject.put("s_tmin", 0);
-            jsonObject.put("s_noise", 1);
-            jsonObject.put("override_settings", new JSONObject());
-            jsonObject.put("override_settings_restore_afterwards", true);
-            jsonObject.put("script_args", new JSONArray());
-            if (cnMode.equals("depth")) {
-                jsonObject.put("steps", 35);
-                jsonObject.put("sampler_index", "DPM++ 2S a Karras");
-            } else {
-                jsonObject.put("steps", 40);
-                jsonObject.put("sampler_index", "Euler a");
-            }
-            jsonObject.put("include_init_images", false);
+            //jsonObject.put("eta", 0);
+            //jsonObject.put("s_churn", 0);
+            //jsonObject.put("s_tmax", 0);
+            //jsonObject.put("s_tmin", 0);
+            //jsonObject.put("s_noise", 1);
+            //jsonObject.put("override_settings", new JSONObject());
+            //jsonObject.put("override_settings_restore_afterwards", true);
+            //jsonObject.put("script_args", new JSONArray());
+            jsonObject.put("steps", 35);
+            jsonObject.put("sampler_index", cnMode.equals("depth") ? "DPM++ 2S a Karras": "Euler a");
+            //jsonObject.put("include_init_images", false);
             //jsonObject.put("script_name", "string");
-            jsonObject.put("send_images", true);
+            //jsonObject.put("send_images", true);
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
             JSONObject controlnet = new JSONObject();
@@ -209,7 +204,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
                 case Sketch.CN_MODE_SCRIBBLE:
                     cnArgObject.put("module", "none");
                     cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.2);
+                    cnArgObject.put("weight", 0.4);
                     break;
                 case Sketch.CN_MODE_DEPTH:
                     cnArgObject.put("module", "depth");
@@ -243,7 +238,6 @@ public class ViewSdImageActivity extends AppCompatActivity {
     }
 
     private void handleResponse(String requestType, String responseBody) throws IOException, JSONException {
-        //Log.d("diffusionPaint", responseBody);
         if ("cnimg2img".equals(requestType)) {
             JSONObject jsonObject = new JSONObject(responseBody);
             JSONArray images = jsonObject.getJSONArray("images");
@@ -272,7 +266,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
         client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
                 .url(url)

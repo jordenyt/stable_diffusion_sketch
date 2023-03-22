@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +40,9 @@ import com.jsoft.diffusionpaint.helper.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,10 +77,35 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            Intent drawIntent = new Intent(MainActivity.this, DrawingActivity.class);
-            drawIntent.putExtra("sketchId", -2);
-            drawIntent.putExtra("bitmapPath", getPathFromUri(uri));
-            drawingActivityResultLauncher.launch(drawIntent);
+            String mimeType = getContentResolver().getType(uri);
+            String filePath = getPathFromUri(uri);
+            if (mimeType != null && mimeType.startsWith("image/")) {
+                if (uri.getScheme().equals("content") && getPathFromUri(uri) == null) {
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(uri);
+                        String fileName = "temp_file_" + System.currentTimeMillis();
+                        File tempFile = new File(getCacheDir(), fileName);
+                        FileOutputStream outputStream = new FileOutputStream(tempFile);
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
+                        }
+                        outputStream.flush();
+                        outputStream.close();
+                        inputStream.close();
+                        filePath = tempFile.getAbsolutePath();
+                    } catch (IOException e) {
+                        Log.e("diffusionPaint", "Cannot get Image Path from shared content.");
+                    }
+                }
+                if (filePath != null) {
+                    Intent drawIntent = new Intent(MainActivity.this, DrawingActivity.class);
+                    drawIntent.putExtra("sketchId", -2);
+                    drawIntent.putExtra("bitmapPath", filePath);
+                    drawingActivityResultLauncher.launch(drawIntent);
+                }
+            }
         }
     }
 
@@ -198,8 +227,12 @@ public class MainActivity extends AppCompatActivity {
         spAspect.setSelection(prefAspect.equals("landscape") ? 2 : prefAspect.equals("portrait") ? 1 : 0);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
-            int ipSize = (spSize.getSelectedItemPosition() == 1 ? 768 : spSize.getSelectedItemPosition() == 2 ? 1024 : 512);
-            String ipAspect = (spAspect.getSelectedItemPosition() == 1 ? "portrait" : spAspect.getSelectedItemPosition() == 2 ? "landscape" : "square");
+            int ipSize = (spSize.getSelectedItemPosition() == 1 ? 768
+                    : spSize.getSelectedItemPosition() == 2 ? 1024
+                    : 512);
+            String ipAspect = (spAspect.getSelectedItemPosition() == 1 ? "portrait"
+                    : spAspect.getSelectedItemPosition() == 2 ? "landscape"
+                    : "square");
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("sdImageAspect",ipAspect);
             editor.putInt("sdImageSize", ipSize);

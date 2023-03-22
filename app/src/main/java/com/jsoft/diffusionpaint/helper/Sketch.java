@@ -11,7 +11,6 @@ public class Sketch implements Serializable {
     private int id;
     private String prompt;
     private Bitmap imgPreview;
-
     private String cnMode;
 
     public static final String CN_MODE_SCRIBBLE = "scribble";

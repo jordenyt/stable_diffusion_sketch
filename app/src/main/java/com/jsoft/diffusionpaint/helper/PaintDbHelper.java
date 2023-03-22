@@ -18,6 +18,7 @@ public class PaintDbHelper extends SQLiteOpenHelper {
         public static final String CREATE_DATE = "create_date";
         public static final String LAST_UPDATE_DATE = "last_update_date";
         public static final String PREVIEW = "img_preview";
+        public static final String CN_MODE = "cn_mode";
         public static final String PROMPT = "prompt";
     }
 
@@ -25,16 +26,17 @@ public class PaintDbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "DIFFUSION_PAINT.DB";
 
     // database version
-    static final int DB_VERSION = 1;
+    static final int DB_VERSION = 2;
 
     static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     // Creating table query
-    private static final String CREATE_TABLE = "create table " + SketchEntry.TABLE_NAME + "("
+    private static final String CREATE_TABLE = "create table IF NOT EXISTS " + SketchEntry.TABLE_NAME + "("
             + SketchEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + SketchEntry.CREATE_DATE + " TEXT NOT NULL, "
             + SketchEntry.LAST_UPDATE_DATE + " TEXT NOT NULL, "
             + SketchEntry.PREVIEW + " TEXT NOT NULL, "
+            + SketchEntry.CN_MODE + " TEXT NOT NULL, "
             + SketchEntry.PROMPT + " TEXT);";
 
     public PaintDbHelper(Context context) {
@@ -48,7 +50,10 @@ public class PaintDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + SketchEntry.TABLE_NAME);
+        //db.execSQL("DROP TABLE IF EXISTS " + SketchEntry.TABLE_NAME);
+        if (oldVersion <= 1) {
+            db.execSQL("ALTER TABLE " + SketchEntry.TABLE_NAME + " ADD COLUMN " + SketchEntry.CN_MODE + " TEXT DEFAULT 'scribble'");
+        }
         onCreate(db);
     }
 

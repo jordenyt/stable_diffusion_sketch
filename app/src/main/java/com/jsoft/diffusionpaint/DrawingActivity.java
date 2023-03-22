@@ -74,38 +74,39 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
             Bitmap imageBitmap = BitmapFactory.decodeFile(bitmapPath);
+            if (imageBitmap != null) {
+                int orientation = ExifInterface.ORIENTATION_UNDEFINED;
+                try {
+                    ExifInterface exif = null;
+                    exif = new ExifInterface(bitmapPath);
+                    orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                } catch (IOException e) {
+                    Log.e("diffusionpaint", "IOException get from returned camera file.");
+                }
 
-            ExifInterface exif = null;
-            try {
-                exif = new ExifInterface(bitmapPath);
-            } catch (IOException e) {
-                Log.e("diffusionpaint", "IOException get from returned camera file.");
-            }
-            assert exif != null;
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-
-            // Rotate the bitmap to correct the orientation
-            Matrix matrix = new Matrix();
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    matrix.postRotate(90);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    matrix.postRotate(180);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    matrix.postRotate(270);
-                    break;
-                default:
-                    break;
-            }
-            rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
-            if (rotatedBitmap.getWidth() * 3 / 4 >= rotatedBitmap.getHeight()) {
-                aspectRatio = "landscape";
-            } else if (rotatedBitmap.getWidth() <= rotatedBitmap.getHeight() * 3 / 4) {
-                aspectRatio = "portrait";
-            } else {
-                aspectRatio = "square";
+                // Rotate the bitmap to correct the orientation
+                Matrix matrix = new Matrix();
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        matrix.postRotate(90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        matrix.postRotate(180);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        matrix.postRotate(270);
+                        break;
+                    default:
+                        break;
+                }
+                rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+                if (rotatedBitmap.getWidth() * 3 / 4 >= rotatedBitmap.getHeight()) {
+                    aspectRatio = "landscape";
+                } else if (rotatedBitmap.getWidth() <= rotatedBitmap.getHeight() * 3 / 4) {
+                    aspectRatio = "portrait";
+                } else {
+                    aspectRatio = "square";
+                }
             }
         }
 

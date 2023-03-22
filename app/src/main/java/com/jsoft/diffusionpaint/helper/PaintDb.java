@@ -27,6 +27,7 @@ public class PaintDb {
                         + ", " + SketchEntry.LAST_UPDATE_DATE
                         + ", " + SketchEntry.PREVIEW
                         + ", " + SketchEntry.PROMPT
+                        + ", " + SketchEntry.CN_MODE
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " ORDER BY " + SketchEntry.LAST_UPDATE_DATE + " DESC";
         Cursor c = db.rawQuery(queryString, new String[] {});
@@ -37,6 +38,7 @@ public class PaintDb {
             sketch.setCreateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.CREATE_DATE))));
             sketch.setLastUpdateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.LAST_UPDATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
+            sketch.setCnMode(c.getString(c.getColumnIndexOrThrow(SketchEntry.CN_MODE)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             sketches.add(sketch);
         }
@@ -51,6 +53,7 @@ public class PaintDb {
                         + ", " + SketchEntry.LAST_UPDATE_DATE
                         + ", " + SketchEntry.PREVIEW
                         + ", " + SketchEntry.PROMPT
+                        + ", " + SketchEntry.CN_MODE
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " WHERE " + SketchEntry._ID + " = " + sketchId;
         Cursor c = db.rawQuery(queryString, new String[] {});
@@ -61,6 +64,7 @@ public class PaintDb {
             sketch.setCreateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.CREATE_DATE))));
             sketch.setLastUpdateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.LAST_UPDATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
+            sketch.setCnMode(c.getString(c.getColumnIndexOrThrow(SketchEntry.CN_MODE)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             sketches.add(sketch);
         }
@@ -85,22 +89,24 @@ public class PaintDb {
         values.put(SketchEntry.CREATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.LAST_UPDATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.PROMPT, sketch.getPrompt());
+        values.put(SketchEntry.CN_MODE, sketch.getCnMode());
         values.put(SketchEntry.PREVIEW, Utils.bitmap2Base64String(sketch.getImgPreview()));
 
         return db.insert(SketchEntry.TABLE_NAME,null,values);
     }
 
-    public void updateSketch(Sketch sketch) {
+    public int updateSketch(Sketch sketch) {
         ContentValues values = new ContentValues();
         values.put(SketchEntry.LAST_UPDATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.PROMPT, sketch.getPrompt());
+        values.put(SketchEntry.CN_MODE, sketch.getCnMode());
         values.put(SketchEntry.PREVIEW, Utils.bitmap2Base64String(sketch.getImgPreview()));
 
         // Which row to update, based on the ID
         String selection = SketchEntry._ID + " LIKE ?";
         String[] selectionArgs = { sketch.getId() + "" };
 
-        int count = db.update(
+        return db.update(
                 SketchEntry.TABLE_NAME,
                 values,
                 selection,
