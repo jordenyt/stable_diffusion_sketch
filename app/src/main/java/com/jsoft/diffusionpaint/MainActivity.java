@@ -113,7 +113,13 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            int column_index;
+            try {
+                column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            } catch (IllegalArgumentException e) {
+                cursor.close();
+                return null;
+            }
             if (cursor.moveToFirst()) {
                 String path = cursor.getString(column_index);
                 cursor.close();
@@ -126,11 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                }
-            });
+            result -> {});
 
     public void gotoDrawingActivity(int sketchID) {
         Intent intent = new Intent(MainActivity.this, DrawingActivity.class);

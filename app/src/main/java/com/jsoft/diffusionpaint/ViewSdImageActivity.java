@@ -305,7 +305,7 @@ public class ViewSdImageActivity extends AppCompatActivity {
                 case Sketch.CN_MODE_SCRIBBLE:
                     cnArgObject.put("module", "none");
                     cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.4);
+                    cnArgObject.put("weight", 0.3);
                     break;
                 case Sketch.CN_MODE_DEPTH:
                     cnArgObject.put("module", "depth");
