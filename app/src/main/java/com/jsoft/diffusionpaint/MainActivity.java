@@ -78,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
             Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             String mimeType = getContentResolver().getType(uri);
-            String filePath = getPathFromUri(uri);
             if (mimeType != null && mimeType.startsWith("image/")) {
-                if (uri.getScheme().equals("content") && getPathFromUri(uri) == null) {
+                String filePath = getPathFromUri(uri);
+                if (uri.getScheme().equals("content") && filePath == null) {
                     try {
                         InputStream inputStream = getContentResolver().openInputStream(uri);
                         String fileName = "temp_file_" + System.currentTimeMillis();
@@ -113,17 +113,16 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
-            int column_index;
             try {
-                column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                if (cursor.moveToFirst()) {
+                    String path = cursor.getString(column_index);
+                    cursor.close();
+                    return path;
+                }
             } catch (IllegalArgumentException e) {
                 cursor.close();
                 return null;
-            }
-            if (cursor.moveToFirst()) {
-                String path = cursor.getString(column_index);
-                cursor.close();
-                return path;
             }
             cursor.close();
         }
