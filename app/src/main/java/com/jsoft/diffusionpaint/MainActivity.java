@@ -27,25 +27,34 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.JsonParseException;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.helper.AppConstant;
 import com.jsoft.diffusionpaint.helper.PaintDb;
+import com.jsoft.diffusionpaint.helper.SdApiHelper;
+import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
     private PaintDb db;
     private GridView gridView;
@@ -53,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     private List<Sketch> sketches;
     private SharedPreferences sharedPreferences;
     private static File mImageFile;
+    private SdApiHelper sdApiHelper;
+    private JSONArray getSDModelResponse;
+    private JSONObject getConfigResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         addCameraButton.setOnClickListener(view -> launchCamera());
 
         isPermissionGranted();
+
+        sdApiHelper = new SdApiHelper(this, this);
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -210,10 +224,69 @@ public class MainActivity extends AppCompatActivity {
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
                 break;
+            case R.id.mi_sd_model:
+                getSDModelResponse = null;
+                getConfigResponse = null;
+                sdApiHelper.sendRequest("setSDModel1", "/sdapi/v1/sd-models", null, "GET");
+                sdApiHelper.sendRequest("setSDModel2", "/sdapi/v1/options",  null, "GET");
+                break;
+            case R.id.mi_sd_inpaint_model:
+                getSDModelResponse = null;
+                sdApiHelper.sendRequest("setSDInpaintModel", "/sdapi/v1/sd-models", null, "GET");
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void showSDModelDialog(boolean isInpaint) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
+        builder.setView(dialogView);
+
+        TextView tvTitle = dialogView.findViewById(R.id.dialog_spinner_title);
+        tvTitle.setText(isInpaint? "SD Inpaint Model" : "SD Model");
+
+
+        List<String> options = new ArrayList<>();
+        int selectedPosition = 0;
+        try {
+            String currentModel = isInpaint?
+                    sharedPreferences.getString("sdInpaintModel", ""):
+                    sharedPreferences.getString("sdModelCheckpoint", getConfigResponse.getString("sd_model_checkpoint"));
+            for (int i = 0; i < getSDModelResponse.length(); i++) {
+                JSONObject model = (JSONObject) getSDModelResponse.get(i);
+                String modelTitle = model.getString("title");
+                if (modelTitle.toLowerCase().contains("inpainting.") == isInpaint) {
+                    if (currentModel.equals(modelTitle)) {
+                        selectedPosition = options.size();
+                    }
+                    options.add(modelTitle);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Spinner spModel = dialogView.findViewById(R.id.dialog_spinner_options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item , options);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spModel.setAdapter(adapter);
+        spModel.setSelection(selectedPosition);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String selectedModel = (String) spModel.getSelectedItem();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(isInpaint?"sdInpaintModel":"sdModelCheckpoint",selectedModel);
+            editor.apply();
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showOutputDimenDialog() {
@@ -313,4 +386,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSdApiFailure(String requestType) {
+        if (!"setSDModel1".equals(requestType) ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Request Type: " + requestType)
+                    .setTitle("Call Stable Diffusion API failed.  Please check the server address.")
+                    .setPositiveButton("OK", (dialog, id) -> {
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
+    @Override
+    public void onSdApiResponse(String requestType, String responseBody) {
+        try {
+            if ("setSDModel1".equals(requestType) || "setSDInpaintModel".equals(requestType)) {
+                getSDModelResponse = new JSONArray(responseBody);
+            } else if ("setSDModel2".equals(requestType)) {
+                getConfigResponse = new JSONObject(responseBody);
+            }
+        } catch (JSONException e) {}
+        if ("setSDModel1".equals(requestType) || "setSDModel2".equals(requestType)) {
+            if (getSDModelResponse != null && getConfigResponse != null) {
+                showSDModelDialog(false);
+            }
+        } else if ("setSDInpaintModel".equals(requestType)) {
+            showSDModelDialog(true);
+        }
+    }
 }

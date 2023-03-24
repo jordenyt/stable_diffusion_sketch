@@ -8,6 +8,6 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 public interface SdApiResponseListener {
-    void onSdApiFailure();
+    void onSdApiFailure(String requestType);
     void onSdApiResponse(String requestType, String responseBody);
 }

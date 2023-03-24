@@ -1,6 +1,5 @@
 package com.jsoft.diffusionpaint;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -11,7 +10,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,21 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -54,7 +40,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton backButton;
     private Bitmap mBitmap;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
-    private String baseUrl;
     private SharedPreferences sharedPreferences;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
@@ -70,7 +55,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         this.sdApiHelper = new SdApiHelper(this, this);
 
         db = new PaintDb(this);
-        baseUrl = sharedPreferences.getString("sdServerAddress", "");
 
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
@@ -138,18 +122,18 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         if (cnMode.startsWith("txt")) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
-            sdApiHelper.sendPostRequest("cntxt2img", baseUrl + "/sdapi/v1/txt2img", jsonObject);
+            sdApiHelper.sendRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, "POST");
         } else {
             JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
-            sdApiHelper.sendPostRequest("cnimg2img", baseUrl + "/sdapi/v1/img2img", jsonObject);
+            sdApiHelper.sendRequest("img2img", "/sdapi/v1/img2img", jsonObject, "POST");
         }
     }
 
     @Override
-    public void onSdApiFailure() {
+    public void onSdApiFailure(String requestType) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Call Stable Diffusion API failed")
-                .setTitle("Magic Failed")
+        builder.setMessage("Request Type: " + requestType)
+                .setTitle("Call Stable Diffusion API failed")
                 .setPositiveButton("OK", (dialog, id) -> ViewSdImageActivity.this.onBackPressed());
         AlertDialog alert = builder.create();
         alert.show();
@@ -157,7 +141,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     @Override
     public void onSdApiResponse(String requestType, String responseBody) {
-        if ("cnimg2img".equals(requestType) || "cntxt2img".equals(requestType)) {
+        if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 JSONArray images = jsonObject.getJSONArray("images");
@@ -171,7 +155,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 backButton.setVisibility(View.VISIBLE);
             } catch (JSONException e) {
                 e.printStackTrace();
-                onSdApiFailure();
+                onSdApiFailure(requestType);
             }
         }
     }

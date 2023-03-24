@@ -7,8 +7,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.jsoft.diffusionpaint.ViewSdImageActivity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,37 +29,43 @@ public class SdApiHelper {
     private Activity activity;
     private SdApiResponseListener listener;
     OkHttpClient client = new OkHttpClient();
+    private String baseUrl;
     public SdApiHelper(Activity activity, SdApiResponseListener listener) {
         this.activity  = activity;
         this.listener = listener;
         sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
     }
 
-    public void sendPostRequest(String requestType, String url, JSONObject jsonObject) {
 
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+    public void sendRequest(String requestType, String url, JSONObject jsonObject, String httpMethod) {
+        baseUrl = sharedPreferences.getString("sdServerAddress", "");
         client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
                 .build();
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(baseUrl + url);
+        if ("GET".equals(httpMethod)) {
+            requestBuilder.get();
+        } else {
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+            requestBuilder.post(body);
+        }
+        Request request = requestBuilder.build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-                activity.runOnUiThread(() -> listener.onSdApiFailure());
+                activity.runOnUiThread(() -> listener.onSdApiFailure(requestType));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        activity.runOnUiThread(() -> listener.onSdApiFailure());
+                        activity.runOnUiThread(() -> listener.onSdApiFailure(requestType));
                     }
 
                     Headers responseHeaders = response.headers();
@@ -77,7 +81,7 @@ public class SdApiHelper {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    activity.runOnUiThread(() -> listener.onSdApiFailure());
+                    activity.runOnUiThread(() -> listener.onSdApiFailure(requestType));
                 }
             }
         });
@@ -138,7 +142,7 @@ public class SdApiHelper {
             JSONObject controlnet = new JSONObject();
             JSONArray args = new JSONArray();
             JSONObject cnArgObject = new JSONObject();
-            cnArgObject.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
+            cnArgObject.put("input_image", Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
             //cnArgObject.put("mask", "");
             switch (cnMode) {
                 case Sketch.CN_MODE_TXT_CANNY:
@@ -149,7 +153,7 @@ public class SdApiHelper {
                 case Sketch.CN_MODE_TXT_SCRIBBLE:
                     cnArgObject.put("module", "scribble");
                     cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.6);
+                    cnArgObject.put("weight", 0.8);
                     break;
                 case Sketch.CN_MODE_TXT_DEPTH:
                     cnArgObject.put("module", "depth");
@@ -183,7 +187,7 @@ public class SdApiHelper {
         JSONObject jsonObject = new JSONObject();
         try {
             JSONArray init_images = new JSONArray();
-            init_images.put(Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
+            init_images.put(Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);
             jsonObject.put("denoising_strength", 0.8);
@@ -239,13 +243,13 @@ public class SdApiHelper {
             JSONObject controlnet = new JSONObject();
             JSONArray args = new JSONArray();
             JSONObject cnArgObject = new JSONObject();
-            cnArgObject.put("input_image", Utils.bitmap2Base64String(mCurrentSketch.getImgPreview()));
+            cnArgObject.put("input_image", Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
             //cnArgObject.put("mask", "");
             switch (cnMode) {
                 case Sketch.CN_MODE_SCRIBBLE:
                     cnArgObject.put("module", "none");
                     cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.3);
+                    cnArgObject.put("weight", 0.7);
                     break;
                 case Sketch.CN_MODE_DEPTH:
                     cnArgObject.put("module", "depth");

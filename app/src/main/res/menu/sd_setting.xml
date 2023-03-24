@@ -11,6 +11,8 @@
     </item>
     <item android:title="Model Settings">
         <menu>
+            <item android:id="@+id/mi_sd_model" android:title="Stable Diffusion model"/>
+            <item android:id="@+id/mi_sd_inpaint_model" android:title="Stable Diffusion inpaint model"/>
             <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
             <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
             <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
