@@ -23,6 +23,9 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_DEPTH = "txtDepth";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
+    public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
+    public static final String ASPECT_RATIO_PORTRAIT = "portrait";
+    public static final String ASPECT_RATIO_SQUARE = "square";
 
     public Sketch() {
         this.id = -1;

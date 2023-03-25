@@ -34,7 +34,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.JsonParseException;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.helper.AppConstant;
 import com.jsoft.diffusionpaint.helper.PaintDb;
@@ -270,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             e.printStackTrace();
         }
         Spinner spModel = dialogView.findViewById(R.id.dialog_spinner_options);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item , options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spModel.setAdapter(adapter);
         spModel.setSelection(selectedPosition);
@@ -300,16 +299,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         spSize.setSelection(prefSize == 768 ? 1 : prefSize == 1024 ? 2 : 0);
 
         Spinner spAspect = dialogView.findViewById(R.id.sd_aspect_selection);
-        String prefAspect = sharedPreferences.getString("sdImageAspect", "square");
-        spAspect.setSelection(prefAspect.equals("landscape") ? 2 : prefAspect.equals("portrait") ? 1 : 0);
+        String prefAspect = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
+        spAspect.setSelection(prefAspect.equals(Sketch.ASPECT_RATIO_LANDSCAPE) ? 2 : prefAspect.equals(Sketch.ASPECT_RATIO_PORTRAIT) ? 1 : 0);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             int ipSize = (spSize.getSelectedItemPosition() == 1 ? 768
                     : spSize.getSelectedItemPosition() == 2 ? 1024
                     : 512);
-            String ipAspect = (spAspect.getSelectedItemPosition() == 1 ? "portrait"
-                    : spAspect.getSelectedItemPosition() == 2 ? "landscape"
-                    : "square");
+            String ipAspect = (spAspect.getSelectedItemPosition() == 1 ? Sketch.ASPECT_RATIO_PORTRAIT
+                    : spAspect.getSelectedItemPosition() == 2 ? Sketch.ASPECT_RATIO_LANDSCAPE
+                    : Sketch.ASPECT_RATIO_SQUARE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("sdImageAspect",ipAspect);
             editor.putInt("sdImageSize", ipSize);
@@ -407,7 +406,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("setSDModel2".equals(requestType)) {
                 getConfigResponse = new JSONObject(responseBody);
             }
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if ("setSDModel1".equals(requestType) || "setSDModel2".equals(requestType)) {
             if (getSDModelResponse != null && getConfigResponse != null) {
                 showSDModelDialog(false);

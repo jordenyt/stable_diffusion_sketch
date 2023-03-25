@@ -75,9 +75,7 @@ public class SdApiHelper {
 
                     assert responseBody != null;
                     String responseString = responseBody.string();
-                    activity.runOnUiThread(() -> {
-                        listener.onSdApiResponse(requestType, responseString);
-                    });
+                    activity.runOnUiThread(() -> listener.onSdApiResponse(requestType, responseString));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -111,12 +109,12 @@ public class SdApiHelper {
             jsonObject.put("n_iter", 1);
             jsonObject.put("steps", 40);
             jsonObject.put("cfg_scale", 7);
-            if (aspectRatio.equals("portrait")) {
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                 jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
             } else {
                 jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512));
             }
-            if (aspectRatio.equals("landscape")) {
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
                 jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
             } else {
                 jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512));
@@ -210,12 +208,12 @@ public class SdApiHelper {
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
             jsonObject.put("cfg_scale", 7);
-            if (aspectRatio.equals("portrait")) {
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                 jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
             } else {
                 jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512));
             }
-            if (aspectRatio.equals("landscape")) {
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
                 jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
             } else {
                 jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512));

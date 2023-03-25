@@ -1,5 +1,6 @@
 package com.jsoft.diffusionpaint;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -62,13 +63,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mCurrentSketch = dbSketch;
                 mCurrentSketch.setCnMode(cnMode);
                 mBitmap = mCurrentSketch.getImgPreview();
-                if (mCurrentSketch.getImgPreview().getWidth() > mCurrentSketch.getImgPreview().getHeight()) {
-                    aspectRatio = "landscape";
-                } else if (mCurrentSketch.getImgPreview().getWidth() < mCurrentSketch.getImgPreview().getHeight()) {
-                    aspectRatio = "portrait";
-                } else {
-                    aspectRatio = "square";
-                }
+                aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
             }
         }
         if (mCurrentSketch==null) {
@@ -100,16 +95,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Lock the orientation to portrait
         setScreenRotation();
     }
 
     public void setScreenRotation() {
-        if (aspectRatio.equals("portrait")) {
+        if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        } else if (aspectRatio.equals("landscape")) {
+        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
     }

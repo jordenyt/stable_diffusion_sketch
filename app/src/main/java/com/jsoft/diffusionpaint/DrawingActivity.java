@@ -33,6 +33,7 @@ import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.helper.CircleView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.Sketch;
+import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.io.IOException;
 
@@ -61,19 +62,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
-        aspectRatio = sharedPreferences.getString("sdImageAspect", "square");
+        aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         Bitmap rotatedBitmap = null;
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
                 mCurrentSketch = dbSketch;
-                if (mCurrentSketch.getImgPreview().getWidth() * 3 / 4 >= mCurrentSketch.getImgPreview().getHeight()) {
-                    aspectRatio = "landscape";
-                } else if (mCurrentSketch.getImgPreview().getWidth() <= mCurrentSketch.getImgPreview().getHeight() * 3 / 4) {
-                    aspectRatio = "portrait";
-                } else {
-                    aspectRatio = "square";
-                }
+                aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
             }
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
@@ -81,8 +76,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             if (imageBitmap != null) {
                 int orientation = ExifInterface.ORIENTATION_UNDEFINED;
                 try {
-                    ExifInterface exif = null;
-                    exif = new ExifInterface(bitmapPath);
+                    ExifInterface exif = new ExifInterface(bitmapPath);
                     orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
                 } catch (IOException e) {
                     Log.e("diffusionpaint", "IOException get from returned camera file.");
@@ -104,13 +98,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                         break;
                 }
                 rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
-                if (rotatedBitmap.getWidth() * 3 / 4 >= rotatedBitmap.getHeight()) {
-                    aspectRatio = "landscape";
-                } else if (rotatedBitmap.getWidth() <= rotatedBitmap.getHeight() * 3 / 4) {
-                    aspectRatio = "portrait";
-                } else {
-                    aspectRatio = "square";
-                }
+                aspectRatio = Utils.getAspectRatio(rotatedBitmap);
             }
         }
 
@@ -132,9 +120,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
 
         ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
-        if (aspectRatio.equals("landscape")) {
+        if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
             loParam.dimensionRatio = "4:3";
-        } else if (aspectRatio.equals("portrait")) {
+        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
             loParam.dimensionRatio = "3:4";
         } else {
             loParam.dimensionRatio = "1:1";
@@ -142,7 +130,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
-                //mDrawingView.setmBaseBitmap(mCurrentSketch.getImgPreview());
                 mDrawingView.setmBaseBitmap(mCurrentSketch.getImgBackground() == null? mCurrentSketch.getImgPreview(): mCurrentSketch.getImgBackground());
                 mDrawingView.setmPaintBitmap(mCurrentSketch.getImgPaint());
             }
@@ -227,9 +214,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     public void setScreenRotation() {
 
-        if (aspectRatio.equals("portrait")) {
+        if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        } else if (aspectRatio.equals("landscape")) {
+        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
     }

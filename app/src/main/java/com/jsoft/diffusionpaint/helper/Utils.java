@@ -66,6 +66,15 @@ public class Utils {
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
+    public static String getAspectRatio(Bitmap bm) {
+        String aspectRatio = Sketch.ASPECT_RATIO_SQUARE;
+        if (bm.getWidth() * 3 / 4 >= bm.getHeight()) {
+            aspectRatio = Sketch.ASPECT_RATIO_LANDSCAPE;
+        } else if (bm.getWidth() <= bm.getHeight() * 3 / 4) {
+            aspectRatio = Sketch.ASPECT_RATIO_PORTRAIT;
+        }
+        return aspectRatio;
+    }
     public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String filename) {
         // Get the directory for the user's public pictures directory.
         File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
