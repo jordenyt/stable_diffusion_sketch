@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -143,7 +142,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
-                mDrawingView.setmBaseBitmap(mCurrentSketch.getImgPreview());
+                //mDrawingView.setmBaseBitmap(mCurrentSketch.getImgPreview());
+                mDrawingView.setmBaseBitmap(mCurrentSketch.getImgBackground() == null? mCurrentSketch.getImgPreview(): mCurrentSketch.getImgBackground());
+                mDrawingView.setmPaintBitmap(mCurrentSketch.getImgPaint());
             }
         }
 
@@ -309,7 +310,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void saveSketch()  {
-        mCurrentSketch = mDrawingView.getSketch(mCurrentSketch);
+        mCurrentSketch = mDrawingView.prepareBitmap(mCurrentSketch);
         if (mCurrentSketch.getId() < 0) {
             long rowId  = db.insertSketch(mCurrentSketch);
             int sketchID = db.getId4rowid(rowId);

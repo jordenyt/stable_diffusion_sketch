@@ -11,8 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import com.jsoft.diffusionpaint.helper.Sketch;
 
 import java.util.ArrayList;
@@ -23,8 +21,11 @@ public class DrawingView extends View
 	private Paint mBackgroundPaint;
 	private Paint mDrawPaint;
 	private Canvas mDrawCanvas;
-	private Bitmap mCanvasBitmap;
-	private Bitmap mBaseBitmap;
+	private Bitmap mCanvasBitmap; //member of mDrawCanvas
+	private Bitmap mBaseBitmap; //Input Background
+
+
+	private Bitmap mPaintBitmap; //Input Paint from save data
 	private ArrayList<Path> mPaths = new ArrayList<>();
 	private ArrayList<Paint> mPaints = new ArrayList<>();
 	private ArrayList<Path> mUndonePaths = new ArrayList<>();
@@ -70,8 +71,7 @@ public class DrawingView extends View
 		mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
 	}
 
-	private void drawBackground(Canvas canvas)
-	{
+	private void drawBackground(Canvas canvas) {
 		if (mBaseBitmap == null) {
 			mBackgroundPaint.setColor(mBackgroundColor);
 			mBackgroundPaint.setStyle(Paint.Style.FILL);
@@ -101,35 +101,28 @@ public class DrawingView extends View
 			Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, (int)xOffset, (int)yOffset, (int)croppedWidth, (int)croppedHeight, matrix, true);
 
 			// Draw the cropped bitmap onto the canvas
-			canvas.drawBitmap(croppedBitmap, 0, 0, mBackgroundPaint);
-
-
-			//canvas.drawBitmap(mBaseBitmap, 0, 0, mBackgroundPaint);
+			canvas.drawBitmap(croppedBitmap, 0, 0, null);
 		}
 	}
 
-	private void drawPaths(Canvas canvas)
-	{
+	private void drawPaths(Canvas canvas) {
+		if (mPaintBitmap != null) { canvas.drawBitmap(mPaintBitmap, 0, 0, null); }
 		int i = 0;
-		for (Path p : mPaths)
-		{
+		for (Path p : mPaths) {
 			canvas.drawPath(p, mPaints.get(i));
 			i++;
 		}
-
 	}
 
 	@Override
-	protected void onDraw(Canvas canvas)
-	{
+	protected void onDraw(Canvas canvas) {
 		drawBackground(canvas);
 		drawPaths(canvas);
 		canvas.drawPath(mDrawPath, mDrawPaint);
 	}
 
 	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh)
-	{
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		mDrawCanvas = new Canvas(mCanvasBitmap);
@@ -141,8 +134,7 @@ public class DrawingView extends View
 		float touchX = event.getX();
 		float touchY = event.getY();
 
-		switch (event.getAction())
-		{
+		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (!isEyedropper) {
 					mDrawPath.moveTo(touchX, touchY);
@@ -162,7 +154,7 @@ public class DrawingView extends View
 					mDrawPath = new Path();
 					initPaint();
 				} else {
-					int eyedropperColor = getBitmap().getPixel((int)touchX, (int)touchY);
+					int eyedropperColor = getPreview().getPixel((int)touchX, (int)touchY);
 					listener.onEyedropperResult(eyedropperColor);
 				}
 				break;
@@ -174,8 +166,7 @@ public class DrawingView extends View
 		return true;
 	}
 
-	public void clearCanvas()
-	{
+	public void clearCanvas() {
 		mPaths.clear();
 		mPaints.clear();
 		mUndonePaths.clear();
@@ -184,44 +175,33 @@ public class DrawingView extends View
 		invalidate();
 	}
 
-	public void setPaintColor(int color)
-	{
+	public void setPaintColor(int color) {
 		mPaintColor = color;
 		mDrawPaint.setColor(mPaintColor);
 	}
 
-	public void setPaintStrokeWidth(int strokeWidth)
-	{
+	public void setPaintStrokeWidth(int strokeWidth) {
 		mStrokeWidth = strokeWidth;
 		mDrawPaint.setStrokeWidth(mStrokeWidth);
 	}
 
-	public void setBackgroundColor(int color)
-	{
+	public void setBackgroundColor(int color) {
 		mBackgroundColor = color;
 		mBackgroundPaint.setColor(mBackgroundColor);
 		invalidate();
 	}
 
-	public Bitmap getBitmap()
-	{
-		drawBackground(mDrawCanvas);
-		drawPaths(mDrawCanvas);
-		return mCanvasBitmap;
-	}
 
-	public void undo()
-	{
-		if (mPaths.size() > 0)
-		{
+
+	public void undo() {
+		if (mPaths.size() > 0) {
 			mUndonePaths.add(mPaths.remove(mPaths.size() - 1));
 			mUndonePaints.add(mPaints.remove(mPaints.size() - 1));
 			invalidate();
 		}
 	}
 
-	public void redo()
-	{
+	public void redo() {
 		if (mUndonePaths.size() > 0)
 		{
 			mPaths.add(mUndonePaths.remove(mUndonePaths.size() - 1));
@@ -230,13 +210,40 @@ public class DrawingView extends View
 		}
 	}
 
-	public Sketch getSketch(@NonNull Sketch s) {
-		s.setImgPreview(getBitmap());
+	public Sketch prepareBitmap(Sketch s) {
+		s.setImgPreview(getPreview());
+		s.setImgBackground(getBgBitmap());
+		s.setImgPaint(getPaintBitmap());
 		return s;
+	}
+
+	public Bitmap getPreview() {
+		drawBackground(mDrawCanvas);
+		drawPaths(mDrawCanvas);
+		return mCanvasBitmap;
+	}
+
+	public Bitmap getBgBitmap() {
+		Bitmap bmBackground = Bitmap.createBitmap(mDrawCanvas.getWidth(), mDrawCanvas.getHeight(), Bitmap.Config.ARGB_8888);
+		Canvas canvasBackground = new Canvas(bmBackground);
+		drawBackground(canvasBackground);
+		return bmBackground;
+	}
+
+	public Bitmap getPaintBitmap() {
+		Bitmap bmOverlay = Bitmap.createBitmap(mDrawCanvas.getWidth(), mDrawCanvas.getHeight(), Bitmap.Config.ARGB_8888);
+		Canvas canvasOverlay = new Canvas(bmOverlay);
+		drawPaths(canvasOverlay);
+		return bmOverlay;
 	}
 
 	public void setmBaseBitmap(Bitmap bitmap) {
 		this.mBaseBitmap = bitmap;
 	}
+
+	public void setmPaintBitmap(Bitmap mPaintBitmap) {
+		this.mPaintBitmap = mPaintBitmap;
+	}
+
 
 }

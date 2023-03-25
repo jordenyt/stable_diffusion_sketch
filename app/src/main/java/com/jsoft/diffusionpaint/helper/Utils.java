@@ -45,13 +45,23 @@ public class Utils {
     }
 
     public static Bitmap base64String2Bitmap(String s) {
+        if (s == null || s.length() == 0) return null;
         byte[] preview = Base64.decode(s, Base64.DEFAULT);
         return (BitmapFactory.decodeByteArray(preview, 0, preview.length));
     }
 
-    public static String bitmap2Base64String(Bitmap bm) {
+    public static String jpg2Base64String(Bitmap bm) {
+        return bitmap2Base64String(bm, Bitmap.CompressFormat.JPEG, 90);
+    }
+
+    public static String png2Base64String(Bitmap bm) {
+        return bitmap2Base64String(bm, Bitmap.CompressFormat.PNG, 100);
+    }
+
+    public static String bitmap2Base64String(Bitmap bm, Bitmap.CompressFormat format, int quality) {
+        if (bm == null) return "";
         ByteArrayOutputStream byteArrayOutputStream  = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 90, byteArrayOutputStream ); //bm is the bitmap object
+        bm.compress(format, quality, byteArrayOutputStream ); //bm is the bitmap object
         byte[] b = byteArrayOutputStream .toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
     }

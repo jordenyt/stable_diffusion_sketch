@@ -11,6 +11,10 @@ public class Sketch implements Serializable {
     private int id;
     private String prompt;
     private Bitmap imgPreview;
+    private Bitmap imgBackground;
+    private Bitmap imgPaint;
+    private Bitmap imgInpaint;
+
     private String cnMode;
 
     public static final String CN_MODE_SCRIBBLE = "scribble";
@@ -36,6 +40,18 @@ public class Sketch implements Serializable {
     public void setImgPreview(Bitmap imgPreview) {
         this.imgPreview = imgPreview;
     }
+
+    public Bitmap getImgBackground() { return imgBackground;}
+
+    public void setImgBackground(Bitmap imgBackground) { this.imgBackground = imgBackground; }
+
+    public Bitmap getImgPaint() { return imgPaint; }
+
+    public void setImgPaint(Bitmap imgPaint) { this.imgPaint = imgPaint; }
+
+    public Bitmap getImgInpaint() { return imgInpaint; }
+
+    public void setImgInpaint(Bitmap imgInpaint) { this.imgInpaint = imgInpaint; }
 
     public String getCnMode() {
         return cnMode;
