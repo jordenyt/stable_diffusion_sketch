@@ -226,17 +226,65 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sd_model:
                 getSDModelResponse = null;
                 getConfigResponse = null;
-                sdApiHelper.sendRequest("setSDModel1", "/sdapi/v1/sd-models", null, "GET");
-                sdApiHelper.sendRequest("setSDModel2", "/sdapi/v1/options",  null, "GET");
+                sdApiHelper.sendGetRequest("setSDModel1", "/sdapi/v1/sd-models");
+                sdApiHelper.sendGetRequest("setSDModel2", "/sdapi/v1/options");
                 break;
             case R.id.mi_sd_inpaint_model:
                 getSDModelResponse = null;
-                sdApiHelper.sendRequest("setSDInpaintModel", "/sdapi/v1/sd-models", null, "GET");
+                sdApiHelper.sendGetRequest("setSDInpaintModel", "/sdapi/v1/sd-models");
+                break;
+            case R.id.mi_sd_sampler:
+                sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void showSamplerDialog(JSONArray samplers) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
+        builder.setView(dialogView);
+
+        TextView tvTitle = dialogView.findViewById(R.id.dialog_spinner_title);
+        tvTitle.setText("SD Sampling Method");
+
+
+        List<String> options = new ArrayList<>();
+        int selectedPosition = 0;
+        try {
+            String currentModel = sharedPreferences.getString("sdSampler", "Euler a");
+            for (int i = 0; i < samplers.length(); i++) {
+                JSONObject model = (JSONObject) samplers.get(i);
+                String modelTitle = model.getString("name");
+                if (currentModel.equals(modelTitle)) {
+                    selectedPosition = i;
+                }
+                options.add(modelTitle);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Spinner spModel = dialogView.findViewById(R.id.dialog_spinner_options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, options);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spModel.setAdapter(adapter);
+        spModel.setSelection(selectedPosition);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String selectedModel = (String) spModel.getSelectedItem();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("sdSampler",selectedModel);
+            editor.apply();
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showSDModelDialog(boolean isInpaint) {
@@ -415,6 +463,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             }
         } else if ("setSDInpaintModel".equals(requestType)) {
             showSDModelDialog(true);
+        } else if ("setSampler".equals(requestType)) {
+            try {
+                showSamplerDialog(new JSONArray(responseBody));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

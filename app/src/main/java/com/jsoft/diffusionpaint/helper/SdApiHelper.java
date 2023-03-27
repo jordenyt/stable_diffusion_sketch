@@ -3,6 +3,7 @@ package com.jsoft.diffusionpaint.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -36,8 +37,15 @@ public class SdApiHelper {
         sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
     }
 
+    public void sendGetRequest(String requestType, String url) {
+        sendRequest(requestType, url, null, "GET");
+    }
 
-    public void sendRequest(String requestType, String url, JSONObject jsonObject, String httpMethod) {
+    public void sendPostRequest(String requestType, String url, JSONObject jsonObject) {
+        sendRequest(requestType, url, jsonObject, "POST");
+    }
+
+    private void sendRequest(String requestType, String url, JSONObject jsonObject, String httpMethod) {
         baseUrl = sharedPreferences.getString("sdServerAddress", "");
         client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -83,6 +91,29 @@ public class SdApiHelper {
                 }
             }
         });
+    }
+
+    public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("resize_mode", 0);
+            jsonObject.put("show_extras_results", true);
+            jsonObject.put("gfpgan_visibility", 0);
+            jsonObject.put("codeformer_visibility", 0);
+            jsonObject.put("codeformer_weight", 0);
+            jsonObject.put("upscaling_resize", 2);
+            jsonObject.put("upscaling_resize_w", 512);
+            jsonObject.put("upscaling_resize_h", 512);
+            jsonObject.put("upscaling_crop", true);
+            jsonObject.put("upscaler_1", "R-ESRGAN General 4xV3");
+            jsonObject.put("upscaler_2", "None");
+            jsonObject.put("extras_upscaler_2_visibility", 0);
+            jsonObject.put("upscale_first", false);
+            jsonObject.put("image", Utils.jpg2Base64String(bitmap));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 
     public JSONObject getControlnetTxt2imgJSON(String prompt, String cnMode, Sketch mCurrentSketch, String aspectRatio) {
@@ -132,7 +163,7 @@ public class SdApiHelper {
             //jsonObject.put("override_settings", new JSONObject());
             //jsonObject.put("override_settings_restore_afterwards", true);
             //jsonObject.put("script_args", new JSONArray());
-            jsonObject.put("sampler_index", "Euler a");
+            jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
             //jsonObject.put("script_name", "string");
             //jsonObject.put("send_images", true);
             jsonObject.put("save_images", false);
@@ -183,20 +214,23 @@ public class SdApiHelper {
 
     public JSONObject getControlnetImg2imgJSON(String prompt, String cnMode, Sketch mCurrentSketch, String aspectRatio) {
         JSONObject jsonObject = new JSONObject();
+        boolean isInpaint = cnMode.startsWith("inpaint");
         try {
             JSONArray init_images = new JSONArray();
-            init_images.put(Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
+            init_images.put(Utils.jpg2Base64String(cnMode.equals(Sketch.CN_MODE_INPAINT)?mCurrentSketch.getImgBackground():mCurrentSketch.getImgPreview()));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);
-            jsonObject.put("denoising_strength", 0.8);
+            jsonObject.put("denoising_strength", cnMode.equals(Sketch.CN_MODE_INPAINT)?1:0.8);
             jsonObject.put("image_cfg_scale", 7);
-            //jsonObject.put("mask", "string");
-            jsonObject.put("mask_blur", 4);
-            //jsonObject.put("inpainting_fill", 0);
-            //jsonObject.put("inpaint_full_res", true);
-            //jsonObject.put("inpaint_full_res_padding", 0);
-            //jsonObject.put("inpainting_mask_invert", 0);
-            //jsonObject.put("initial_noise_multiplier", 0);
+            if (isInpaint) {
+                jsonObject.put("mask", Utils.png2Base64String(Sketch.getInpaintMaskFromPaint(mCurrentSketch)));
+                jsonObject.put("mask_blur", 5);
+                jsonObject.put("inpainting_fill", cnMode.equals(Sketch.CN_MODE_INPAINT)?2:1);
+                jsonObject.put("inpaint_full_res", false);
+                jsonObject.put("inpaint_full_res_padding", 32);
+                //jsonObject.put("inpainting_mask_invert", 0);
+                jsonObject.put("initial_noise_multiplier", 1);
+            }
             jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
             //jsonObject.put("styles", new JSONArray());
             jsonObject.put("seed", -1);
@@ -231,47 +265,52 @@ public class SdApiHelper {
             //jsonObject.put("override_settings", new JSONObject());
             //jsonObject.put("override_settings_restore_afterwards", true);
             //jsonObject.put("script_args", new JSONArray());
-            jsonObject.put("steps", 35);
-            jsonObject.put("sampler_index", cnMode.equals("depth") ? "DPM++ 2S a Karras": "Euler a");
+            jsonObject.put("steps", 50);
+            jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
             //jsonObject.put("include_init_images", false);
             //jsonObject.put("script_name", "string");
             //jsonObject.put("send_images", true);
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
-            JSONObject controlnet = new JSONObject();
-            JSONArray args = new JSONArray();
-            JSONObject cnArgObject = new JSONObject();
-            cnArgObject.put("input_image", Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
-            //cnArgObject.put("mask", "");
-            switch (cnMode) {
-                case Sketch.CN_MODE_SCRIBBLE:
-                    cnArgObject.put("module", "none");
-                    cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.7);
-                    break;
-                case Sketch.CN_MODE_DEPTH:
-                    cnArgObject.put("module", "depth");
-                    cnArgObject.put("model", sharedPreferences.getString("cnDepthModel","control_sd15_depth [fef5e48e]"));
-                    cnArgObject.put("weight", 0.7);
-                    break;
-                case Sketch.CN_MODE_POSE:
-                    cnArgObject.put("module", "openpose");
-                    cnArgObject.put("model", sharedPreferences.getString("cnPoseModel","control_sd15_openpose [fef5e48e]"));
-                    cnArgObject.put("weight", 1);
-                    break;
+
+            if (!isInpaint || cnMode.equals(Sketch.CN_MODE_INPAINT_DEPTH)) {
+                JSONObject controlnet = new JSONObject();
+                JSONArray args = new JSONArray();
+                JSONObject cnArgObject = new JSONObject();
+                cnArgObject.put("input_image", Utils.jpg2Base64String(
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_DEPTH)?mCurrentSketch.getImgBackground():mCurrentSketch.getImgPreview()));
+                //cnArgObject.put("mask", "");
+                switch (cnMode) {
+                    case Sketch.CN_MODE_SCRIBBLE:
+                        cnArgObject.put("module", "none");
+                        cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel", "control_sd15_scribble [fef5e48e]"));
+                        cnArgObject.put("weight", 0.7);
+                        break;
+                    case Sketch.CN_MODE_DEPTH:
+                    case Sketch.CN_MODE_INPAINT_DEPTH:
+                        cnArgObject.put("module", "depth");
+                        cnArgObject.put("model", sharedPreferences.getString("cnDepthModel", "control_sd15_depth [fef5e48e]"));
+                        cnArgObject.put("weight", 0.7);
+                        break;
+                    case Sketch.CN_MODE_POSE:
+                        cnArgObject.put("module", "openpose");
+                        cnArgObject.put("model", sharedPreferences.getString("cnPoseModel", "control_sd15_openpose [fef5e48e]"));
+                        cnArgObject.put("weight", 1);
+                        break;
+                }
+                cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
+                cnArgObject.put("lowvram", false);
+                cnArgObject.put("processor_res", 64);
+                cnArgObject.put("threshold_a", 64);
+                cnArgObject.put("threshold_b", 64);
+                cnArgObject.put("guidance", 1);
+                cnArgObject.put("guidance_start", 0);
+                cnArgObject.put("guidance_end", 1);
+                cnArgObject.put("guessmode", false);
+                args.put(cnArgObject);
+                controlnet.put("args", args);
+                alwayson_scripts.put("controlnet", controlnet);
             }
-            cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
-            cnArgObject.put("lowvram", false);
-            cnArgObject.put("processor_res", 64);
-            cnArgObject.put("threshold_a", 64);
-            cnArgObject.put("threshold_b", 64);
-            cnArgObject.put("guidance", 1);
-            cnArgObject.put("guidance_start", 0);
-            cnArgObject.put("guidance_end", 1);
-            cnArgObject.put("guessmode", false);
-            args.put(cnArgObject);
-            controlnet.put("args", args);
-            alwayson_scripts.put("controlnet", controlnet);
             jsonObject.put("alwayson_scripts", alwayson_scripts);
 
         } catch (JSONException e) {

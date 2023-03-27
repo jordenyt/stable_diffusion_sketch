@@ -1,6 +1,10 @@
 package com.jsoft.diffusionpaint.helper;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,9 +27,13 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_DEPTH = "txtDepth";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
+    public static final String CN_MODE_INPAINT = "inpaintNoise";
+    public static final String CN_MODE_INPAINT_COLOR = "inpaintColor";
+    public static final String CN_MODE_INPAINT_DEPTH = "inpaintDepth";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
     public static final String ASPECT_RATIO_SQUARE = "square";
+
 
     public Sketch() {
         this.id = -1;
@@ -94,5 +102,37 @@ public class Sketch implements Serializable {
 
     public void setPrompt(String prompt) {
         this.prompt = prompt;
+    }
+
+    public static Bitmap getInpaintMaskFromPaint(Sketch s) {
+        Bitmap originalBitmap = s.getImgPaint();
+        // Create a new Bitmap with the same dimensions and a black background
+        Bitmap newBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+        // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
+        for (int x = 0; x < originalBitmap.getWidth(); x++) {
+            for (int y = 0; y < originalBitmap.getHeight(); y++) {
+                int color = originalBitmap.getPixel(x,y);
+                if (Color.alpha(color) != 0) {
+                    newBitmap.setPixel(x,y,Color.WHITE);
+                } else {
+                    newBitmap.setPixel(x, y, 0x00000000);
+                }
+            }
+        }
+
+        int r=5;
+        Bitmap bmMask = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas cvMask = new Canvas(bmMask);
+        Paint mBackgroundPaint = new Paint();
+        mBackgroundPaint.setColor(Color.BLACK);
+        mBackgroundPaint.setStyle(Paint.Style.FILL);
+        cvMask.drawRect(0, 0, bmMask.getWidth(), bmMask.getHeight(), mBackgroundPaint);
+        for (int i=-r;i<=r;i++) {
+            for (int j=-r;j<=r;j++) {
+                cvMask.drawBitmap(newBitmap, i, j, null);
+            }
+        }
+        return bmMask;
     }
 }

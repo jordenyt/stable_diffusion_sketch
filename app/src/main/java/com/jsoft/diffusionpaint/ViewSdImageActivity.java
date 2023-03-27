@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +13,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -38,12 +42,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private LinearLayout spinner_bg;
     private FloatingActionButton sdButton;
     private FloatingActionButton saveButton;
+    private FloatingActionButton expandButton;
+    private FloatingActionButton editButton;
     private FloatingActionButton backButton;
     private Bitmap mBitmap;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
     private SharedPreferences sharedPreferences;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
+    private boolean isCallingSD = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -77,12 +84,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         sdButton = findViewById(R.id.fab_stable_diffusion2);
         saveButton = findViewById(R.id.fab_save2);
         backButton = findViewById(R.id.fab_back);
+        expandButton = findViewById(R.id.fab_expand);
+        editButton = findViewById(R.id.fab_paint_again);
 
         if (mBitmap != null) {
             sdImage.setImageBitmap(mBitmap);
         }
 
-        sdButton.setOnClickListener(view -> callSD(mCurrentSketch.getCnMode()));
+        sdButton.setOnClickListener(view -> getSdConfig(mCurrentSketch.getCnMode()));
 
         backButton.setOnClickListener(view -> this.onBackPressed());
 
@@ -91,7 +100,24 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             saveButton.setVisibility(View.GONE);
         });
 
-        callSD(mCurrentSketch.getCnMode());
+        expandButton.setOnClickListener(view -> {
+            JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+            showSpinner();
+            sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
+        });
+
+        editButton.setOnClickListener(view -> {
+            String fileName = "sdsketch_" + mCurrentSketch.getId() + "_" + dateFormat.format(new Date()) + ".jpg";
+            Utils.saveBitmapToExternalStorage(this,mBitmap,fileName);
+            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File file = new File(directory, fileName);
+            Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
+            intent.putExtra("sketchId", -2);
+            intent.putExtra("bitmapPath", file.getAbsolutePath());
+            drawingActivityResultLauncher.launch(intent);
+        });
+
+        getSdConfig(mCurrentSketch.getCnMode());
     }
 
     @Override
@@ -99,6 +125,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         super.onConfigurationChanged(newConfig);
         // Lock the orientation to portrait
         setScreenRotation();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isCallingSD) {
+            sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
+        }
+        super.onBackPressed();
     }
 
     public void setScreenRotation() {
@@ -109,23 +143,32 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
-    private void callSD(String cnMode) {
+    private void getSdConfig(String cnMode) {
+        showSpinner();
+        sdApiHelper.sendGetRequest("getConfig", "/sdapi/v1/options");
+    }
+
+    private void showSpinner() {
         spinner_bg.setVisibility(View.VISIBLE);
         sdButton.setVisibility(View.GONE);
         saveButton.setVisibility(View.GONE);
         backButton.setVisibility(View.GONE);
+        expandButton.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
+    }
 
-        if (cnMode.startsWith("txt")) {
-            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
-            sdApiHelper.sendRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, "POST");
-        } else {
-            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
-            sdApiHelper.sendRequest("img2img", "/sdapi/v1/img2img", jsonObject, "POST");
-        }
+    private void hideSpinner() {
+        spinner_bg.setVisibility(View.GONE);
+        sdButton.setVisibility(View.VISIBLE);
+        saveButton.setVisibility(View.VISIBLE);
+        backButton.setVisibility(View.VISIBLE);
+        expandButton.setVisibility(View.VISIBLE);
+        editButton.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onSdApiFailure(String requestType) {
+        isCallingSD = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Request Type: " + requestType)
                 .setTitle("Call Stable Diffusion API failed")
@@ -134,24 +177,60 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         alert.show();
     }
 
+    public void callSD4Img() {
+        String cnMode = mCurrentSketch.getCnMode();
+        if (cnMode.startsWith("txt")) {
+            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
+            sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);
+        } else {
+            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
+            sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject);
+        }
+    }
+
+    ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {});
+
     @Override
     public void onSdApiResponse(String requestType, String responseBody) {
-        if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
-            try {
+        try {
+            if ("getConfig".equals(requestType)) {
+                JSONObject getConfigResponse = new JSONObject(responseBody);
+                String currentModel = getConfigResponse.getString("sd_model_checkpoint");
+                String cnMode = mCurrentSketch.getCnMode();
+                if (currentModel.contains("inpainting.") != cnMode.startsWith("inpaint")) {
+                    JSONObject setConfigRequest = new JSONObject();
+                    if (cnMode.startsWith("inpaint")) {
+                        setConfigRequest.put("sd_model_checkpoint", sharedPreferences.getString("sdInpaintModel", ""));
+                    } else {
+                        setConfigRequest.put("sd_model_checkpoint", sharedPreferences.getString("sdModelCheckpoint", ""));
+                    }
+                    sdApiHelper.sendPostRequest("setConfig", "/sdapi/v1/options", setConfigRequest);
+                } else {
+                    callSD4Img();
+                }
+            } else if ("setConfig".equals(requestType)) {
+                callSD4Img();
+            } else if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
+                isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
                 JSONArray images = jsonObject.getJSONArray("images");
                 if (images.length() > 0) {
                     mBitmap = Utils.base64String2Bitmap((String) images.get(0));
                     sdImage.setImageBitmap(mBitmap);
                 }
-                spinner_bg.setVisibility(View.GONE);
-                sdButton.setVisibility(View.VISIBLE);
-                saveButton.setVisibility(View.VISIBLE);
-                backButton.setVisibility(View.VISIBLE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                onSdApiFailure(requestType);
+                hideSpinner();
+            } else if ("extraSingleImage".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                String imageStr = jsonObject.getString("image");
+                mBitmap = Utils.base64String2Bitmap(imageStr);
+                sdImage.setImageBitmap(mBitmap);
+                hideSpinner();
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            onSdApiFailure(requestType);
         }
     }
 }

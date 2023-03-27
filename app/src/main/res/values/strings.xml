@@ -17,6 +17,9 @@
         <item>Canny Coloring</item>
         <item>Scribble Coloring</item>
         <item>Depth Coloring</item>
+        <item>Inpaint</item>
+        <item>Inpaint with paint</item>
+        <item>Inpaint with paint and depth</item>
         <item></item>
     </string-array>
     <string-array name="sd_size_options">
