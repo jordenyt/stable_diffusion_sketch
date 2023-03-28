@@ -121,16 +121,18 @@ public class Sketch implements Serializable {
             }
         }
 
-        int r=5;
+        int expandPixel=10;
         Bitmap bmMask = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas cvMask = new Canvas(bmMask);
         Paint mBackgroundPaint = new Paint();
         mBackgroundPaint.setColor(Color.BLACK);
         mBackgroundPaint.setStyle(Paint.Style.FILL);
         cvMask.drawRect(0, 0, bmMask.getWidth(), bmMask.getHeight(), mBackgroundPaint);
-        for (int i=-r;i<=r;i++) {
-            for (int j=-r;j<=r;j++) {
-                cvMask.drawBitmap(newBitmap, i, j, null);
+        for (int i=-expandPixel;i<=expandPixel;i++) {
+            for (int j=-expandPixel;j<=expandPixel;j++) {
+                if (Math.sqrt(i^2 + j^2) <= expandPixel) {
+                    cvMask.drawBitmap(newBitmap, i, j, null);
+                }
             }
         }
         return bmMask;

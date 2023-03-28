@@ -47,6 +47,7 @@
         android:src="@drawable/ic_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:backgroundTint="@color/light_blue_A400"
         app:tint="@android:color/white" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_paint_again"
@@ -58,6 +59,7 @@
         android:src="@drawable/ic_edit"
         app:layout_constraintEnd_toStartOf="@+id/fab_save2"
         app:layout_constraintTop_toTopOf="parent"
+        app:backgroundTint="@color/light_blue_A400"
         app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

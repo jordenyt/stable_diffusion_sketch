@@ -119,7 +119,10 @@ public class DrawingView extends View
 	}
 
 	private void drawPaths(Canvas canvas, Path path, Paint paint) {
-		Bitmap pathBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+		int width = canvas.getWidth();
+		int height = canvas.getHeight();
+		if (width == 0) return;
+		Bitmap pathBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas pathCanvas = new Canvas(pathBitmap);
 		if (mPaintBitmap != null) { pathCanvas.drawBitmap(mPaintBitmap, 0, 0, null); }
 		int i = 0;

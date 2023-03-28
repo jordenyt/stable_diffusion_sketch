@@ -20,40 +20,35 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/backgrounds/scenic"/>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_undo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:backgroundTint="#00000000"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/undo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_undo_white_24dp"
+        app:backgroundTint="@color/light_blue_A400"
+        app:tint="@android:color/white" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_undo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:contentDescription="@string/undo"
-            android:src="@drawable/ic_undo_white_24dp"
-            app:backgroundTint="@color/light_blue_A400"
-            app:tint="@android:color/white" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_redo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:contentDescription="@string/redo"
-            android:src="@drawable/ic_redo_white_24dp"
-            app:backgroundTint="@color/light_blue_A400"
-            app:tint="@android:color/white" />
-
-
-    </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_redo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/redo"
+        android:src="@drawable/ic_redo_white_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fab_undo"
+        app:backgroundTint="@color/light_blue_A400"
+        app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_save"

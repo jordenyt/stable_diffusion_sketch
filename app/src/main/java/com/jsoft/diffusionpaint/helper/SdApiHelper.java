@@ -224,7 +224,7 @@ public class SdApiHelper {
             jsonObject.put("image_cfg_scale", 7);
             if (isInpaint) {
                 jsonObject.put("mask", Utils.png2Base64String(Sketch.getInpaintMaskFromPaint(mCurrentSketch)));
-                jsonObject.put("mask_blur", 5);
+                jsonObject.put("mask_blur", 10);
                 jsonObject.put("inpainting_fill", cnMode.equals(Sketch.CN_MODE_INPAINT)?2:1);
                 jsonObject.put("inpaint_full_res", false);
                 jsonObject.put("inpaint_full_res_padding", 32);
