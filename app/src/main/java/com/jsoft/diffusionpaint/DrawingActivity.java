@@ -52,6 +52,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     FloatingActionButton undoButton;
     FloatingActionButton redoButton;
     FloatingActionButton sdButton;
+    FloatingActionButton eraserButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,14 +190,44 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdButton.setOnClickListener(view -> showInputDialog());
 
         circleView.setOnClickListener(view -> {
-            sdButton.setVisibility(View.GONE);
-            undoButton.setVisibility(View.GONE);
-            redoButton.setVisibility(View.GONE);
-            paletteButton.setVisibility(View.GONE);
-            seekWidth.setVisibility(View.GONE);
-            circleView.setVisibility(View.GONE);
-            mDrawingView.setEyedropper(true);
+            if (!mDrawingView.getIsEraserMode()) {
+                hideTools();
+                mDrawingView.setEyedropper(true);
+            }
         });
+
+        eraserButton = findViewById(R.id.fab_eraser);
+        eraserButton.setOnClickListener(view -> {
+            if (!mDrawingView.getIsEraserMode()) {
+                mDrawingView.setEraserMode();
+                eraserButton.setImageResource(R.drawable.ic_brush);
+                paletteButton.setEnabled(false);
+                circleView.setColor(Color.BLACK);
+            } else {
+                mDrawingView.setPenMode();
+                eraserButton.setImageResource(R.drawable.ic_eraser);
+                paletteButton.setEnabled(true);
+                circleView.setColor(mCurrentColor);
+            }
+        });
+    }
+
+    public void hideTools() {
+        sdButton.setVisibility(View.GONE);
+        undoButton.setVisibility(View.GONE);
+        redoButton.setVisibility(View.GONE);
+        paletteButton.setVisibility(View.GONE);
+        seekWidth.setVisibility(View.GONE);
+        circleView.setVisibility(View.GONE);
+    }
+
+    public void showTools() {
+        sdButton.setVisibility(View.VISIBLE);
+        undoButton.setVisibility(View.VISIBLE);
+        redoButton.setVisibility(View.VISIBLE);
+        paletteButton.setVisibility(View.VISIBLE);
+        seekWidth.setVisibility(View.VISIBLE);
+        circleView.setVisibility(View.VISIBLE);
     }
 
     public void gotoMainActivity() {
@@ -340,12 +371,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     @Override
     public void onEyedropperResult(int color) {
-        sdButton.setVisibility(View.VISIBLE);
-        undoButton.setVisibility(View.VISIBLE);
-        redoButton.setVisibility(View.VISIBLE);
-        paletteButton.setVisibility(View.VISIBLE);
-        seekWidth.setVisibility(View.VISIBLE);
-        circleView.setVisibility(View.VISIBLE);
+        showTools();
         mDrawingView.setEyedropper(false);
         mCurrentColor = color;
         mDrawingView.setPaintColor(mCurrentColor);

@@ -3,10 +3,12 @@ package com.jsoft.diffusionpaint.component;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +38,7 @@ public class DrawingView extends View
 	private int mPaintColor = 0xFF666666;
 	private int mStrokeWidth = 10;
 	private boolean isEyedropper = false;
+	private boolean isEraser = false;
 	private DrawingViewListener listener;
 
 	public DrawingView(Context context, AttributeSet attrs)
@@ -52,6 +55,9 @@ public class DrawingView extends View
 		isEyedropper = eyedropper;
 	}
 
+	public boolean getIsEraserMode() {
+		return this.isEraser;
+	}
 	private void init()
 	{
 		mDrawPath = new Path();
@@ -69,6 +75,9 @@ public class DrawingView extends View
 		mDrawPaint.setStyle(Paint.Style.STROKE);
 		mDrawPaint.setStrokeJoin(Paint.Join.ROUND);
 		mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
+		if (isEraser) {
+			mDrawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+		}
 	}
 
 	private void drawBackground(Canvas canvas) {
@@ -106,19 +115,28 @@ public class DrawingView extends View
 	}
 
 	private void drawPaths(Canvas canvas) {
-		if (mPaintBitmap != null) { canvas.drawBitmap(mPaintBitmap, 0, 0, null); }
+		drawPaths(canvas, null, null);
+	}
+
+	private void drawPaths(Canvas canvas, Path path, Paint paint) {
+		Bitmap pathBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+		Canvas pathCanvas = new Canvas(pathBitmap);
+		if (mPaintBitmap != null) { pathCanvas.drawBitmap(mPaintBitmap, 0, 0, null); }
 		int i = 0;
 		for (Path p : mPaths) {
-			canvas.drawPath(p, mPaints.get(i));
+			pathCanvas.drawPath(p, mPaints.get(i));
 			i++;
 		}
+		if (path != null && paint != null) {
+			pathCanvas.drawPath(path, paint);
+		}
+		canvas.drawBitmap(pathBitmap, 0, 0, null);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		drawBackground(canvas);
-		drawPaths(canvas);
-		canvas.drawPath(mDrawPath, mDrawPaint);
+		drawPaths(canvas, mDrawPath, mDrawPaint);
 	}
 
 	@Override
@@ -183,6 +201,16 @@ public class DrawingView extends View
 	public void setPaintStrokeWidth(int strokeWidth) {
 		mStrokeWidth = strokeWidth;
 		mDrawPaint.setStrokeWidth(mStrokeWidth);
+	}
+
+	public void setEraserMode() {
+		isEraser = true;
+		mDrawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+	}
+
+	public void setPenMode() {
+		isEraser = false;
+		mDrawPaint.setXfermode(null);
 	}
 
 	public void setBackgroundColor(int color) {
