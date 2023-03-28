@@ -97,15 +97,15 @@ public class SdApiHelper {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("resize_mode", 0);
-            jsonObject.put("show_extras_results", true);
+            //jsonObject.put("show_extras_results", true);
             jsonObject.put("gfpgan_visibility", 0);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
             jsonObject.put("upscaling_resize", 2);
-            jsonObject.put("upscaling_resize_w", 512);
-            jsonObject.put("upscaling_resize_h", 512);
-            jsonObject.put("upscaling_crop", true);
-            jsonObject.put("upscaler_1", "R-ESRGAN General 4xV3");
+            //jsonObject.put("upscaling_resize_w", 512);
+            //jsonObject.put("upscaling_resize_h", 512);
+            //jsonObject.put("upscaling_crop", true);
+            jsonObject.put("upscaler_1", sharedPreferences.getString("sdUpscaler", "R-ESRGAN General 4xV3"));
             jsonObject.put("upscaler_2", "None");
             jsonObject.put("extras_upscaler_2_visibility", 0);
             jsonObject.put("upscale_first", false);

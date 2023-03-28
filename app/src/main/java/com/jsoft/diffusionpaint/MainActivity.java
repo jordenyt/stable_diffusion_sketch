@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private SharedPreferences sharedPreferences;
     private static File mImageFile;
     private SdApiHelper sdApiHelper;
-    private JSONArray getSDModelResponse;
-    private JSONObject getConfigResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,32 +207,31 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
                 break;
             case R.id.mi_cn_scribble:
-                showTextInputDialog("cnScribbleModel", "ControlNet Scribble Model:", "control_sd15_scribble [fef5e48e]", "control_sd15_scribble [fef5e48e]");
+                sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_depth:
-                showTextInputDialog("cnDepthModel", "ControlNet Depth Model:", "control_sd15_depth [fef5e48e]", "control_sd15_depth [fef5e48e]");
+                sdApiHelper.sendGetRequest("setCnDepth", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_pose:
-                showTextInputDialog("cnPoseModel", "ControlNet Pose Model:", "control_sd15_openpose [fef5e48e]", "control_sd15_openpose [fef5e48e]");
+                sdApiHelper.sendGetRequest("setCnPose", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_canny:
-                showTextInputDialog("cnCannyModel", "ControlNet Canny Model:", "control_sd15_canny [fef5e48e]", "control_sd15_canny [fef5e48e]");
+                sdApiHelper.sendGetRequest("setCnCanny", "/controlnet/model_list");
                 break;
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
                 break;
             case R.id.mi_sd_model:
-                getSDModelResponse = null;
-                getConfigResponse = null;
-                sdApiHelper.sendGetRequest("setSDModel1", "/sdapi/v1/sd-models");
-                sdApiHelper.sendGetRequest("setSDModel2", "/sdapi/v1/options");
+                sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_inpaint_model:
-                getSDModelResponse = null;
                 sdApiHelper.sendGetRequest("setSDInpaintModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_sampler:
                 sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
+                break;
+            case R.id.mi_sd_upscaler:
+                sdApiHelper.sendGetRequest("setUpscaler", "/sdapi/v1/upscalers");
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -242,71 +239,29 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         return true;
     }
 
-    private void showSamplerDialog(JSONArray samplers) {
+    private void showSpinnerDialog(JSONArray jsonArray, String jsonKey, String title, String prefKey, String prefDefault, String filter) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
         builder.setView(dialogView);
 
         TextView tvTitle = dialogView.findViewById(R.id.dialog_spinner_title);
-        tvTitle.setText("SD Sampling Method");
+        tvTitle.setText(title);
 
 
         List<String> options = new ArrayList<>();
         int selectedPosition = 0;
         try {
-            String currentModel = sharedPreferences.getString("sdSampler", "Euler a");
-            for (int i = 0; i < samplers.length(); i++) {
-                JSONObject model = (JSONObject) samplers.get(i);
-                String modelTitle = model.getString("name");
-                if (currentModel.equals(modelTitle)) {
-                    selectedPosition = i;
+            String currentModel = sharedPreferences.getString(prefKey, prefDefault);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String modelTitle = "";
+                if (jsonKey != null) {
+                    JSONObject model = (JSONObject) jsonArray.get(i);
+                    modelTitle = model.getString(jsonKey);
+                } else {
+                    modelTitle = jsonArray.getString(i);
                 }
-                options.add(modelTitle);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Spinner spModel = dialogView.findViewById(R.id.dialog_spinner_options);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, options);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spModel.setAdapter(adapter);
-        spModel.setSelection(selectedPosition);
-
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            String selectedModel = (String) spModel.getSelectedItem();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("sdSampler",selectedModel);
-            editor.apply();
-            dialog.dismiss();
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void showSDModelDialog(boolean isInpaint) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_spinner, null);
-        builder.setView(dialogView);
-
-        TextView tvTitle = dialogView.findViewById(R.id.dialog_spinner_title);
-        tvTitle.setText(isInpaint? "SD Inpaint Model" : "SD Model");
-
-
-        List<String> options = new ArrayList<>();
-        int selectedPosition = 0;
-        try {
-            String currentModel = isInpaint?
-                    sharedPreferences.getString("sdInpaintModel", ""):
-                    sharedPreferences.getString("sdModelCheckpoint", getConfigResponse.getString("sd_model_checkpoint"));
-            for (int i = 0; i < getSDModelResponse.length(); i++) {
-                JSONObject model = (JSONObject) getSDModelResponse.get(i);
-                String modelTitle = model.getString("title");
-                if (modelTitle.toLowerCase().contains("inpainting.") == isInpaint) {
+                if (modelTitle.toLowerCase().contains(filter)) {
                     if (currentModel.equals(modelTitle)) {
                         selectedPosition = options.size();
                     }
@@ -325,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         builder.setPositiveButton("OK", (dialog, which) -> {
             String selectedModel = (String) spModel.getSelectedItem();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(isInpaint?"sdInpaintModel":"sdModelCheckpoint",selectedModel);
+            editor.putString(prefKey,selectedModel);
             editor.apply();
             dialog.dismiss();
         });
@@ -449,26 +404,25 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     @Override
     public void onSdApiResponse(String requestType, String responseBody) {
         try {
-            if ("setSDModel1".equals(requestType) || "setSDInpaintModel".equals(requestType)) {
-                getSDModelResponse = new JSONArray(responseBody);
-            } else if ("setSDModel2".equals(requestType)) {
-                getConfigResponse = new JSONObject(responseBody);
+            if ("setSDModel".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "Stable Diffusion Model", "sdModelCheckpoint", "", "");
+            } else if ("setSDInpaintModel".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SD Inpaint Model", "sdInpaintModel", "", "inpainting.");
+            } else if ("setSampler".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "name", "SD Sampling Method", "sdSampler", "Euler a", "");
+            } else if ("setUpscaler".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "name", "Upscaler", "sdUpscaler", "R-ESRGAN General 4xV3", "");
+            } else if ("setCnScribble".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Scribble Model", "cnScribbleModel", "control_sd15_scribble [fef5e48e]", "scribble");
+            } else if ("setCnDepth".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Depth Model", "cnDepthModel", "control_sd15_depth [fef5e48e]", "depth");
+            } else if ("setCnPose".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Pose Model", "cnPoseModel", "control_sd15_openpose [fef5e48e]", "pose");
+            } else if ("setCnCanny".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet CNNY Model", "cnCannyModel", "control_sd15_canny [fef5e48e]", "canny");
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-        if ("setSDModel1".equals(requestType) || "setSDModel2".equals(requestType)) {
-            if (getSDModelResponse != null && getConfigResponse != null) {
-                showSDModelDialog(false);
-            }
-        } else if ("setSDInpaintModel".equals(requestType)) {
-            showSDModelDialog(true);
-        } else if ("setSampler".equals(requestType)) {
-            try {
-                showSamplerDialog(new JSONArray(responseBody));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
