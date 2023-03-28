@@ -12,14 +12,23 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
 	- txt2img with Scribble ControlNet Model
 	- txt2img with Depth ControlNet Model
 	- txt2img with Canny ControlNet Model
+	- basic inpaint
+	- inpaint with sketch
+	- inpaint with sketch and Depth
+- Sketching Tools:
+  - Palette
+  - Paintbrush
+  - Eyedropper
+  - Eraser
+  - Undo/redo
 - Use Camera to capture base of your sketching
 - Receive Share image from other apps and use it as base.
 - Preset values for your prompt
 - 3 Canvas aspect ratio: landscape, portrait and square
+- 2x Upscaler
 
 ## Demo Video
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
-
 
 ## Prerequisites
 Before using Stable Diffusion Sketch, you need to install and set up the following on your server:
@@ -43,7 +52,8 @@ Here's how to use Stable Diffusion Sketch:
    - If both of your Android device and Server are on the same intranet, you can use the intranet IP, i.e. 192.168.xxx.xxx / 10.xxx.xxx.xxx.  You can get this IP by running `ipconfig /all` on Windows or `ifconfig --all` on MacOS/Linux.
    - If your Android device is on public internet, and your server is on intranet, you need to config your router NAT/Firewall and DDNS. In this case, use the internet IP and translated port number as the server address.
    - You can test the server address by using it on Android device's web browser.  If it is valid, then you will see automatic1111's webui running on your web browser. 
-4. Start sketching and let Stable Diffusion do the magic!
+4. In the app, select SD Model, Inpaint Model, Sampler, Upscaler and ControlNet model.
+5. Start sketching and let Stable Diffusion do the magic!
 
 ## License
 Stable Diffusion Sketch is licensed under the [GNU General Public License v3.0](https://github.com/jordenyt/stable_diffusion_sketch/blob/main/LICENSE).
