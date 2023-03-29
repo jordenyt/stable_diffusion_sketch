@@ -20,7 +20,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         android:contentDescription="@string/stroke_width"
-        android:src="@drawable/ic_stable_diffusion"
+        android:src="@drawable/ic_magic"
         app:backgroundTint="@android:color/holo_orange_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +80,9 @@
         android:layout_height="match_parent"
         android:background="#CC000000"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <ProgressBar
             android:id="@+id/spinner"

@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text= "Magic you want to cast:"
+        android:text= "Select preset SD Mode:"
         android:textAppearance="?android:textAppearanceMedium" />
     <Spinner
         android:id="@+id/sd_mode_selection"

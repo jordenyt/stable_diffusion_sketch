@@ -11,15 +11,15 @@
     <string name="delete_sketch">Delete Sketch</string>
     <string name="ok">OK</string>
     <string-array name="cnmode_options">
-        <item>Scribble</item>
-        <item>Depth</item>
-        <item>Pose</item>
-        <item>Canny Coloring</item>
-        <item>Scribble Coloring</item>
-        <item>Depth Coloring</item>
-        <item>Inpaint</item>
-        <item>Inpaint with paint</item>
-        <item>Inpaint with paint and depth</item>
+        <item>img2img with Scribble</item>
+        <item>img2img with Depth</item>
+        <item>img2img with Pose</item>
+        <item>txt2img with Canny</item>
+        <item>txt2img with Scribble</item>
+        <item>txt2img with Depth</item>
+        <item>Inpaint on background</item>
+        <item>Inpaint on sketch</item>
+        <item>Inpaint on sketch with background depth</item>
         <item></item>
     </string-array>
     <string-array name="sd_size_options">

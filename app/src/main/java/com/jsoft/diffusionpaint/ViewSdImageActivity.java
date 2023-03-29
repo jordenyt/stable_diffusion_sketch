@@ -199,7 +199,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONObject getConfigResponse = new JSONObject(responseBody);
                 String currentModel = getConfigResponse.getString("sd_model_checkpoint");
                 String cnMode = mCurrentSketch.getCnMode();
-                if (currentModel.contains("inpainting.") != cnMode.startsWith("inpaint")) {
+                if (currentModel.toLowerCase().contains("inpainting.") != cnMode.startsWith("inpaint") &&
+                        sharedPreferences.getString("sdInpaintModel", null) != null &&
+                        sharedPreferences.getString("sdModelCheckpoint", null) != null) {
                     JSONObject setConfigRequest = new JSONObject();
                     if (cnMode.startsWith("inpaint")) {
                         setConfigRequest.put("sd_model_checkpoint", sharedPreferences.getString("sdInpaintModel", ""));

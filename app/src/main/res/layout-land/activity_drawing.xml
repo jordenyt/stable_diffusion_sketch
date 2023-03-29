@@ -8,6 +8,19 @@
     android:foregroundTint="@color/white"
     tools:context=".DrawingActivity">
 
+    <SeekBar
+        android:id="@+id/seek_width"
+        android:layout_width="141dp"
+        android:layout_height="149dp"
+        android:layout_marginEnd="10dp"
+        android:max="200"
+        android:min="10"
+        android:progress="50"
+        android:progressBackgroundTint="@color/white"
+        android:rotation="270"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.jsoft.diffusionpaint.component.DrawingView
         android:id="@+id/drawing_view"
         android:layout_width="0dp"
@@ -101,23 +114,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
 
-    <SeekBar
-        android:id="@+id/seek_width"
-        android:layout_width="141dp"
-        android:layout_height="149dp"
-        android:layout_marginEnd="10dp"
-        android:max="200"
-        android:min="10"
-        android:progress="50"
-        android:progressBackgroundTint="@color/white"
-        android:rotation="270"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <com.jsoft.diffusionpaint.helper.CircleView
         android:id="@+id/circle_pen"
-        android:layout_width="78dp"
-        android:layout_height="75dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="#00000000"
@@ -131,7 +131,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         android:contentDescription="@string/stroke_width"
-        android:src="@drawable/ic_stable_diffusion"
+        android:src="@drawable/ic_magic"
         app:backgroundTint="@android:color/holo_orange_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
