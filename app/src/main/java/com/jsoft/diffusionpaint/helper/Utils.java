@@ -77,9 +77,13 @@ public class Utils {
     }
     public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String filename) {
         // Get the directory for the user's public pictures directory.
-        File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File sdSketchFolder = new File(picturesDirectory, "sdSketch");
+        if (!sdSketchFolder.exists()) {
+            sdSketchFolder.mkdirs();
+        }
         // Create the file object.
-        File file = new File(directory, filename);
+        File file = new File(sdSketchFolder, filename);
 
         try {
             // Create a file output stream to write the bitmap data to the file.

@@ -103,6 +103,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         expandButton.setOnClickListener(view -> {
             JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
             showSpinner();
+            isCallingSD = true;
             sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
         });
 
@@ -131,6 +132,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void onBackPressed() {
         if (isCallingSD) {
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
+            isCallingSD = false;
         }
         super.onBackPressed();
     }
@@ -178,6 +180,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     public void callSD4Img() {
+        isCallingSD = true;
         String cnMode = mCurrentSketch.getCnMode();
         if (cnMode.startsWith("txt")) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
@@ -224,6 +227,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
                 hideSpinner();
             } else if ("extraSingleImage".equals(requestType)) {
+                isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
                 String imageStr = jsonObject.getString("image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
