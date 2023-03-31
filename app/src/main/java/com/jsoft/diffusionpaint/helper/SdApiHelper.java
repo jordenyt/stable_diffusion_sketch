@@ -119,23 +119,8 @@ public class SdApiHelper {
     public JSONObject getControlnetTxt2imgJSON(String prompt, String cnMode, Sketch mCurrentSketch, String aspectRatio) {
         JSONObject jsonObject = new JSONObject();
         try {
-            //jsonObject.put("enable_hr", false);
-            //jsonObject.put("denoising_strength", 0);
-            //jsonObject.put("firstphase_width", 0);
-            //jsonObject.put("firstphase_height", 0);
-            //jsonObject.put("hr_scale", 2);
-            //jsonObject.put("hr_upscaler", "R-ESRGAN General 4xV3");
-            //jsonObject.put("hr_second_pass_steps", 0);
-            //jsonObject.put("hr_resize_x", 0);
-            //jsonObject.put("hr_resize_y", 0);
             jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
-            //jsonObject.put("styles", new JSONArray());
             jsonObject.put("seed", -1);
-            //jsonObject.put("subseed", -1);
-            //jsonObject.put("subseed_strength", 0);
-            //jsonObject.put("seed_resize_from_h", -1);
-            //jsonObject.put("seed_resize_from_w", -1);
-            //jsonObject.put("sampler_name", "Euler a");
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
             jsonObject.put("steps", 40);
@@ -155,19 +140,11 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", ""));
-            //jsonObject.put("eta", 0);
-            //jsonObject.put("s_churn", 0);
-            //jsonObject.put("s_tmax", 0);
-            //jsonObject.put("s_tmin", 0);
-            //jsonObject.put("s_noise", 1);
-            //jsonObject.put("override_settings", new JSONObject());
-            //jsonObject.put("override_settings_restore_afterwards", true);
-            //jsonObject.put("script_args", new JSONArray());
             jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
-            //jsonObject.put("script_name", "string");
-            //jsonObject.put("send_images", true);
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
+
+            // ControlNet Args
             JSONObject controlnet = new JSONObject();
             JSONArray args = new JSONArray();
             JSONObject cnArgObject = new JSONObject();
@@ -182,16 +159,14 @@ public class SdApiHelper {
                 case Sketch.CN_MODE_TXT_SCRIBBLE:
                     cnArgObject.put("module", "scribble");
                     cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.8);
+                    cnArgObject.put("weight", 0.7);
                     break;
                 case Sketch.CN_MODE_TXT_DEPTH:
                     cnArgObject.put("module", "depth");
                     cnArgObject.put("model", sharedPreferences.getString("cnDepthModel","control_sd15_depth [fef5e48e]"));
-                    cnArgObject.put("weight", 0.8);
+                    cnArgObject.put("weight", 0.9);
                     break;
             }
-
-
             cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
             cnArgObject.put("lowvram", false);
             cnArgObject.put("processor_res", 64);
@@ -232,13 +207,7 @@ public class SdApiHelper {
                 jsonObject.put("initial_noise_multiplier", 1);
             }
             jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
-            //jsonObject.put("styles", new JSONArray());
             jsonObject.put("seed", -1);
-            //jsonObject.put("subseed", -1);
-            //jsonObject.put("subseed_strength", 1);
-            //jsonObject.put("seed_resize_from_h", -1);
-            //jsonObject.put("seed_resize_from_w", -1);
-            //jsonObject.put("sampler_name", "string");
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
             jsonObject.put("cfg_scale", 7);
@@ -257,22 +226,12 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", ""));
-            //jsonObject.put("eta", 0);
-            //jsonObject.put("s_churn", 0);
-            //jsonObject.put("s_tmax", 0);
-            //jsonObject.put("s_tmin", 0);
-            //jsonObject.put("s_noise", 1);
-            //jsonObject.put("override_settings", new JSONObject());
-            //jsonObject.put("override_settings_restore_afterwards", true);
-            //jsonObject.put("script_args", new JSONArray());
             jsonObject.put("steps", 50);
             jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
-            //jsonObject.put("include_init_images", false);
-            //jsonObject.put("script_name", "string");
-            //jsonObject.put("send_images", true);
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
 
+            // ControlNet Args
             if (!isInpaint || cnMode.equals(Sketch.CN_MODE_INPAINT_DEPTH)) {
                 JSONObject controlnet = new JSONObject();
                 JSONArray args = new JSONArray();
@@ -290,7 +249,7 @@ public class SdApiHelper {
                     case Sketch.CN_MODE_INPAINT_DEPTH:
                         cnArgObject.put("module", "depth");
                         cnArgObject.put("model", sharedPreferences.getString("cnDepthModel", "control_sd15_depth [fef5e48e]"));
-                        cnArgObject.put("weight", 0.7);
+                        cnArgObject.put("weight", 0.9);
                         break;
                     case Sketch.CN_MODE_POSE:
                         cnArgObject.put("module", "openpose");

@@ -110,8 +110,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         editButton.setOnClickListener(view -> {
             String fileName = "sdsketch_" + mCurrentSketch.getId() + "_" + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this,mBitmap,fileName);
-            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File file = new File(directory, fileName);
+            File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File sdSketchFolder = new File(picturesDirectory, "sdSketch");
+            File file = new File(sdSketchFolder, fileName);
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -2);
             intent.putExtra("bitmapPath", file.getAbsolutePath());
@@ -202,15 +203,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONObject getConfigResponse = new JSONObject(responseBody);
                 String currentModel = getConfigResponse.getString("sd_model_checkpoint");
                 String cnMode = mCurrentSketch.getCnMode();
-                if (currentModel.toLowerCase().contains("inpainting.") != cnMode.startsWith("inpaint") &&
-                        sharedPreferences.getString("sdInpaintModel", null) != null &&
-                        sharedPreferences.getString("sdModelCheckpoint", null) != null) {
+                String preferredModel = cnMode.startsWith("inpaint")?
+                        sharedPreferences.getString("sdInpaintModel", ""):
+                        sharedPreferences.getString("sdModelCheckpoint", "");
+                if (!currentModel.equals(preferredModel)) {
                     JSONObject setConfigRequest = new JSONObject();
-                    if (cnMode.startsWith("inpaint")) {
-                        setConfigRequest.put("sd_model_checkpoint", sharedPreferences.getString("sdInpaintModel", ""));
-                    } else {
-                        setConfigRequest.put("sd_model_checkpoint", sharedPreferences.getString("sdModelCheckpoint", ""));
-                    }
+                    setConfigRequest.put("sd_model_checkpoint", preferredModel);
                     sdApiHelper.sendPostRequest("setConfig", "/sdapi/v1/options", setConfigRequest);
                 } else {
                     callSD4Img();

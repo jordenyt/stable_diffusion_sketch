@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
@@ -53,6 +54,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     FloatingActionButton redoButton;
     FloatingActionButton sdButton;
     FloatingActionButton eraserButton;
+    ImageView modeIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +148,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     protected void initButtons() {
 
+        modeIcon = findViewById(R.id.img_drawing_mode);
+        modeIcon.setImageResource(R.drawable.ic_brush);
         paletteButton = findViewById(R.id.fab_color);
         paletteButton.setOnClickListener(view -> ColorPickerDialog.newBuilder()
                 .setDialogType(ColorPickerDialog.TYPE_PRESETS)
@@ -193,6 +197,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             if (!mDrawingView.getIsEraserMode()) {
                 hideTools();
                 mDrawingView.setEyedropper(true);
+                eraserButton.setVisibility(View.GONE);
+                modeIcon.setImageResource(R.drawable.ic_eyedropper);
             }
         });
 
@@ -203,11 +209,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 eraserButton.setImageResource(R.drawable.ic_brush);
                 paletteButton.setEnabled(false);
                 circleView.setColor(Color.BLACK);
+                modeIcon.setImageResource(R.drawable.ic_eraser);
             } else {
                 mDrawingView.setPenMode();
                 eraserButton.setImageResource(R.drawable.ic_eraser);
                 paletteButton.setEnabled(true);
                 circleView.setColor(mCurrentColor);
+                modeIcon.setImageResource(R.drawable.ic_brush);
             }
         });
     }
@@ -376,5 +384,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         mCurrentColor = color;
         mDrawingView.setPaintColor(mCurrentColor);
         circleView.setColor(mCurrentColor);
+        eraserButton.setVisibility(View.VISIBLE);
+        modeIcon.setImageResource(R.drawable.ic_brush);
     }
 }
