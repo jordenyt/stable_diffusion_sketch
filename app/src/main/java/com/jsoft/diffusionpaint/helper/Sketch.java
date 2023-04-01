@@ -24,6 +24,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_SCRIBBLE = "scribble";
     public static final String CN_MODE_DEPTH = "depth";
     public static final String CN_MODE_POSE = "pose";
+    public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_DEPTH = "txtDepth";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";

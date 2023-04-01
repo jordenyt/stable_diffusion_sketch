@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -80,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         FloatingActionButton addCameraButton = findViewById(R.id.fab_add_camera);
         addCameraButton.setOnClickListener(view -> launchCamera());
+
+        FloatingActionButton addTxt2img = findViewById(R.id.fab_add_txt2img);
+        addTxt2img.setOnClickListener(view -> showPromptDialog());
 
         isPermissionGranted();
 
@@ -141,6 +145,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {});
+
+    ActivityResultLauncher<Intent> viewSdImageActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {});
 
@@ -321,6 +329,33 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showPromptDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_textbox, null);
+        builder.setView(dialogView);
+
+        TextView tvTitle = dialogView.findViewById(R.id.text_title);
+        tvTitle.setText("What do you want me to draw?");
+        EditText editText = dialogView.findViewById(R.id.edit_text);
+        editText.setText(sharedPreferences.getString("txt2imgPrompt", ""));
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String prompt = editText.getText().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("txt2imgPrompt","");
+            editor.apply();
+            Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
+            intent.putExtra("sketchId", -3);
+            intent.putExtra("cnMode", Sketch.CN_MODE_TXT);
+            intent.putExtra("prompt", prompt);
+            drawingActivityResultLauncher.launch(intent);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
     }

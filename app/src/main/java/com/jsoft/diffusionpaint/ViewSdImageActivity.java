@@ -72,6 +72,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mBitmap = mCurrentSketch.getImgPreview();
                 aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
             }
+        } else if (sketchId == -3) {
+            mCurrentSketch=new Sketch();
+            mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
+            mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
+            mCurrentSketch.setId(-3);
+            aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         }
         if (mCurrentSketch==null) {
             mCurrentSketch=new Sketch();
@@ -96,7 +102,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         backButton.setOnClickListener(view -> this.onBackPressed());
 
         saveButton.setOnClickListener(view -> {
-            Utils.saveBitmapToExternalStorage(this,mBitmap,"sdsketch_" + mCurrentSketch.getId() + "_" + dateFormat.format(new Date()) + ".jpg");
+            String filename = "sdsketch_" + (mCurrentSketch.getId()>=0?(mCurrentSketch.getId() + "_"):"") + dateFormat.format(new Date()) + ".jpg";
+            Utils.saveBitmapToExternalStorage(this,mBitmap,filename);
             saveButton.setVisibility(View.GONE);
         });
 
@@ -108,7 +115,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         editButton.setOnClickListener(view -> {
-            String fileName = "sdsketch_" + mCurrentSketch.getId() + "_" + dateFormat.format(new Date()) + ".jpg";
+            String fileName = "sdsketch_" + (mCurrentSketch.getId()>=0?(mCurrentSketch.getId() + "_"):"") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this,mBitmap,fileName);
             File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File sdSketchFolder = new File(picturesDirectory, "sdSketch");
@@ -116,6 +123,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -2);
             intent.putExtra("bitmapPath", file.getAbsolutePath());
+            intent.putExtra("prompt", mCurrentSketch.getPrompt());
             drawingActivityResultLauncher.launch(intent);
         });
 

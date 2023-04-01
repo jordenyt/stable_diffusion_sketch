@@ -38,4 +38,16 @@
         app:layout_constraintBottom_toTopOf="@+id/fab_add"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_txt2img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/add_paint"
+        android:src="@drawable/ic_magic"
+        app:layout_constraintBottom_toTopOf="@+id/fab_add_camera"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

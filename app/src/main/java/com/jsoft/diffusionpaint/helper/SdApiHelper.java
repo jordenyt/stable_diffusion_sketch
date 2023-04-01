@@ -98,7 +98,7 @@ public class SdApiHelper {
         try {
             jsonObject.put("resize_mode", 0);
             //jsonObject.put("show_extras_results", true);
-            jsonObject.put("gfpgan_visibility", 0);
+            jsonObject.put("gfpgan_visibility", 1);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
             jsonObject.put("upscaling_resize", 2);
@@ -144,41 +144,44 @@ public class SdApiHelper {
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
 
-            // ControlNet Args
-            JSONObject controlnet = new JSONObject();
-            JSONArray args = new JSONArray();
-            JSONObject cnArgObject = new JSONObject();
-            cnArgObject.put("input_image", Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
-            //cnArgObject.put("mask", "");
-            switch (cnMode) {
-                case Sketch.CN_MODE_TXT_CANNY:
-                    cnArgObject.put("module", "canny");
-                    cnArgObject.put("model", sharedPreferences.getString("cnCannyModel","control_sd15_canny [fef5e48e]"));
-                    cnArgObject.put("weight", 1);
-                    break;
-                case Sketch.CN_MODE_TXT_SCRIBBLE:
-                    cnArgObject.put("module", "scribble");
-                    cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel","control_sd15_scribble [fef5e48e]"));
-                    cnArgObject.put("weight", 0.7);
-                    break;
-                case Sketch.CN_MODE_TXT_DEPTH:
-                    cnArgObject.put("module", "depth");
-                    cnArgObject.put("model", sharedPreferences.getString("cnDepthModel","control_sd15_depth [fef5e48e]"));
-                    cnArgObject.put("weight", 0.9);
-                    break;
+            if (!cnMode.equals(Sketch.CN_MODE_TXT)) {
+                // ControlNet Args
+                JSONObject controlnet = new JSONObject();
+                JSONArray args = new JSONArray();
+                JSONObject cnArgObject = new JSONObject();
+                cnArgObject.put("input_image", Utils.jpg2Base64String(mCurrentSketch.getImgPreview()));
+                //cnArgObject.put("mask", "");
+                switch (cnMode) {
+                    case Sketch.CN_MODE_TXT_CANNY:
+                        cnArgObject.put("module", "canny");
+                        cnArgObject.put("model", sharedPreferences.getString("cnCannyModel", "control_sd15_canny [fef5e48e]"));
+                        cnArgObject.put("weight", 1);
+                        break;
+                    case Sketch.CN_MODE_TXT_SCRIBBLE:
+                        cnArgObject.put("module", "scribble");
+                        cnArgObject.put("model", sharedPreferences.getString("cnScribbleModel", "control_sd15_scribble [fef5e48e]"));
+                        cnArgObject.put("weight", 0.7);
+                        break;
+                    case Sketch.CN_MODE_TXT_DEPTH:
+                        cnArgObject.put("module", "depth");
+                        cnArgObject.put("model", sharedPreferences.getString("cnDepthModel", "control_sd15_depth [fef5e48e]"));
+                        cnArgObject.put("weight", 0.9);
+                        break;
+                }
+                cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
+                cnArgObject.put("lowvram", false);
+                cnArgObject.put("processor_res", 64);
+                cnArgObject.put("threshold_a", 64);
+                cnArgObject.put("threshold_b", 64);
+                cnArgObject.put("guidance", 1);
+                cnArgObject.put("guidance_start", 0);
+                cnArgObject.put("guidance_end", 1);
+                cnArgObject.put("guessmode", false);
+                args.put(cnArgObject);
+                controlnet.put("args", args);
+                alwayson_scripts.put("controlnet", controlnet);
+
             }
-            cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
-            cnArgObject.put("lowvram", false);
-            cnArgObject.put("processor_res", 64);
-            cnArgObject.put("threshold_a", 64);
-            cnArgObject.put("threshold_b", 64);
-            cnArgObject.put("guidance", 1);
-            cnArgObject.put("guidance_start", 0);
-            cnArgObject.put("guidance_end", 1);
-            cnArgObject.put("guessmode", false);
-            args.put(cnArgObject);
-            controlnet.put("args", args);
-            alwayson_scripts.put("controlnet", controlnet);
             jsonObject.put("alwayson_scripts", alwayson_scripts);
 
         } catch (JSONException e) {
@@ -198,7 +201,10 @@ public class SdApiHelper {
             jsonObject.put("denoising_strength", cnMode.equals(Sketch.CN_MODE_INPAINT)?1:0.8);
             jsonObject.put("image_cfg_scale", 7);
             if (isInpaint) {
-                jsonObject.put("mask", Utils.png2Base64String(Sketch.getInpaintMaskFromPaint(mCurrentSketch)));
+                if (mCurrentSketch.getImgInpaint() == null) {
+                    mCurrentSketch.setImgInpaint(Sketch.getInpaintMaskFromPaint(mCurrentSketch));
+                }
+                jsonObject.put("mask", Utils.png2Base64String(mCurrentSketch.getImgInpaint()));
                 jsonObject.put("mask_blur", 10);
                 jsonObject.put("inpainting_fill", cnMode.equals(Sketch.CN_MODE_INPAINT)?2:1);
                 jsonObject.put("inpaint_full_res", false);

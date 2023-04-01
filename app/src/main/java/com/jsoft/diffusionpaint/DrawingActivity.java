@@ -75,6 +75,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             }
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
+            mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
             Bitmap imageBitmap = BitmapFactory.decodeFile(bitmapPath);
             if (imageBitmap != null) {
                 int orientation = ExifInterface.ORIENTATION_UNDEFINED;
