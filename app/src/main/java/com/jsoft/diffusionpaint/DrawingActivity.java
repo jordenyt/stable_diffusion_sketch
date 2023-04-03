@@ -147,6 +147,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     }
 
+    @Override
+    public void onBackPressed() {
+        gotoMainActivity();
+    }
+
     protected void initButtons() {
 
         modeIcon = findViewById(R.id.img_drawing_mode);

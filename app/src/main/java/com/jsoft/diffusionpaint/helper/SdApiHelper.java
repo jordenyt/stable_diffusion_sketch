@@ -101,14 +101,14 @@ public class SdApiHelper {
             jsonObject.put("gfpgan_visibility", 1);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
-            jsonObject.put("upscaling_resize", 2);
+            jsonObject.put("upscaling_resize", 4);
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
             //jsonObject.put("upscaling_crop", true);
             jsonObject.put("upscaler_1", sharedPreferences.getString("sdUpscaler", "R-ESRGAN General 4xV3"));
             jsonObject.put("upscaler_2", "None");
             jsonObject.put("extras_upscaler_2_visibility", 0);
-            jsonObject.put("upscale_first", false);
+            jsonObject.put("upscale_first", true);
             jsonObject.put("image", Utils.jpg2Base64String(bitmap));
         } catch (JSONException e) {
             e.printStackTrace();

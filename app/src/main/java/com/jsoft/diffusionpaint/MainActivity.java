@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         builder.setPositiveButton("OK", (dialog, which) -> {
             String prompt = editText.getText().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("txt2imgPrompt","");
+            editor.putString("txt2imgPrompt",prompt);
             editor.apply();
             Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
