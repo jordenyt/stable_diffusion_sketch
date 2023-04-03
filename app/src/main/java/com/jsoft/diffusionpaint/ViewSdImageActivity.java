@@ -12,6 +12,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -115,6 +118,20 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         editButton.setOnClickListener(view -> {
+            showSpinner();
+            if (mCurrentSketch.getImgInpaint() != null && cnMode.startsWith("inpaint")) {
+                Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvasEdit = new Canvas(bmEdit);
+                canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), 20);
+                for (int x = 0; x < bmEdit.getWidth(); x++)
+                    for (int y = 0; y < bmEdit.getHeight(); y++) {
+                        if (bmMask.getPixel(x, y) == Color.BLACK)
+                            bmEdit.setPixel(x, y, mCurrentSketch.getImgBackground().getPixel(x, y));
+                    }
+                mBitmap = bmEdit;
+            }
+
             String fileName = "sdsketch_" + (mCurrentSketch.getId()>=0?(mCurrentSketch.getId() + "_"):"") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this,mBitmap,fileName);
             File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);

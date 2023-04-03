@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
@@ -102,5 +105,39 @@ public class Utils {
             // Show a toast message indicating that the save failed.
             Toast.makeText(a, "Error saving image", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static Bitmap getDilationMask(Bitmap originalBitmap, int expandPixel) {
+        // Create a new Bitmap with the same dimensions and a black background
+        Bitmap newBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+        // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
+        for (int x = 0; x < originalBitmap.getWidth(); x++) {
+            for (int y = 0; y < originalBitmap.getHeight(); y++) {
+                int color = originalBitmap.getPixel(x,y);
+                if (Color.alpha(color) != 0) {
+                    newBitmap.setPixel(x,y,Color.WHITE);
+                } else {
+                    newBitmap.setPixel(x, y, Color.TRANSPARENT);
+                }
+            }
+        }
+
+        Bitmap bmMask = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas cvMask = new Canvas(bmMask);
+        Paint mBackgroundPaint = new Paint();
+        mBackgroundPaint.setColor(Color.BLACK);
+        mBackgroundPaint.setStyle(Paint.Style.FILL);
+        cvMask.drawRect(0, 0, bmMask.getWidth(), bmMask.getHeight(), mBackgroundPaint);
+        int step = Math.max(2,expandPixel/5);
+        for (int i=-expandPixel;i<=expandPixel;i=i+step) {
+            for (int j=-expandPixel;j<=expandPixel;j=j+step) {
+                double d = Math.sqrt(i^2 + j^2);
+                if (d <= expandPixel) {
+                    cvMask.drawBitmap(newBitmap, i, j, null);
+                }
+            }
+        }
+        return bmMask;
     }
 }

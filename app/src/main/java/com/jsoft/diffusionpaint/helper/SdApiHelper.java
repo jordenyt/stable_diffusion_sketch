@@ -165,7 +165,7 @@ public class SdApiHelper {
                     case Sketch.CN_MODE_TXT_DEPTH:
                         cnArgObject.put("module", "depth");
                         cnArgObject.put("model", sharedPreferences.getString("cnDepthModel", "control_sd15_depth [fef5e48e]"));
-                        cnArgObject.put("weight", 0.9);
+                        cnArgObject.put("weight", 1);
                         break;
                 }
                 cnArgObject.put("resize_mode", "Scale to Fit (Inner Fit)");
@@ -255,7 +255,7 @@ public class SdApiHelper {
                     case Sketch.CN_MODE_INPAINT_DEPTH:
                         cnArgObject.put("module", "depth");
                         cnArgObject.put("model", sharedPreferences.getString("cnDepthModel", "control_sd15_depth [fef5e48e]"));
-                        cnArgObject.put("weight", 0.9);
+                        cnArgObject.put("weight", 1);
                         break;
                     case Sketch.CN_MODE_POSE:
                         cnArgObject.put("module", "openpose");

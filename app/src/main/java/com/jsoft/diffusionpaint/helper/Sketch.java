@@ -1,10 +1,6 @@
 package com.jsoft.diffusionpaint.helper;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -106,36 +102,6 @@ public class Sketch implements Serializable {
     }
 
     public static Bitmap getInpaintMaskFromPaint(Sketch s) {
-        Bitmap originalBitmap = s.getImgPaint();
-        // Create a new Bitmap with the same dimensions and a black background
-        Bitmap newBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-
-        // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
-        for (int x = 0; x < originalBitmap.getWidth(); x++) {
-            for (int y = 0; y < originalBitmap.getHeight(); y++) {
-                int color = originalBitmap.getPixel(x,y);
-                if (Color.alpha(color) != 0) {
-                    newBitmap.setPixel(x,y,Color.WHITE);
-                } else {
-                    newBitmap.setPixel(x, y, 0x00000000);
-                }
-            }
-        }
-
-        int expandPixel=10;
-        Bitmap bmMask = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas cvMask = new Canvas(bmMask);
-        Paint mBackgroundPaint = new Paint();
-        mBackgroundPaint.setColor(Color.BLACK);
-        mBackgroundPaint.setStyle(Paint.Style.FILL);
-        cvMask.drawRect(0, 0, bmMask.getWidth(), bmMask.getHeight(), mBackgroundPaint);
-        for (int i=-expandPixel;i<=expandPixel;i++) {
-            for (int j=-expandPixel;j<=expandPixel;j++) {
-                if (Math.sqrt(i^2 + j^2) <= expandPixel) {
-                    cvMask.drawBitmap(newBitmap, i, j, null);
-                }
-            }
-        }
-        return bmMask;
+        return Utils.getDilationMask(s.getImgPaint(), 10);
     }
 }
