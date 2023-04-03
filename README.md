@@ -4,28 +4,31 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
 ## Supported Features
 
 - Sketch with color
+- Create new paint from:
+  - Blank Canvas
+  - Capture from camera
+  - Output of Stable Diffusion txt2img
+  - shared image from other apps
 - Enhance your sketch with Stable Diffusion
   - Preset Modes:
     - img2img with Scribble ControlNet Model
-	- img2img with Depth ControlNet Model
-	- img2img with Pose ControlNet Model
-	- txt2img with Scribble ControlNet Model
-	- txt2img with Depth ControlNet Model
-	- txt2img with Canny ControlNet Model
-	- basic inpaint
-	- inpaint with sketch
-	- inpaint with sketch and Depth
-- Sketching Tools:
+    - img2img with Depth ControlNet Model
+    - img2img with Pose ControlNet Model
+    - txt2img with Scribble ControlNet Model
+    - txt2img with Depth ControlNet Model
+    - txt2img with Canny ControlNet Model
+    - basic inpaint
+    - inpaint with sketch
+    - inpaint with sketch and Depth
+- Painting Tools:
   - Palette
   - Paintbrush
   - Eyedropper
   - Eraser
   - Undo/redo
-- Use Camera to capture base of your sketching
-- Receive Share image from other apps and use it as base.
 - Preset values for your prompt
 - 3 Canvas aspect ratio: landscape, portrait and square
-- 2x Upscaler
+- 4x Upscaler
 
 ## Demo Video
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
