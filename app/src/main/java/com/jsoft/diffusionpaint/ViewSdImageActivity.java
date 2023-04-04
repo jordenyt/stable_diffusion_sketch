@@ -121,13 +121,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 showSpinner();
                 isCallingSD = true;
                 sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
+            } else {
+                JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
+                showSpinner();
+                sdApiHelper.sendRequest("deepFaceLab", "http://jordentse.asuscomm.com:25000", "/upscaleimage", jsonObject, "POST");
             }
         });
 
         dflButton.setOnClickListener(view -> {
             JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
             showSpinner();
-            isCallingSD = true;
             sdApiHelper.sendRequest("deepFaceLab", "http://jordentse.asuscomm.com:25000", "/processimage", jsonObject, "POST");
         });
 
