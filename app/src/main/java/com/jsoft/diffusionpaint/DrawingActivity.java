@@ -339,7 +339,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     break;
             }
             saveSketch();
-            if (mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
+            if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
                 gotoViewSdImageActivity(mCurrentSketch.getId(), Sketch.CN_MODE_ORIGIN);
             } else {
                 gotoViewSdImageActivity(mCurrentSketch.getId(), mCurrentSketch.getCnMode());

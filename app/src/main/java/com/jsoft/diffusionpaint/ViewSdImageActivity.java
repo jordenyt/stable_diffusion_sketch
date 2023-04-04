@@ -116,10 +116,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         expandButton.setOnClickListener(view -> {
-            JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
-            showSpinner();
-            isCallingSD = true;
-            sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
+            if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1024) {
+                JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+                showSpinner();
+                isCallingSD = true;
+                sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
+            }
         });
 
         dflButton.setOnClickListener(view -> {
