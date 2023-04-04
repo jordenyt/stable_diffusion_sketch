@@ -276,5 +276,8 @@ public class DrawingView extends View
 		this.mPaintBitmap = mPaintBitmap;
 	}
 
+	public boolean isEmpty() {
+		return (mPaths.size() == 0);
+	}
 
 }

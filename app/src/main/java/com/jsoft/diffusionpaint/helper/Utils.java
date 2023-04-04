@@ -140,4 +140,23 @@ public class Utils {
         }
         return bmMask;
     }
+
+    public static boolean isEmptyBitmap(Bitmap bitmap) {
+        if (bitmap == null) return true;
+        boolean allTransparent = true;
+        for (int x = 0; x < bitmap.getWidth(); x++) {
+            for (int y = 0; y < bitmap.getHeight(); y++) {
+                int pixel = bitmap.getPixel(x, y);
+                int alpha = Color.alpha(pixel);
+                if (alpha != 0) {
+                    allTransparent = false;
+                    break;
+                }
+            }
+            if (!allTransparent) {
+                break;
+            }
+        }
+        return allTransparent;
+    }
 }
