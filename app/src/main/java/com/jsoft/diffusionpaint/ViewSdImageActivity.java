@@ -103,7 +103,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             sdImage.setImageBitmap(mBitmap);
         }
 
-        sdButton.setOnClickListener(view -> getSdConfig(mCurrentSketch.getCnMode()));
+        sdButton.setOnClickListener(view -> {
+            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdConfig(mCurrentSketch.getCnMode());
+        });
 
         backButton.setOnClickListener(view -> this.onBackPressed());
 
@@ -154,7 +156,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             drawingActivityResultLauncher.launch(intent);
         });
 
-        getSdConfig(mCurrentSketch.getCnMode());
+        if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
+            hideSpinner();
+        } else {
+            getSdConfig(mCurrentSketch.getCnMode());
+        }
     }
 
     @Override
