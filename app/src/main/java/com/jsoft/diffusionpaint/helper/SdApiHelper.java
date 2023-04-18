@@ -112,7 +112,7 @@ public class SdApiHelper {
             jsonObject.put("gfpgan_visibility", 1);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
-            jsonObject.put("upscaling_resize", 4);
+            jsonObject.put("upscaling_resize", 2);
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
             //jsonObject.put("upscaling_crop", true);
