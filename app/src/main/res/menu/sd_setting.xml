@@ -21,4 +21,11 @@
             <item android:id="@+id/mi_cn_canny" android:title="ControlNet Canny model"/>
         </menu>
     </item>
+    <item android:title="Customized Mode">
+        <menu>
+            <item android:id="@+id/mi_mode_txt2img" android:title="Basic txt2img"/>
+            <item android:id="@+id/mi_mode_custom1" android:title="Custom Mode 1"/>
+            <item android:id="@+id/mi_mode_custom2" android:title="Custom Mode 2"/>
+        </menu>
+    </item>
 </menu>

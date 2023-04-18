@@ -301,6 +301,12 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             case Sketch.CN_MODE_INPAINT_DEPTH:
                 sdMode.setSelection(8);
                 break;
+            case Sketch.CN_MODE_CUSTOM_1:
+                sdMode.setSelection(9);
+                break;
+            case Sketch.CN_MODE_CUSTOM_2:
+                sdMode.setSelection(10);
+                break;
             default:
                 sdMode.setSelection(0);
                 break;
@@ -336,6 +342,12 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     break;
                 case 8:
                     mCurrentSketch.setCnMode(Sketch.CN_MODE_INPAINT_DEPTH);
+                    break;
+                case 9:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_1);
+                    break;
+                case 10:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_2);
                     break;
             }
             saveSketch();

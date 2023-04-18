@@ -27,6 +27,8 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_INPAINT = "inpaintNoise";
     public static final String CN_MODE_INPAINT_COLOR = "inpaintColor";
     public static final String CN_MODE_INPAINT_DEPTH = "inpaintDepth";
+    public static final String CN_MODE_CUSTOM_1 = "custom1";
+    public static final String CN_MODE_CUSTOM_2 = "custom2";
     public static final String CN_MODE_ORIGIN = "original";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
