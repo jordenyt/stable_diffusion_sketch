@@ -52,6 +52,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
@@ -265,6 +267,20 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         TextView tvTitle = dialogView.findViewById(R.id.dialog_spinner_title);
         tvTitle.setText(title);
 
+        List<JSONObject> jsonList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                jsonList.add(jsonArray.getJSONObject(i));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Collections.sort(jsonList, (jsonObject1, jsonObject2) -> {
+            String name1 = jsonObject1.optString(jsonKey);
+            String name2 = jsonObject2.optString(jsonKey);
+            return name1.compareToIgnoreCase(name2);
+        });
+        jsonArray = new JSONArray(jsonList);
 
         List<String> options = new ArrayList<>();
         int selectedPosition = 0;
