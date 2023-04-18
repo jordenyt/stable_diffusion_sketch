@@ -177,7 +177,7 @@ public class SdApiHelper {
                         param.cnWeight = 1;
                         break;
                     case Sketch.CN_MODE_TXT_SCRIBBLE:
-                        param.cnModule = "scribble";
+                        param.cnModule = "scribble_hed";
                         param.cnModelKey = "cnScribbleModel";
                         param.cnWeight = 0.7;
                         break;
