@@ -20,7 +20,8 @@
         <item>Inpaint on background</item>
         <item>Inpaint on sketch</item>
         <item>Inpaint on sketch with background depth</item>
-        <item></item>
+        <item>Custom Mode 1</item>
+        <item>Custom Mode 2</item>
     </string-array>
     <string-array name="sd_size_options">
         <item>512px</item>

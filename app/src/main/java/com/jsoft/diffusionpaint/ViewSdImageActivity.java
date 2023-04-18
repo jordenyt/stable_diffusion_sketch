@@ -17,14 +17,17 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
+import com.jsoft.diffusionpaint.helper.SdCnParam;
 import com.jsoft.diffusionpaint.helper.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
@@ -230,12 +233,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     public void callSD4Img() {
         isCallingSD = true;
-        String cnMode = mCurrentSketch.getCnMode();
-        if (cnMode.startsWith("txt")) {
-            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
+        SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        Gson gson = new Gson();
+        String json = gson.toJson(param);
+        Log.e("diffusionpaint", json);
+        if (param.type.equals(SdCnParam.SD_MODE_TYPE_TXT2IMG)) {
+            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);
         } else {
-            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), cnMode, mCurrentSketch, aspectRatio);
+            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject);
         }
     }

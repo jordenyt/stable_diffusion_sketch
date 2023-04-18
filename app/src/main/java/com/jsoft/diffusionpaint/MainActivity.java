@@ -214,6 +214,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_negative_prompt:
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
                 break;
+            case R.id.mi_mode_txt2img:
+                showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}");
+                break;
+            case R.id.mi_mode_custom1:
+                showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", "{\"type\":\"inpaint\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnDepthModel\",\"cnModule\":\"depth\",\"cnWeight\":1.0}");
+                break;
+            case R.id.mi_mode_custom2:
+                showTextInputDialog("modeCustom2", "Parameters for Custom Mode 2:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                break;
             case R.id.mi_cn_scribble:
                 sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
                 break;
