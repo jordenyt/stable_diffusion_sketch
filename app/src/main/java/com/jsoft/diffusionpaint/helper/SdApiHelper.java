@@ -156,12 +156,12 @@ public class SdApiHelper {
                         break;
                     case Sketch.CN_MODE_DEPTH:
                     case Sketch.CN_MODE_INPAINT_DEPTH:
-                        param.cnModule = "depth";
+                        param.cnModule = "depth_leres";
                         param.cnModelKey = "cnDepthModel";
                         param.cnWeight = 1;
                         break;
                     case Sketch.CN_MODE_POSE:
-                        param.cnModule = "openpose";
+                        param.cnModule = "openpose_full";
                         param.cnModelKey = "cnPoseModel";
                         param.cnWeight = 1;
                         break;
@@ -182,7 +182,7 @@ public class SdApiHelper {
                         param.cnWeight = 0.7;
                         break;
                     case Sketch.CN_MODE_TXT_DEPTH:
-                        param.cnModule = "depth";
+                        param.cnModule = "depth_leres";
                         param.cnModelKey = "cnDepthModel";
                         param.cnWeight = 1;
                         break;

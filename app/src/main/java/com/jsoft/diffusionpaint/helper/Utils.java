@@ -71,10 +71,12 @@ public class Utils {
 
     public static String getAspectRatio(Bitmap bm) {
         String aspectRatio = Sketch.ASPECT_RATIO_SQUARE;
-        if (bm.getWidth() * 3 / 4 >= bm.getHeight()) {
-            aspectRatio = Sketch.ASPECT_RATIO_LANDSCAPE;
-        } else if (bm.getWidth() <= bm.getHeight() * 3 / 4) {
-            aspectRatio = Sketch.ASPECT_RATIO_PORTRAIT;
+        if (bm != null) {
+            if (bm.getWidth() / bm.getHeight() >= 1.125) {
+                aspectRatio = Sketch.ASPECT_RATIO_LANDSCAPE;
+            } else if (bm.getWidth() / bm.getHeight() <= 0.875) {
+                aspectRatio = Sketch.ASPECT_RATIO_PORTRAIT;
+            }
         }
         return aspectRatio;
     }
