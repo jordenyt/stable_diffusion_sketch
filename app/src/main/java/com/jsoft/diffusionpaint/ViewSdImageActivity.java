@@ -126,7 +126,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         editButton.setOnClickListener(view -> {
             showSpinner();
-            if (mCurrentSketch.getImgInpaint() != null && cnMode.startsWith("inpaint")) {
+            SdCnParam param = sdApiHelper.getSdCnParm(cnMode);
+            if (mCurrentSketch.getImgInpaint() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
                 Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
@@ -241,8 +242,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if ("getConfig".equals(requestType)) {
                 JSONObject getConfigResponse = new JSONObject(responseBody);
                 String currentModel = getConfigResponse.getString("sd_model_checkpoint");
-                String cnMode = mCurrentSketch.getCnMode();
-                String preferredModel = cnMode.startsWith("inpaint")?
+                SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                String preferredModel = param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)?
                         sharedPreferences.getString("sdInpaintModel", ""):
                         sharedPreferences.getString("sdModelCheckpoint", "");
                 if (!currentModel.equals(preferredModel)) {
