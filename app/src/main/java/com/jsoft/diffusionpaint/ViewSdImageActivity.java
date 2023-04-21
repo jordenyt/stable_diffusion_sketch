@@ -51,7 +51,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton sdButton;
     private FloatingActionButton saveButton;
     private FloatingActionButton expandButton;
-    private FloatingActionButton dflButton;
     private FloatingActionButton editButton;
     private FloatingActionButton backButton;
     private Bitmap mBitmap;
@@ -102,8 +101,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         backButton = findViewById(R.id.fab_back);
         expandButton = findViewById(R.id.fab_expand);
         editButton = findViewById(R.id.fab_paint_again);
-        dflButton = findViewById(R.id.fab_dfl);
-
 
         if (mBitmap != null) {
             sdImage.setImageBitmap(mBitmap);
@@ -114,25 +111,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         backButton.setOnClickListener(view -> this.onBackPressed());
-
-        expandButton.setOnClickListener(view -> {
-            if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1024) {
-                JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
-                showSpinner();
-                isCallingSD = true;
-                sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
-            } else {
-                JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
-                showSpinner();
-                sdApiHelper.sendRequest("deepFaceLab", "http://jordentse.asuscomm.com:25000", "/upscaleimage", jsonObject, "POST");
-            }
-        });
-
-        dflButton.setOnClickListener(view -> {
-            JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
-            showSpinner();
-            sdApiHelper.sendRequest("deepFaceLab", "http://jordentse.asuscomm.com:25000", "/processimage", jsonObject, "POST");
-        });
 
         saveButton.setOnClickListener(view -> {
             showSpinner();
@@ -146,6 +124,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     saveButton.setVisibility(View.GONE);
                 });
             });
+        });
+
+        expandButton.setOnClickListener(view -> {
+            if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1024) {
+                JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+                showSpinner();
+                isCallingSD = true;
+                sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
+            }
         });
 
         editButton.setOnClickListener(view -> {
@@ -231,7 +218,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         saveButton.setVisibility(View.GONE);
         backButton.setVisibility(View.GONE);
         expandButton.setVisibility(View.GONE);
-        dflButton.setVisibility(View.GONE);
         editButton.setVisibility(View.GONE);
     }
 
@@ -241,7 +227,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         saveButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
         expandButton.setVisibility(View.VISIBLE);
-        dflButton.setVisibility(View.VISIBLE);
         editButton.setVisibility(View.VISIBLE);
     }
 
@@ -308,14 +293,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
                 String imageStr = jsonObject.getString("image");
-                mBitmap = Utils.base64String2Bitmap(imageStr);
-                sdImage.setImageBitmap(mBitmap);
-                savedImageName = null;
-                hideSpinner();
-            } else if ("deepFaceLab".equals(requestType)) {
-                isCallingSD = false;
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String imageStr = jsonObject.getString("processed_image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
