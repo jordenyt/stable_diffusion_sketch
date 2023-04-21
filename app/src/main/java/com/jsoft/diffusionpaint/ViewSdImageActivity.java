@@ -318,6 +318,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 String imageStr = jsonObject.getString("processed_image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
                 sdImage.setImageBitmap(mBitmap);
+                savedImageName = null;
                 hideSpinner();
             }
         } catch (JSONException e) {
