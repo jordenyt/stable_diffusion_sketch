@@ -100,12 +100,8 @@ public class Utils {
             fos.close();
             // Notify the media scanner to add the new image to the gallery.
             MediaScannerConnection.scanFile(a, new String[]{file.toString()}, null, null);
-            // Show a toast message indicating that the save was successful.
-            Toast.makeText(a, "Image saved successfully", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
-            // Show a toast message indicating that the save failed.
-            Toast.makeText(a, "Error saving image", Toast.LENGTH_SHORT).show();
         }
     }
 

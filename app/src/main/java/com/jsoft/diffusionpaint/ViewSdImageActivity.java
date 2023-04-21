@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -58,6 +60,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
     private boolean isCallingSD = false;
+    private String savedImageName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -113,9 +116,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         backButton.setOnClickListener(view -> this.onBackPressed());
 
         saveButton.setOnClickListener(view -> {
-            String filename = "sdsketch_" + (mCurrentSketch.getId()>=0?(mCurrentSketch.getId() + "_"):"") + dateFormat.format(new Date()) + ".jpg";
-            Utils.saveBitmapToExternalStorage(this,mBitmap,filename);
-            saveButton.setVisibility(View.GONE);
+            showSpinner();
+            CompletableFuture.supplyAsync(() -> {
+                saveImage(cnMode);
+                return "";
+            }).thenRun(() -> {
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+                    hideSpinner();
+                    saveButton.setVisibility(View.GONE);
+                });
+            });
         });
 
         expandButton.setOnClickListener(view -> {
@@ -139,11 +150,39 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         editButton.setOnClickListener(view -> {
             showSpinner();
+            CompletableFuture.supplyAsync(() -> {
+                saveImage(cnMode);
+                return "";
+            }).thenRun(() -> {
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+                    File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                    File sdSketchFolder = new File(picturesDirectory, "sdSketch");
+                    File file = new File(sdSketchFolder, savedImageName);
+                    Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
+                    intent.putExtra("sketchId", -2);
+                    intent.putExtra("bitmapPath", file.getAbsolutePath());
+                    intent.putExtra("prompt", mCurrentSketch.getPrompt());
+                    drawingActivityResultLauncher.launch(intent);
+                });
+            });
+        });
+
+        if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
+            hideSpinner();
+        } else {
+            getSdConfig(mCurrentSketch.getCnMode());
+        }
+    }
+
+    private void saveImage(String cnMode) {
+        if (savedImageName==null) {
             SdCnParam param = sdApiHelper.getSdCnParm(cnMode);
             if (mCurrentSketch.getImgInpaint() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
                 Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+
                 Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), 20);
                 for (int x = 0; x < bmEdit.getWidth(); x++)
                     for (int y = 0; y < bmEdit.getHeight(); y++) {
@@ -152,23 +191,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     }
                 mBitmap = bmEdit;
             }
-
-            String fileName = "sdsketch_" + (mCurrentSketch.getId()>=0?(mCurrentSketch.getId() + "_"):"") + dateFormat.format(new Date()) + ".jpg";
-            Utils.saveBitmapToExternalStorage(this,mBitmap,fileName);
-            File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File sdSketchFolder = new File(picturesDirectory, "sdSketch");
-            File file = new File(sdSketchFolder, fileName);
-            Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
-            intent.putExtra("sketchId", -2);
-            intent.putExtra("bitmapPath", file.getAbsolutePath());
-            intent.putExtra("prompt", mCurrentSketch.getPrompt());
-            drawingActivityResultLauncher.launch(intent);
-        });
-
-        if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-            hideSpinner();
-        } else {
-            getSdConfig(mCurrentSketch.getCnMode());
+            savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
+            Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
         }
     }
 
@@ -278,6 +302,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = Utils.base64String2Bitmap((String) images.get(0));
                     sdImage.setImageBitmap(mBitmap);
                 }
+                savedImageName = null;
                 hideSpinner();
             } else if ("extraSingleImage".equals(requestType)) {
                 isCallingSD = false;
@@ -285,6 +310,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 String imageStr = jsonObject.getString("image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
                 sdImage.setImageBitmap(mBitmap);
+                savedImageName = null;
                 hideSpinner();
             } else if ("deepFaceLab".equals(requestType)) {
                 isCallingSD = false;
