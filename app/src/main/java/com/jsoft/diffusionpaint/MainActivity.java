@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             String mimeType = getContentResolver().getType(uri);
             if (mimeType != null && mimeType.startsWith("image/")) {
                 String filePath = getPathFromUri(uri);
-                if (uri.getScheme().equals("content") && filePath == null) {
+                if (uri.getScheme().equals("content")) {
                     try {
                         InputStream inputStream = getContentResolver().openInputStream(uri);
                         String fileName = "temp_file_" + System.currentTimeMillis();
