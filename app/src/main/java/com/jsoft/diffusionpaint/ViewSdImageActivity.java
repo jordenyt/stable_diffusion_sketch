@@ -61,6 +61,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private SdApiHelper sdApiHelper;
     private boolean isCallingSD = false;
     private String savedImageName = null;
+    private boolean hasCall = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -171,7 +172,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
             hideSpinner();
         } else {
-            getSdConfig(mCurrentSketch.getCnMode());
+            int orientation = this.getResources().getConfiguration().orientation;
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE)
+                    || (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT) && orientation == Configuration.ORIENTATION_PORTRAIT)
+                    || (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE) && orientation== Configuration.ORIENTATION_LANDSCAPE)) {
+                getSdConfig(mCurrentSketch.getCnMode());
+            }
         }
     }
 
@@ -183,7 +189,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
 
-                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), 20);
+                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), 10);
                 for (int x = 0; x < bmEdit.getWidth(); x++)
                     for (int y = 0; y < bmEdit.getHeight(); y++) {
                         if (bmMask.getPixel(x, y) == Color.BLACK)
