@@ -105,6 +105,6 @@ public class Sketch implements Serializable {
     }
 
     public static Bitmap getInpaintMaskFromPaint(Sketch s) {
-        return Utils.getDilationMask(s.getImgPaint(), 10);
+        return Utils.getDilationMask(s.getImgPaint(), 0);
     }
 }
