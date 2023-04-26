@@ -128,7 +128,7 @@ public class Utils {
         mBackgroundPaint.setColor(Color.BLACK);
         mBackgroundPaint.setStyle(Paint.Style.FILL);
         cvMask.drawRect(0, 0, bmMask.getWidth(), bmMask.getHeight(), mBackgroundPaint);
-        int step = Math.max(1,expandPixel/5);
+        int step = (int) Math.round(Math.max(1,(expandPixel + 0.0)/5));
         for (int i=-expandPixel;i<=expandPixel;i=i+step) {
             for (int j=-expandPixel;j<=expandPixel;j=j+step) {
                 double d = Math.sqrt(i^2 + j^2);
