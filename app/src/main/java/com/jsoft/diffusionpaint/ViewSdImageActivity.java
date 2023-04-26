@@ -172,11 +172,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (savedImageName==null) {
             SdCnParam param = sdApiHelper.getSdCnParm(cnMode);
             if (mCurrentSketch.getImgInpaint() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
+                double ratio = (mCurrentSketch.getImgBackground().getWidth() + 0.0) / mBitmap.getWidth();
                 Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
 
-                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), 10);
+                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(10 * ratio));
                 for (int x = 0; x < bmEdit.getWidth(); x++)
                     for (int y = 0; y < bmEdit.getHeight(); y++) {
                         if (bmMask.getPixel(x, y) == Color.BLACK)
