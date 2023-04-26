@@ -119,11 +119,13 @@ public class SdApiHelper {
     }
 
     public SdCnParam getSdCnParm(String cnMode) {
-        if (cnMode.equals(Sketch.CN_MODE_TXT) || cnMode.equals(Sketch.CN_MODE_CUSTOM_1) || cnMode.equals(Sketch.CN_MODE_CUSTOM_2)) {
+        if (cnMode.equals(Sketch.CN_MODE_TXT) || cnMode.startsWith("custom") ) {
             Gson gson = new Gson();
             String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
                             cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
-                            sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}");
+                            cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
+                            cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
+                            sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}");
             SdCnParam param = gson.fromJson(jsonMode, SdCnParam.class);
             return param;
         }
