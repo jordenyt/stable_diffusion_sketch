@@ -26,6 +26,8 @@
             <item android:id="@+id/mi_mode_txt2img" android:title="Basic txt2img"/>
             <item android:id="@+id/mi_mode_custom1" android:title="Custom Mode 1"/>
             <item android:id="@+id/mi_mode_custom2" android:title="Custom Mode 2"/>
+            <item android:id="@+id/mi_mode_custom3" android:title="Custom Mode 3"/>
+            <item android:id="@+id/mi_mode_custom4" android:title="Custom Mode 4"/>
         </menu>
     </item>
 </menu>
