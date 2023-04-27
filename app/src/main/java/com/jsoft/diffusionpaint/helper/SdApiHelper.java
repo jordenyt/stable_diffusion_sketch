@@ -247,7 +247,7 @@ public class SdApiHelper {
 
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
-                cnArgObject.put("processor_res", 64);
+                cnArgObject.put("processor_res", sharedPreferences.getInt("sdImageSize", 512));
                 cnArgObject.put("threshold_a", 64);
                 cnArgObject.put("threshold_b", 64);
                 cnArgObject.put("guidance", 1);
@@ -325,7 +325,7 @@ public class SdApiHelper {
                 cnArgObject.put("weight", param.cnWeight);
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
-                cnArgObject.put("processor_res", 64);
+                cnArgObject.put("processor_res", sharedPreferences.getInt("sdImageSize", 512));
                 cnArgObject.put("threshold_a", 64);
                 cnArgObject.put("threshold_b", 64);
                 cnArgObject.put("guidance", 1);
