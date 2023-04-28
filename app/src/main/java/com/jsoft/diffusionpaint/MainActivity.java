@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         Spinner spSize = dialogView.findViewById(R.id.sd_size_selection);
         int prefSize = sharedPreferences.getInt("sdImageSize", 512);
-        spSize.setSelection(prefSize == 768 ? 1 : prefSize == 1024 ? 2 : 0);
+        spSize.setSelection(prefSize == 768 ? 1 : prefSize == 1024 ? 2 : prefSize == 1280 ? 3 : 0);
 
         Spinner spAspect = dialogView.findViewById(R.id.sd_aspect_selection);
         String prefAspect = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
@@ -349,6 +349,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         builder.setPositiveButton("OK", (dialog, which) -> {
             int ipSize = (spSize.getSelectedItemPosition() == 1 ? 768
                     : spSize.getSelectedItemPosition() == 2 ? 1024
+                    : spSize.getSelectedItemPosition() == 3 ? 1280
                     : 512);
             String ipAspect = (spAspect.getSelectedItemPosition() == 1 ? Sketch.ASPECT_RATIO_PORTRAIT
                     : spAspect.getSelectedItemPosition() == 2 ? Sketch.ASPECT_RATIO_LANDSCAPE
