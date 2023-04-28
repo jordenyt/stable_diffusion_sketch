@@ -29,6 +29,7 @@
         <item>512px</item>
         <item>768px</item>
         <item>1024px</item>
+        <item>1280px</item>
     </string-array>
     <string-array name="sd_aspect_options">
         <item>1:1 (square)</item>
