@@ -243,6 +243,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_cn_canny:
                 sdApiHelper.sendGetRequest("setCnCanny", "/controlnet/model_list");
                 break;
+            case R.id.mi_cn_tile:
+                sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
+                break;
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
                 break;
@@ -482,13 +485,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("setUpscaler".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "name", "Upscaler", "sdUpscaler", "R-ESRGAN General 4xV3", "");
             } else if ("setCnScribble".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Scribble Model", "cnScribbleModel", "control_sd15_scribble [fef5e48e]", "scribble");
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Scribble Model", "cnScribbleModel", "control_v11p_sd15_scribble [d4ba51ff]", "scribble");
             } else if ("setCnDepth".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Depth Model", "cnDepthModel", "control_sd15_depth [fef5e48e]", "depth");
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Depth Model", "cnDepthModel", "control_v11f1p_sd15_depth [cfd03158]", "depth");
             } else if ("setCnPose".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Pose Model", "cnPoseModel", "control_sd15_openpose [fef5e48e]", "pose");
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Pose Model", "cnPoseModel", "control_v11p_sd15_openpose [cab727d4]", "pose");
             } else if ("setCnCanny".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet CNNY Model", "cnCannyModel", "control_sd15_canny [fef5e48e]", "canny");
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Canny Model", "cnCannyModel", "control_v11p_sd15_canny [d14c016b]", "canny");
+            } else if ("setCnTile".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Tile Model", "cnTileModel", "control_v11f1e_sd15_tile [a371b31b]", "tile");
             }
         } catch (JSONException e) {
             e.printStackTrace();
