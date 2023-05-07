@@ -131,7 +131,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         expandButton.setOnClickListener(view -> {
-            if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1024) {
+            if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1280) {
                 JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
                 showSpinner();
                 isCallingSD = true;
@@ -194,7 +194,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
 
-                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(30 * ratio));
+                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(10 * ratio));
+
                 for (int x = 0; x < bmEdit.getWidth(); x++)
                     for (int y = 0; y < bmEdit.getHeight(); y++) {
                         if (bmMask.getPixel(x, y) == Color.BLACK)

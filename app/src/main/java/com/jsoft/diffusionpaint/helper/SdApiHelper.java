@@ -109,7 +109,7 @@ public class SdApiHelper {
         try {
             jsonObject.put("resize_mode", 0);
             //jsonObject.put("show_extras_results", true);
-            jsonObject.put("gfpgan_visibility", 1);
+            jsonObject.put("gfpgan_visibility", 0.8);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
             jsonObject.put("upscaling_resize", 2);
@@ -253,7 +253,7 @@ public class SdApiHelper {
                 cnArgObject.put("guidance", 1);
                 cnArgObject.put("guidance_start", 0);
                 cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("guessmode", false);
+                cnArgObject.put("control_mode", "ControlNet is more important");
                 args.put(cnArgObject);
                 controlnet.put("args", args);
                 alwayson_scripts.put("controlnet", controlnet);
@@ -331,7 +331,7 @@ public class SdApiHelper {
                 cnArgObject.put("guidance", 1);
                 cnArgObject.put("guidance_start", 0);
                 cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("guessmode", false);
+                cnArgObject.put("control_mode", "ControlNet is more important");
                 args.put(cnArgObject);
                 controlnet.put("args", args);
                 alwayson_scripts.put("controlnet", controlnet);
