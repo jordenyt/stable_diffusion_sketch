@@ -184,7 +184,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private void saveImage(String cnMode) {
         if (savedImageName==null) {
             SdCnParam param = sdApiHelper.getSdCnParm(cnMode);
-            if (mCurrentSketch.getImgInpaint() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
+            if (mCurrentSketch.getImgInpaintMask() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
                 int bmWidth = sharedPreferences.getInt("sdImageSize", 512);
                 if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                     bmWidth = bmWidth * 3 / 4;
@@ -315,6 +315,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 if (images.length() > 0) {
                     mBitmap = Utils.base64String2Bitmap((String) images.get(0));
                     sdImage.setImageBitmap(mBitmap);
+                    if ("img2img".equals(requestType)) {
+                        SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                        if (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL) {
+                            Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                            Canvas canvasEdit = new Canvas(bmEdit);
+                            canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                            canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(), null);
+                            mBitmap = bmEdit;
+                            sdImage.setImageBitmap(mBitmap);
+                        }
+                    }
                 }
                 savedImageName = null;
                 hideSpinner();

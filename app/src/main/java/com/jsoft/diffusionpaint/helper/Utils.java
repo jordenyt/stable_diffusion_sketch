@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.RectF;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Base64;
@@ -138,6 +139,10 @@ public class Utils {
             }
         }
         return bmMask;
+    }
+
+    public static Bitmap extractBitmap(Bitmap sourceBitmap, RectF r) {
+        return Bitmap.createBitmap(sourceBitmap, (int)r.left, (int)r.top, (int)r.width(), (int)r.height());
     }
 
     public static boolean isEmptyBitmap(Bitmap bitmap) {
