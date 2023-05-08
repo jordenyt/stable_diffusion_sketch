@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.jsoft.diffusionpaint.helper.Sketch;
+import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.util.ArrayList;
 
@@ -40,6 +41,8 @@ public class DrawingView extends View
 	private boolean isEyedropper = false;
 	private boolean isEraser = false;
 	private DrawingViewListener listener;
+
+	private int maxImgSize = 2560;
 
 	public DrawingView(Context context, AttributeSet attrs)
 	{
@@ -255,7 +258,29 @@ public class DrawingView extends View
 	}
 
 	public Bitmap getBgBitmap() {
-		Bitmap bmBackground = Bitmap.createBitmap(mDrawCanvas.getWidth(), mDrawCanvas.getHeight(), Bitmap.Config.ARGB_8888);
+		int croppedWidth = mDrawCanvas.getWidth();
+		int croppedHeight = mDrawCanvas.getHeight();
+
+		if (mBaseBitmap != null) {
+			float bitmapWidth = mBaseBitmap.getWidth();
+			float bitmapHeight = mBaseBitmap.getHeight();
+			float canvasWidth = mDrawCanvas.getWidth();
+			float canvasHeight = mDrawCanvas.getHeight();
+
+			// Calculate the scale factor to fit the bitmap into the canvas while maintaining its aspect ratio
+			float scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
+
+			// Calculate the cropped bitmap dimensions
+			croppedWidth = (int)(canvasWidth / scaleFactor);
+			croppedHeight = (int)(canvasHeight / scaleFactor);
+		}
+		if (croppedWidth > maxImgSize || croppedHeight > maxImgSize) {
+			double scaleFactor = Math.max((double)croppedWidth/maxImgSize, (double)croppedHeight/maxImgSize);
+			croppedWidth = (int) (croppedWidth / scaleFactor);
+			croppedHeight = (int) (croppedHeight / scaleFactor);
+		}
+
+		Bitmap bmBackground = Bitmap.createBitmap(croppedWidth, croppedHeight, Bitmap.Config.ARGB_8888);
 		Canvas canvasBackground = new Canvas(bmBackground);
 		drawBackground(canvasBackground);
 		return bmBackground;

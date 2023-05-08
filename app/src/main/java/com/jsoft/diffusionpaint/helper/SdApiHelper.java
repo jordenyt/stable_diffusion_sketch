@@ -230,7 +230,7 @@ public class SdApiHelper {
                 JSONArray args = new JSONArray();
                 JSONObject cnArgObject = new JSONObject();
                 cnArgObject.put("input_image", Utils.jpg2Base64String(
-                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getImgBackground():mCurrentSketch.getImgPreview()));
+                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview()));
                 //cnArgObject.put("mask", "");
                 cnArgObject.put("module", param.cnModule);
                 cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, ""));
@@ -262,7 +262,7 @@ public class SdApiHelper {
         boolean isInpaint = param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT);
         try {
             JSONArray init_images = new JSONArray();
-            init_images.put(Utils.jpg2Base64String(param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getImgBackground():mCurrentSketch.getImgPreview()));
+            init_images.put(Utils.jpg2Base64String(param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview()));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);
             jsonObject.put("denoising_strength", param.denoise);
@@ -309,7 +309,7 @@ public class SdApiHelper {
                 JSONArray args = new JSONArray();
                 JSONObject cnArgObject = new JSONObject();
                 cnArgObject.put("input_image", Utils.jpg2Base64String(
-                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getImgBackground():mCurrentSketch.getImgPreview()));
+                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview()));
                 //cnArgObject.put("mask", "");
                 cnArgObject.put("module", param.cnModule);
                 cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, ""));

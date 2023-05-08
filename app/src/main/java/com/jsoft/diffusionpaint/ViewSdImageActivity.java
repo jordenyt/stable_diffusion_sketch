@@ -183,9 +183,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
                 Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(5.0 * ratio));
 
+                Bitmap bmResizedMask = Bitmap.createScaledBitmap(bmMask, bmEdit.getWidth(), bmEdit.getHeight(), false);
+
                 for (int x = 0; x < bmEdit.getWidth(); x++)
                     for (int y = 0; y < bmEdit.getHeight(); y++) {
-                        if (bmMask.getPixel(x, y) == Color.BLACK)
+                        if (bmResizedMask.getPixel(x, y) == Color.BLACK)
                             bmEdit.setPixel(x, y, mCurrentSketch.getImgBackground().getPixel(x, y));
                     }
                 mBitmap = bmEdit;
