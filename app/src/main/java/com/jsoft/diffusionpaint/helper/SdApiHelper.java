@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -143,6 +144,7 @@ public class SdApiHelper {
 
         if (param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
             param.inpaintFill = cnMode.equals(Sketch.CN_MODE_INPAINT)? SdCnParam.SD_INPAINT_FILL_NOISE : SdCnParam.SD_INPAINT_FILL_ORIGINAL;
+            param.inpaintPartial = SdCnParam.INPAINT_FULL;
         }
         if (!param.type.equals(SdCnParam.SD_MODE_TYPE_TXT2IMG)) {
             param.baseImage = cnMode.equals(Sketch.CN_MODE_INPAINT)? SdCnParam.SD_INPUT_IMAGE_BACKGROUND : SdCnParam.SD_INPUT_IMAGE_SKETCH;
@@ -262,16 +264,34 @@ public class SdApiHelper {
         boolean isInpaint = param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT);
         try {
             JSONArray init_images = new JSONArray();
-            init_images.put(Utils.jpg2Base64String(param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview()));
+
+            Bitmap baseImage = null;
+            if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
+                if (mCurrentSketch.getRectInpaint() == null) {
+                    mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(sharedPreferences.getInt("sdImageSize", 512)));
+                }
+                baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), mCurrentSketch.getRectInpaint());
+            } else {
+                baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
+            }
+            //Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
+            //Log.e("diffusionpaint", "baseImage=" + baseImage.getWidth() + "X" + baseImage.getHeight());
+            //Log.e("diffusionpaint", "Rect=" + mCurrentSketch.getRectInpaint().width() + "X" + mCurrentSketch.getRectInpaint().height());
+            init_images.put(Utils.jpg2Base64String(baseImage));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("image_cfg_scale", param.cfgScale);
             if (isInpaint) {
-                if (mCurrentSketch.getImgInpaint() == null) {
-                    mCurrentSketch.setImgInpaint(Sketch.getInpaintMaskFromPaint(mCurrentSketch));
+                if (mCurrentSketch.getImgInpaintMask() == null) {
+                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch));
                 }
-                jsonObject.put("mask", Utils.png2Base64String(mCurrentSketch.getImgInpaint()));
+                Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
+                if (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL) {
+                    Bitmap resizedBm = Bitmap.createScaledBitmap(mCurrentSketch.getImgInpaintMask(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), false);
+                    imgInpaintMask = Utils.extractBitmap(resizedBm, mCurrentSketch.getRectInpaint());
+                }
+                jsonObject.put("mask", Utils.png2Base64String(imgInpaintMask));
                 jsonObject.put("mask_blur", 10);
                 jsonObject.put("inpainting_fill", param.inpaintFill);
                 jsonObject.put("inpaint_full_res", false);
@@ -308,8 +328,15 @@ public class SdApiHelper {
                 JSONObject controlnet = new JSONObject();
                 JSONArray args = new JSONArray();
                 JSONObject cnArgObject = new JSONObject();
-                cnArgObject.put("input_image", Utils.jpg2Base64String(
-                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview()));
+
+                Bitmap cnImage = null;
+                if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
+                    cnImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), mCurrentSketch.getRectInpaint());
+                } else {
+                    cnImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
+                }
+
+                cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
                 //cnArgObject.put("mask", "");
                 cnArgObject.put("module", param.cnModule);
                 cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, ""));

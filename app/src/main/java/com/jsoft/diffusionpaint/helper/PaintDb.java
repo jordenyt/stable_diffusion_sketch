@@ -45,7 +45,7 @@ public class PaintDb {
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
             sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
-            sketch.setImgInpaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
+            sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
             sketches.add(sketch);
         }
         c.close();
@@ -77,7 +77,7 @@ public class PaintDb {
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
             sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
-            sketch.setImgInpaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
+            sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
             sketches.add(sketch);
         }
         c.close();
@@ -105,7 +105,7 @@ public class PaintDb {
         values.put(SketchEntry.PREVIEW, Utils.jpg2Base64String(sketch.getImgPreview()));
         values.put(SketchEntry.BACKGROUND, Utils.jpg2Base64String(sketch.getImgBackground()));
         values.put(SketchEntry.PAINT, Utils.png2Base64String(sketch.getImgPaint()));
-        values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaint()));
+        values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaintMask()));
         return db.insert(SketchEntry.TABLE_NAME,null,values);
     }
 
@@ -117,7 +117,7 @@ public class PaintDb {
         values.put(SketchEntry.PREVIEW, Utils.jpg2Base64String(sketch.getImgPreview()));
         values.put(SketchEntry.BACKGROUND, Utils.jpg2Base64String(sketch.getImgBackground()));
         values.put(SketchEntry.PAINT, Utils.png2Base64String(sketch.getImgPaint()));
-        values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaint()));
+        values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaintMask()));
         // Which row to update, based on the ID
         String selection = SketchEntry._ID + " LIKE ?";
         String[] selectionArgs = { sketch.getId() + "" };
