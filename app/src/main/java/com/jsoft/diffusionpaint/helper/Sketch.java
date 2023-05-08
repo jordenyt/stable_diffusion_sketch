@@ -109,4 +109,12 @@ public class Sketch implements Serializable {
     public static Bitmap getInpaintMaskFromPaint(Sketch s) {
         return Utils.getDilationMask(s.getImgPaint(), 0);
     }
+
+    public Bitmap getResizedImgBackground() {
+        if (imgBackground != null) {
+            return Bitmap.createScaledBitmap(imgBackground, imgPreview.getWidth(), imgPreview.getHeight(), true);
+        } else {
+            return null;
+        }
+    }
 }
