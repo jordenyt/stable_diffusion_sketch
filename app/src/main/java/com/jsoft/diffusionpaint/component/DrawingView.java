@@ -258,24 +258,21 @@ public class DrawingView extends View
 	}
 
 	public Bitmap getBgBitmap() {
-		int croppedWidth = mDrawCanvas.getWidth();
-		int croppedHeight = mDrawCanvas.getHeight();
+		float bitmapWidth = mBaseBitmap.getWidth();
+		float bitmapHeight = mBaseBitmap.getHeight();
+		float canvasWidth = mDrawCanvas.getWidth();
+		float canvasHeight = mDrawCanvas.getHeight();
 
-		if (mBaseBitmap != null) {
-			float bitmapWidth = mBaseBitmap.getWidth();
-			float bitmapHeight = mBaseBitmap.getHeight();
-			float canvasWidth = mDrawCanvas.getWidth();
-			float canvasHeight = mDrawCanvas.getHeight();
+		int croppedWidth = (int)canvasWidth;
+		int croppedHeight = (int)canvasHeight;
 
-			// Calculate the scale factor to fit the bitmap into the canvas while maintaining its aspect ratio
+		if (mBaseBitmap != null && bitmapWidth > canvasWidth) {
 			float scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
-
-			// Calculate the cropped bitmap dimensions
 			croppedWidth = (int)(canvasWidth / scaleFactor);
 			croppedHeight = (int)(canvasHeight / scaleFactor);
 		}
 		if (croppedWidth > maxImgSize || croppedHeight > maxImgSize) {
-			double scaleFactor = Math.max((double)croppedWidth/maxImgSize, (double)croppedHeight/maxImgSize);
+			float scaleFactor = Math.max((float)croppedWidth/maxImgSize, (float)croppedHeight/maxImgSize);
 			croppedWidth = (int) (croppedWidth / scaleFactor);
 			croppedHeight = (int) (croppedHeight / scaleFactor);
 		}
