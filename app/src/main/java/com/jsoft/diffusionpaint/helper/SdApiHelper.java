@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 
@@ -270,6 +271,14 @@ public class SdApiHelper {
                 if (mCurrentSketch.getRectInpaint() == null) {
                     mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(sharedPreferences.getInt("sdImageSize", 512)));
                 }
+                Bitmap bg = mCurrentSketch.getImgBackground();
+                if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
+                    Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvasEdit = new Canvas(bmEdit);
+                    canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                    canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                    bg = bmEdit;
+                }
                 baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), mCurrentSketch.getRectInpaint());
             } else {
                 baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
@@ -331,9 +340,17 @@ public class SdApiHelper {
 
                 Bitmap cnImage = null;
                 if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
-                    cnImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), mCurrentSketch.getRectInpaint());
+                    Bitmap bg = mCurrentSketch.getImgBackground();
+                    if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
+                        Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                        Canvas canvasEdit = new Canvas(bmEdit);
+                        canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                        canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                        bg = bmEdit;
+                    }
+                    cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
                 } else {
-                    cnImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
+                    cnImage = param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
                 }
 
                 cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
