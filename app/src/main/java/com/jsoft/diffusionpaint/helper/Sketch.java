@@ -166,18 +166,18 @@ public class Sketch implements Serializable {
         int bottom = (int)Math.round((y1 + (y2-y1)/2.0) + scale * imgBackground.getHeight() / 2.0);
 
         if (left < 0) {
-            right = right - left;
+            right = Math.min(right - left, imgBackground.getWidth() - 1);
             left = 0;
         } else if (right > imgBackground.getWidth() - 1) {
-            left = left - (right - imgBackground.getWidth() + 1);
+            left = Math.max(left - (right - imgBackground.getWidth() + 1),  0);
             right = imgBackground.getWidth() - 1;
         }
 
         if (top < 0) {
-            bottom = bottom - top;
+            bottom = Math.min(bottom - top, imgBackground.getHeight() - 1);
             top = 0;
         } else if (bottom > imgBackground.getHeight() - 1) {
-            top = top - (bottom - imgBackground.getHeight() + 1);
+            top = Math.max(top - (bottom - imgBackground.getHeight() + 1), 0);
             bottom = imgBackground.getHeight() - 1;
         }
 
