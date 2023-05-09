@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -127,7 +128,7 @@ public class DrawingView extends View
 		if (width == 0) return;
 		Bitmap pathBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas pathCanvas = new Canvas(pathBitmap);
-		if (mPaintBitmap != null) { pathCanvas.drawBitmap(mPaintBitmap, 0, 0, null); }
+		if (mPaintBitmap != null) { pathCanvas.drawBitmap(mPaintBitmap, null, new RectF(0,0,width, height), null); }
 		int i = 0;
 		for (Path p : mPaths) {
 			pathCanvas.drawPath(p, mPaints.get(i));
