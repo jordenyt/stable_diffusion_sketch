@@ -138,6 +138,9 @@ public class SdApiHelper {
                             cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
                             sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}");
             SdCnParam param = gson.fromJson(jsonMode, SdCnParam.class);
+            if (param.sdSize == 0) {
+                param.sdSize = sharedPreferences.getInt("sdImageSize", 512);
+            }
             return param;
         }
         SdCnParam param = new SdCnParam();
@@ -151,6 +154,7 @@ public class SdApiHelper {
 
         param.cfgScale = 7;
         param.steps = 40;
+        param.sdSize = sharedPreferences.getInt("sdImageSize", 512);
 
         if (param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
             param.inpaintFill = cnMode.equals(Sketch.CN_MODE_INPAINT)? SdCnParam.SD_INPAINT_FILL_NOISE : SdCnParam.SD_INPAINT_FILL_ORIGINAL;
@@ -218,14 +222,14 @@ public class SdApiHelper {
             jsonObject.put("steps", param.steps);
             jsonObject.put("cfg_scale", param.cfgScale);
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
+                jsonObject.put("width", param.sdSize * 3 / 4);
             } else {
-                jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512));
+                jsonObject.put("width", param.sdSize);
             }
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
+                jsonObject.put("height", param.sdSize * 3 / 4);
             } else {
-                jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512));
+                jsonObject.put("height", param.sdSize);
             }
             jsonObject.put("restore_faces", false);
             jsonObject.put("tiling", false);
@@ -250,7 +254,7 @@ public class SdApiHelper {
 
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
-                cnArgObject.put("processor_res", sharedPreferences.getInt("sdImageSize", 512));
+                cnArgObject.put("processor_res", param.sdSize);
                 cnArgObject.put("threshold_a", 64);
                 cnArgObject.put("threshold_b", 64);
                 cnArgObject.put("guidance", 1);
@@ -278,7 +282,7 @@ public class SdApiHelper {
             Bitmap baseImage = null;
             if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
                 if (mCurrentSketch.getRectInpaint() == null) {
-                    mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(sharedPreferences.getInt("sdImageSize", 512)));
+                    mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(param.sdSize));
                 }
                 Bitmap bg = mCurrentSketch.getImgBackground();
                 if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
@@ -322,14 +326,14 @@ public class SdApiHelper {
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
+                jsonObject.put("width", param.sdSize * 3 / 4);
             } else {
-                jsonObject.put("width", sharedPreferences.getInt("sdImageSize", 512));
+                jsonObject.put("width", param.sdSize);
             }
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512) * 3 / 4);
+                jsonObject.put("height", param.sdSize * 3 / 4);
             } else {
-                jsonObject.put("height", sharedPreferences.getInt("sdImageSize", 512));
+                jsonObject.put("height", param.sdSize);
             }
             jsonObject.put("restore_faces", false);
             jsonObject.put("tiling", false);
@@ -369,7 +373,7 @@ public class SdApiHelper {
                 cnArgObject.put("weight", param.cnWeight);
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
-                cnArgObject.put("processor_res", sharedPreferences.getInt("sdImageSize", 512));
+                cnArgObject.put("processor_res", param.sdSize);
                 cnArgObject.put("threshold_a", 64);
                 cnArgObject.put("threshold_b", 64);
                 cnArgObject.put("guidance", 1);
