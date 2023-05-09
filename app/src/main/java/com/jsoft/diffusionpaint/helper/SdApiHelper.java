@@ -296,9 +296,10 @@ public class SdApiHelper {
             } else {
                 baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
             }
-            //Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
-            //Log.e("diffusionpaint", "baseImage=" + baseImage.getWidth() + "X" + baseImage.getHeight());
-            //Log.e("diffusionpaint", "Rect=" + mCurrentSketch.getRectInpaint().width() + "X" + mCurrentSketch.getRectInpaint().height());
+            /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
+            Log.e("diffusionpaint", "baseImage=" + baseImage.getWidth() + "X" + baseImage.getHeight());
+            Log.e("diffusionpaint", "Rect=(" + mCurrentSketch.getRectInpaint().left + "," + mCurrentSketch.getRectInpaint().top + ") -> ("
+                            + mCurrentSketch.getRectInpaint().right + "," + mCurrentSketch.getRectInpaint().bottom + ")");*/
             init_images.put(Utils.jpg2Base64String(baseImage));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);

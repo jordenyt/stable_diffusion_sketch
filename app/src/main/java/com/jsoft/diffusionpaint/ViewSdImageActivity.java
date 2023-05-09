@@ -185,7 +185,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (savedImageName==null) {
             SdCnParam param = sdApiHelper.getSdCnParm(cnMode);
             if (mCurrentSketch.getImgInpaintMask() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
-                int bmWidth = sharedPreferences.getInt("sdImageSize", 512);
+                int bmWidth = param.sdSize;
                 if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                     bmWidth = bmWidth * 3 / 4;
                 }
