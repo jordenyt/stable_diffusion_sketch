@@ -279,7 +279,7 @@ public class SdApiHelper {
         try {
             JSONArray init_images = new JSONArray();
 
-            Bitmap baseImage = null;
+            Bitmap baseImage;
             if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
                 if (mCurrentSketch.getRectInpaint() == null) {
                     mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(param.sdSize));
@@ -292,7 +292,7 @@ public class SdApiHelper {
                     canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     bg = bmEdit;
                 }
-                baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), mCurrentSketch.getRectInpaint());
+                baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
             } else {
                 baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
             }
