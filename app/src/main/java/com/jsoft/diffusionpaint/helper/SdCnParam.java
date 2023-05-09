@@ -12,6 +12,7 @@ public class SdCnParam {
     public String cnModelKey;
     public double cnWeight;
     public int inpaintPartial = 0;
+    public int sdSize;
 
     public static final String SD_MODE_TYPE_TXT2IMG = "txt2img";
     public static final String SD_MODE_TYPE_IMG2IMG = "img2img";
