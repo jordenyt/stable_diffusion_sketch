@@ -160,10 +160,10 @@ public class Sketch implements Serializable {
         float scale = Math.max((float)inpaintWidth/imgBackground.getWidth(), (float)inpaintHeight/imgBackground.getHeight());
         if (scale > 1.0) scale = 1;
 
-        int left = (int)((x1 + (x2-x1)/2.0) - scale * imgBackground.getWidth() / 2.0);
-        int right = (int)((x1 + (x2-x1)/2.0) + scale * imgBackground.getWidth() / 2.0);
-        int top = (int)((y1 + (y2-y1)/2.0) - scale * imgBackground.getHeight() / 2.0);
-        int bottom = (int)((y1 + (y2-y1)/2.0) + scale * imgBackground.getHeight() / 2.0);
+        int left = (int)Math.round((x1 + (x2-x1)/2.0) - scale * imgBackground.getWidth() / 2.0);
+        int right = (int)Math.round((x1 + (x2-x1)/2.0) + scale * imgBackground.getWidth() / 2.0);
+        int top = (int)Math.round((y1 + (y2-y1)/2.0) - scale * imgBackground.getHeight() / 2.0);
+        int bottom = (int)Math.round((y1 + (y2-y1)/2.0) + scale * imgBackground.getHeight() / 2.0);
 
         if (left < 0) {
             right = right - left;
