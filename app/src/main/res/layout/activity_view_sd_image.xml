@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:contentDescription="@string/stroke_width"
+        android:contentDescription="@string/deepfacelab"
         android:src="@drawable/ic_dfl"
         app:backgroundTint="@android:color/holo_orange_dark"
         app:layout_constraintBottom_toBottomOf="parent"

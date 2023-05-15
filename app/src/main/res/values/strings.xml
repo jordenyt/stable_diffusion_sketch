@@ -14,6 +14,7 @@
     <string name="edit_result">Edit Result</string>
     <string name="delete_sketch">Delete Sketch</string>
     <string name="go_back">Go Back</string>
+    <string name="deepfacelab">DeepFaceLab</string>
     <string name="ok">OK</string>
     <string-array name="cnmode_options">
         <item>img2img with Scribble</item>
