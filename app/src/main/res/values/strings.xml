@@ -7,8 +7,13 @@
     <string name="redo">Redo</string>
     <string name="stroke_width">Stroke Width</string>
     <string name="stroke_color">Stroke Color</string>
+    <string name="eraser">Eraser</string>
+    <string name="sdAction">Diffuse now</string>
+    <string name="super_resolution">Super Resolution</string>
     <string name="save_sketch">Save Sketch</string>
+    <string name="edit_result">Edit Result</string>
     <string name="delete_sketch">Delete Sketch</string>
+    <string name="go_back">Go Back</string>
     <string name="ok">OK</string>
     <string-array name="cnmode_options">
         <item>img2img with Scribble</item>
