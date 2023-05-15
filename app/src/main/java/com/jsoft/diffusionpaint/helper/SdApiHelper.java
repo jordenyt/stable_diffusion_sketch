@@ -114,7 +114,7 @@ public class SdApiHelper {
             jsonObject.put("gfpgan_visibility", 0.8);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
-            jsonObject.put("upscaling_resize", Math.min(4, 2560f / (float)Math.max(bitmap.getWidth(), bitmap.getHeight())));
+            jsonObject.put("upscaling_resize", Math.min(4, 2560d / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
             //jsonObject.put("upscaling_crop", true);
@@ -249,7 +249,9 @@ public class SdApiHelper {
                         param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview()));
                 //cnArgObject.put("mask", "");
                 cnArgObject.put("module", param.cnModule);
-                cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, ""));
+                if (!"None".equals(sharedPreferences.getString(param.cnModelKey, "None"))) {
+                    cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, "None"));
+                }
                 cnArgObject.put("weight", param.cnWeight);
 
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
@@ -370,7 +372,9 @@ public class SdApiHelper {
                 cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
                 //cnArgObject.put("mask", "");
                 cnArgObject.put("module", param.cnModule);
-                cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, ""));
+                if (!"None".equals(sharedPreferences.getString(param.cnModelKey, "None"))) {
+                    cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, "None"));
+                }
                 cnArgObject.put("weight", param.cnWeight);
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
