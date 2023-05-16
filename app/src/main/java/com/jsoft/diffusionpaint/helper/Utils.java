@@ -2,6 +2,8 @@ package com.jsoft.diffusionpaint.helper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,17 +12,25 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+
+import com.jsoft.diffusionpaint.DrawingActivity;
+import com.jsoft.diffusionpaint.MainActivity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Utils {
 
@@ -162,5 +172,58 @@ public class Utils {
             }
         }
         return allTransparent;
+    }
+
+    private static String getPathFromUri(Uri uri, Activity activity) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            try {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                if (cursor.moveToFirst()) {
+                    String path = cursor.getString(column_index);
+                    cursor.close();
+                    return path;
+                }
+            } catch (IllegalArgumentException e) {
+                cursor.close();
+                return null;
+            }
+            cursor.close();
+        }
+        return null;
+    }
+    public static void newPaintFromImage(Intent intent, Activity activity, ActivityResultLauncher<Intent> drawingActivityResultLauncher) {
+        Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        String mimeType = activity.getContentResolver().getType(uri);
+        if (mimeType != null && mimeType.startsWith("image/")) {
+            String filePath = getPathFromUri(uri, activity);
+            if (uri.getScheme().equals("content")) {
+                try {
+                    InputStream inputStream = activity.getContentResolver().openInputStream(uri);
+                    String fileName = "temp_file_" + System.currentTimeMillis();
+                    File tempFile = new File(activity.getCacheDir(), fileName);
+                    FileOutputStream outputStream = new FileOutputStream(tempFile);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    outputStream.flush();
+                    outputStream.close();
+                    inputStream.close();
+                    filePath = tempFile.getAbsolutePath();
+                } catch (IOException e) {
+                    Log.e("diffusionPaint", "Cannot get Image Path from shared content.");
+                }
+            }
+            if (filePath != null) {
+                Intent drawIntent = new Intent(activity, DrawingActivity.class);
+                drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                drawIntent.putExtra("sketchId", -2);
+                drawIntent.putExtra("bitmapPath", filePath);
+                drawingActivityResultLauncher.launch(drawIntent);
+            }
+        }
     }
 }
