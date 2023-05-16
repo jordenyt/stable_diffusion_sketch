@@ -84,13 +84,13 @@ public class DrawingView extends View
 		}
 	}
 
-	private void drawBackground(Canvas canvas) {
+	private void drawBackground(Canvas canvas, Bitmap bm) {
 		if (mBaseBitmap == null) {
 			mBackgroundPaint.setColor(mBackgroundColor);
 			mBackgroundPaint.setStyle(Paint.Style.FILL);
 			canvas.drawRect(0, 0, this.getWidth(), this.getHeight(), mBackgroundPaint);
 		} else {
-			Bitmap bitmap = mBaseBitmap;
+			Bitmap bitmap = bm;
 			float bitmapWidth = bitmap.getWidth();
 			float bitmapHeight = bitmap.getHeight();
 			float canvasWidth = canvas.getWidth();
@@ -142,7 +142,7 @@ public class DrawingView extends View
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		drawBackground(canvas);
+		drawBackground(canvas, mBaseBitmap);
 		drawPaths(canvas, mDrawPath, mDrawPaint);
 	}
 
@@ -245,43 +245,51 @@ public class DrawingView extends View
 		}
 	}
 
-	public Sketch prepareBitmap(Sketch s) {
+	public Sketch prepareBitmap(Sketch s, Bitmap bmRef) {
 		s.setImgPreview(getPreview());
+		s.setImgReference(getCroppedBitmap(bmRef));
 		s.setImgBackground(getBgBitmap());
 		s.setImgPaint(getPaintBitmap());
 		return s;
 	}
 
 	public Bitmap getPreview() {
-		drawBackground(mDrawCanvas);
+		drawBackground(mDrawCanvas, mBaseBitmap);
 		drawPaths(mDrawCanvas);
 		return mCanvasBitmap;
 	}
 
+	public Bitmap getCroppedBitmap(Bitmap bm) {
+		if (bm != null) {
+			float bitmapWidth = bm.getWidth();
+			float bitmapHeight = bm.getHeight();
+			float canvasWidth = mDrawCanvas.getWidth();
+			float canvasHeight = mDrawCanvas.getHeight();
+
+			int croppedWidth = (int) canvasWidth;
+			int croppedHeight = (int) canvasHeight;
+
+			if (bitmapWidth > canvasWidth) {
+				float scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
+				croppedWidth = (int) (canvasWidth / scaleFactor);
+				croppedHeight = (int) (canvasHeight / scaleFactor);
+			}
+			if (croppedWidth > maxImgSize || croppedHeight > maxImgSize) {
+				float scaleFactor = Math.max((float) croppedWidth / maxImgSize, (float) croppedHeight / maxImgSize);
+				croppedWidth = (int) (croppedWidth / scaleFactor);
+				croppedHeight = (int) (croppedHeight / scaleFactor);
+			}
+
+			Bitmap bmBackground = Bitmap.createBitmap(croppedWidth, croppedHeight, Bitmap.Config.ARGB_8888);
+			Canvas canvasBackground = new Canvas(bmBackground);
+			drawBackground(canvasBackground, bm);
+			return bmBackground;
+		}
+		return null;
+	}
+
 	public Bitmap getBgBitmap() {
-		float bitmapWidth = mBaseBitmap.getWidth();
-		float bitmapHeight = mBaseBitmap.getHeight();
-		float canvasWidth = mDrawCanvas.getWidth();
-		float canvasHeight = mDrawCanvas.getHeight();
-
-		int croppedWidth = (int)canvasWidth;
-		int croppedHeight = (int)canvasHeight;
-
-		if (mBaseBitmap != null && bitmapWidth > canvasWidth) {
-			float scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
-			croppedWidth = (int)(canvasWidth / scaleFactor);
-			croppedHeight = (int)(canvasHeight / scaleFactor);
-		}
-		if (croppedWidth > maxImgSize || croppedHeight > maxImgSize) {
-			float scaleFactor = Math.max((float)croppedWidth/maxImgSize, (float)croppedHeight/maxImgSize);
-			croppedWidth = (int) (croppedWidth / scaleFactor);
-			croppedHeight = (int) (croppedHeight / scaleFactor);
-		}
-
-		Bitmap bmBackground = Bitmap.createBitmap(croppedWidth, croppedHeight, Bitmap.Config.ARGB_8888);
-		Canvas canvasBackground = new Canvas(bmBackground);
-		drawBackground(canvasBackground);
-		return bmBackground;
+		return getCroppedBitmap(mBaseBitmap);
 	}
 
 	public Bitmap getPaintBitmap() {
