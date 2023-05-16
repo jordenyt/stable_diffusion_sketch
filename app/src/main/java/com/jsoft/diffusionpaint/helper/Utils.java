@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
@@ -22,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.jsoft.diffusionpaint.DrawingActivity;
 import com.jsoft.diffusionpaint.MainActivity;
@@ -174,7 +176,28 @@ public class Utils {
         return allTransparent;
     }
 
-    private static String getPathFromUri(Uri uri, Activity activity) {
+    public static String getPathFromUri(Uri uri, Activity activity) {
+        if (uri.getScheme().equals("content")) {
+            try {
+                InputStream inputStream = activity.getContentResolver().openInputStream(uri);
+                String fileName = "temp_file_" + System.currentTimeMillis();
+                File tempFile = new File(activity.getCacheDir(), fileName);
+                FileOutputStream outputStream = new FileOutputStream(tempFile);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                outputStream.flush();
+                outputStream.close();
+                inputStream.close();
+                return tempFile.getAbsolutePath();
+            } catch (IOException e) {
+                Log.e("diffusionPaint", "Cannot get Image Path from shared content.");
+                return null;
+            }
+        }
+
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = activity.getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
@@ -198,25 +221,6 @@ public class Utils {
         String mimeType = activity.getContentResolver().getType(uri);
         if (mimeType != null && mimeType.startsWith("image/")) {
             String filePath = getPathFromUri(uri, activity);
-            if (uri.getScheme().equals("content")) {
-                try {
-                    InputStream inputStream = activity.getContentResolver().openInputStream(uri);
-                    String fileName = "temp_file_" + System.currentTimeMillis();
-                    File tempFile = new File(activity.getCacheDir(), fileName);
-                    FileOutputStream outputStream = new FileOutputStream(tempFile);
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                    outputStream.flush();
-                    outputStream.close();
-                    inputStream.close();
-                    filePath = tempFile.getAbsolutePath();
-                } catch (IOException e) {
-                    Log.e("diffusionPaint", "Cannot get Image Path from shared content.");
-                }
-            }
             if (filePath != null) {
                 Intent drawIntent = new Intent(activity, DrawingActivity.class);
                 drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -225,5 +229,38 @@ public class Utils {
                 drawingActivityResultLauncher.launch(drawIntent);
             }
         }
+    }
+
+    public static Bitmap getBitmapFromPath(String filePath) {
+        if (filePath != null) {
+            Bitmap imageBitmap = BitmapFactory.decodeFile(filePath);
+            if (imageBitmap != null) {
+                int orientation = ExifInterface.ORIENTATION_UNDEFINED;
+                try {
+                    ExifInterface exif = new ExifInterface(filePath);
+                    orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                } catch (IOException e) {
+                    Log.e("diffusionpaint", "IOException get from returned file.");
+                }
+
+                // Rotate the bitmap to correct the orientation
+                Matrix matrix = new Matrix();
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        matrix.postRotate(90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        matrix.postRotate(180);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        matrix.postRotate(270);
+                        break;
+                    default:
+                        break;
+                }
+                return Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+            }
+        }
+        return null;
     }
 }

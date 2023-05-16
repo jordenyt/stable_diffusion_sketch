@@ -16,6 +16,7 @@ public class Sketch implements Serializable {
     private Bitmap imgBackground;
     private Bitmap imgPaint;
     private Bitmap imgInpaintMask;
+    private Bitmap imgReference;
 
     private String cnMode;
     private RectF rectInpaint;
@@ -69,6 +70,10 @@ public class Sketch implements Serializable {
 
     public void setImgInpaintMask(Bitmap imgInpaintMask) { this.imgInpaintMask = imgInpaintMask; }
 
+    public Bitmap getImgReference() { return imgReference; }
+
+    public void setImgReference(Bitmap imgReference) { this.imgReference = imgReference; }
+
     public String getCnMode() {
         return cnMode;
     }
@@ -120,6 +125,14 @@ public class Sketch implements Serializable {
     public Bitmap getResizedImgBackground() {
         if (imgBackground != null) {
             return Bitmap.createScaledBitmap(imgBackground, imgPreview.getWidth(), imgPreview.getHeight(), true);
+        } else {
+            return null;
+        }
+    }
+
+    public Bitmap getResizedImgReference() {
+        if (imgReference != null) {
+            return Bitmap.createScaledBitmap(imgReference, imgPreview.getWidth(), imgPreview.getHeight(), true);
         } else {
             return null;
         }

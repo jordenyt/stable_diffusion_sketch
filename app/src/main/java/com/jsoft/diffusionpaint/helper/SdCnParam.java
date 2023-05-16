@@ -19,7 +19,7 @@ public class SdCnParam {
     public static final String SD_MODE_TYPE_INPAINT = "inpaint";
     public static final String SD_INPUT_IMAGE_BACKGROUND = "background";
     public static final String SD_INPUT_IMAGE_SKETCH = "sketch";
-    public static final String SD_INPUT_IMAGE_MASK = "mask";
+    public static final String SD_INPUT_IMAGE_REF = "reference";
     public static final int SD_INPAINT_FILL_ORIGINAL = 1;
     public static final int SD_INPAINT_FILL_NOISE = 2;
     public static final int INPAINT_FULL = 0;

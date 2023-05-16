@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     protected void onNewIntent(Intent intent) {
-        Log.e("diffusionpaint", "[DEBUG] MainActivity.onNewIntent()");
         super.onNewIntent(intent);
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
             Utils.newPaintFromImage(intent, this, drawingActivityResultLauncher);

@@ -17,6 +17,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import androidx.exifinterface.media.ExifInterface;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +38,10 @@ import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener
 {
@@ -55,6 +60,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     FloatingActionButton sdButton;
     FloatingActionButton eraserButton;
     ImageView modeIcon;
+    ImageView imgRef;
+    Bitmap bmRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,32 +83,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
-            Bitmap imageBitmap = BitmapFactory.decodeFile(bitmapPath);
-            if (imageBitmap != null) {
-                int orientation = ExifInterface.ORIENTATION_UNDEFINED;
-                try {
-                    ExifInterface exif = new ExifInterface(bitmapPath);
-                    orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-                } catch (IOException e) {
-                    Log.e("diffusionpaint", "IOException get from returned camera file.");
-                }
-
-                // Rotate the bitmap to correct the orientation
-                Matrix matrix = new Matrix();
-                switch (orientation) {
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        matrix.postRotate(90);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        matrix.postRotate(180);
-                        break;
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        matrix.postRotate(270);
-                        break;
-                    default:
-                        break;
-                }
-                rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+            rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
+            if (rotatedBitmap != null) {
                 aspectRatio = Utils.getAspectRatio(rotatedBitmap);
             }
         }
@@ -224,6 +207,15 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 modeIcon.setImageResource(R.drawable.ic_brush);
             }
         });
+
+        imgRef = findViewById(R.id.img_reference);
+        imgRef.setOnClickListener(view -> {
+            pickImage();
+        });
+        bmRef = mCurrentSketch.getImgReference();
+        if (bmRef != null) {
+            imgRef.setImageBitmap(bmRef);
+        }
     }
 
     public void hideTools() {
@@ -233,6 +225,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         paletteButton.setVisibility(View.GONE);
         seekWidth.setVisibility(View.GONE);
         circleView.setVisibility(View.GONE);
+        imgRef.setVisibility(View.GONE);
     }
 
     public void showTools() {
@@ -242,6 +235,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         paletteButton.setVisibility(View.VISIBLE);
         seekWidth.setVisibility(View.VISIBLE);
         circleView.setVisibility(View.VISIBLE);
+        imgRef.setVisibility(View.VISIBLE);
     }
 
     public void gotoMainActivity() {
@@ -389,7 +383,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void saveSketch()  {
-        mCurrentSketch = mDrawingView.prepareBitmap(mCurrentSketch);
+        mCurrentSketch = mDrawingView.prepareBitmap(mCurrentSketch, bmRef);
         if (mCurrentSketch.getId() < 0) {
             long rowId  = db.insertSketch(mCurrentSketch);
             int sketchID = db.getId4rowid(rowId);
@@ -422,4 +416,27 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         eraserButton.setVisibility(View.VISIBLE);
         modeIcon.setImageResource(R.drawable.ic_brush);
     }
+
+    private void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        pickImageLauncher.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData()!= null && result.getData().getData() != null) {
+                    Uri uri = result.getData().getData();
+                    String mimeType = this.getContentResolver().getType(uri);
+                    String filePath = null;
+                    if (mimeType != null && mimeType.startsWith("image/")) {
+                        filePath = Utils.getPathFromUri(uri, this);
+                    }
+                    bmRef = Utils.getBitmapFromPath(filePath);
+                    imgRef.setImageBitmap(bmRef);
+                }
+            });
+
+
 }

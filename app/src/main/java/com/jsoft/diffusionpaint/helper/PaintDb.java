@@ -29,6 +29,7 @@ public class PaintDb {
                         + ", " + SketchEntry.BACKGROUND
                         + ", " + SketchEntry.PAINT
                         + ", " + SketchEntry.MASK
+                        + ", " + SketchEntry.REF
                         + ", " + SketchEntry.PROMPT
                         + ", " + SketchEntry.CN_MODE
                         + " FROM " + SketchEntry.TABLE_NAME
@@ -46,6 +47,7 @@ public class PaintDb {
             sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
             sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
             sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
+            sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
             sketches.add(sketch);
         }
         c.close();
@@ -61,6 +63,7 @@ public class PaintDb {
                         + ", " + SketchEntry.BACKGROUND
                         + ", " + SketchEntry.PAINT
                         + ", " + SketchEntry.MASK
+                        + ", " + SketchEntry.REF
                         + ", " + SketchEntry.PROMPT
                         + ", " + SketchEntry.CN_MODE
                         + " FROM " + SketchEntry.TABLE_NAME
@@ -78,6 +81,7 @@ public class PaintDb {
             sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
             sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
             sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
+            sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
             sketches.add(sketch);
         }
         c.close();
@@ -106,6 +110,7 @@ public class PaintDb {
         values.put(SketchEntry.BACKGROUND, Utils.jpg2Base64String(sketch.getImgBackground()));
         values.put(SketchEntry.PAINT, Utils.png2Base64String(sketch.getImgPaint()));
         values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaintMask()));
+        values.put(SketchEntry.REF, Utils.jpg2Base64String(sketch.getImgReference()));
         return db.insert(SketchEntry.TABLE_NAME,null,values);
     }
 
@@ -118,6 +123,7 @@ public class PaintDb {
         values.put(SketchEntry.BACKGROUND, Utils.jpg2Base64String(sketch.getImgBackground()));
         values.put(SketchEntry.PAINT, Utils.png2Base64String(sketch.getImgPaint()));
         values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaintMask()));
+        values.put(SketchEntry.REF, Utils.jpg2Base64String(sketch.getImgReference()));
         // Which row to update, based on the ID
         String selection = SketchEntry._ID + " LIKE ?";
         String[] selectionArgs = { sketch.getId() + "" };
