@@ -93,57 +93,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            String mimeType = getContentResolver().getType(uri);
-            if (mimeType != null && mimeType.startsWith("image/")) {
-                String filePath = getPathFromUri(uri);
-                if (uri.getScheme().equals("content")) {
-                    try {
-                        InputStream inputStream = getContentResolver().openInputStream(uri);
-                        String fileName = "temp_file_" + System.currentTimeMillis();
-                        File tempFile = new File(getCacheDir(), fileName);
-                        FileOutputStream outputStream = new FileOutputStream(tempFile);
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = inputStream.read(buffer)) != -1) {
-                            outputStream.write(buffer, 0, bytesRead);
-                        }
-                        outputStream.flush();
-                        outputStream.close();
-                        inputStream.close();
-                        filePath = tempFile.getAbsolutePath();
-                    } catch (IOException e) {
-                        Log.e("diffusionPaint", "Cannot get Image Path from shared content.");
-                    }
-                }
-                if (filePath != null) {
-                    Intent drawIntent = new Intent(MainActivity.this, DrawingActivity.class);
-                    drawIntent.putExtra("sketchId", -2);
-                    drawIntent.putExtra("bitmapPath", filePath);
-                    drawingActivityResultLauncher.launch(drawIntent);
-                }
-            }
+            Utils.newPaintFromImage(intent, this, drawingActivityResultLauncher);
         }
-    }
-
-    private String getPathFromUri(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            try {
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                if (cursor.moveToFirst()) {
-                    String path = cursor.getString(column_index);
-                    cursor.close();
-                    return path;
-                }
-            } catch (IllegalArgumentException e) {
-                cursor.close();
-                return null;
-            }
-            cursor.close();
-        }
-        return null;
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
@@ -166,6 +117,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         sketches = db.getSketchList();
         GridViewImageAdapter adapter = new GridViewImageAdapter(this, sketches);
         gridView.setAdapter(adapter);
+    }
+
+    protected void onNewIntent(Intent intent) {
+        Log.e("diffusionpaint", "[DEBUG] MainActivity.onNewIntent()");
+        super.onNewIntent(intent);
+        if (Intent.ACTION_SEND.equals(intent.getAction())) {
+            Utils.newPaintFromImage(intent, this, drawingActivityResultLauncher);
+        }
     }
 
     @Override
