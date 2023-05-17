@@ -20,6 +20,7 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
     - basic inpaint
     - inpaint with sketch
     - inpaint with sketch and Depth
+	- 4 Custom Modes
 - Painting Tools:
   - Palette
   - Paintbrush
@@ -27,8 +28,33 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
   - Eraser
   - Undo/redo
 - Preset values for your prompt
+  - Prompt Prefix
+  - Prompt Postfix
+  - Negative Prompt
 - 3 Canvas aspect ratio: landscape, portrait and square
-- 4x Upscaler
+- Upscaler
+
+## Custom Modes
+Custom mode can be defined in JSON format.<br/>
+Below is an example which I use to enhance the details of inpainting area : <br/>
+`{"type":"inpaint", "steps":40, "denoise":0.15, "cfgScale":10.0, "baseImage":"background", "inpaintFill":1, "cnInputImage":"background", "cnModelKey":"cnTileModel", "cnModule":"tile_resample", "cnWeight":1.0, "inpaintPartial":1, "sdSize":1280}`
+
+Parameters for the mode definition JSON:
+(M - Mandatory; O - Optional)
+| Variable | txt2img | img2img | inpainting | Value |
+| --- | --- | --- | --- | --- |
+| `type` | M | M | M | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting |
+| `steps` | M | M | M | integer from 1 to 120 |
+| `cfgScale` | M | M | M | decimal from 0 to 30, default value is 7.0 |
+| `denoise` | - | M | M | decimal from 0 to 1 |
+| `baseImage` | - | M | M | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image |
+| `inpaintFill` | - | - | M | `0` - fill <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing |
+| `inpaintPartial` | - | - | O | `0` - Inpainting on whole image <br/> `1` - Inpainting on "painted" area and paste on original image |
+| `sdSize` | O | O | O | Output resolution of SD.  Default value is configured  in setting. <br/>Suggested value: 512 / 768 / 1024 / 1280 |
+| `cnInputImage` | O | O | O | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image |
+| `cnModelKey` | O | O | O | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model |
+| `cnModule` | O | O | O | CN Module that ControlNet provided.  Typical values are: `tile_resample` / `reference_only` / `openpose_full` / `canny` / `depth_midas` / `scribble_hed` <br/> For full list, please refer to the Automatic1111 web UI. |
+| `cnWeight` | O | O | O | decimal from 0 to 1 |
 
 ## Demo Video
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
