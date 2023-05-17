@@ -59,6 +59,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     FloatingActionButton redoButton;
     FloatingActionButton sdButton;
     FloatingActionButton eraserButton;
+    FloatingActionButton refButton;
     ImageView modeIcon;
     ImageView imgRef;
     Bitmap bmRef;
@@ -208,13 +209,22 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             }
         });
 
+        refButton = findViewById(R.id.fab_img_reference);
+        refButton.setOnClickListener(view -> {
+            pickImage();
+        });
+
         imgRef = findViewById(R.id.img_reference);
         imgRef.setOnClickListener(view -> {
             pickImage();
         });
+
         bmRef = mCurrentSketch.getImgReference();
         if (bmRef != null) {
             imgRef.setImageBitmap(bmRef);
+            refButton.setVisibility(View.GONE);
+        } else {
+            imgRef.setVisibility(View.GONE);
         }
     }
 
@@ -226,6 +236,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         seekWidth.setVisibility(View.GONE);
         circleView.setVisibility(View.GONE);
         imgRef.setVisibility(View.GONE);
+        refButton.setVisibility(View.GONE);
     }
 
     public void showTools() {
@@ -235,7 +246,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         paletteButton.setVisibility(View.VISIBLE);
         seekWidth.setVisibility(View.VISIBLE);
         circleView.setVisibility(View.VISIBLE);
-        imgRef.setVisibility(View.VISIBLE);
+        if (bmRef != null) {
+            imgRef.setVisibility(View.VISIBLE);
+        } else {
+            refButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void gotoMainActivity() {
