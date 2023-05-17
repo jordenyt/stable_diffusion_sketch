@@ -450,6 +450,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     }
                     bmRef = Utils.getBitmapFromPath(filePath);
                     imgRef.setImageBitmap(bmRef);
+                    imgRef.setVisibility(View.VISIBLE);
+                    refButton.setVisibility(View.GONE);
                 }
             });
 
