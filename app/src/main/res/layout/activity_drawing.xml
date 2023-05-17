@@ -138,13 +138,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@android:color/white" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_img_reference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/refImg"
+        android:src="@drawable/ic_image"
+        app:backgroundTint="@android:color/holo_orange_dark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fab_stable_diffusion"
+        app:tint="@android:color/white" />
+
     <ImageView
         android:id="@+id/img_reference"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:background="#FFFFFF"
+        android:background="#222222"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fab_stable_diffusion" />
 

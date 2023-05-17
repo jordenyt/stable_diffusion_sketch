@@ -194,7 +194,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
 
-                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(5.0 * ratio));
+                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(2.0 * ratio));
 
                 Bitmap bmResizedMask = Bitmap.createScaledBitmap(bmMask, bmEdit.getWidth(), bmEdit.getHeight(), false);
 
