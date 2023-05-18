@@ -114,7 +114,9 @@ public class SdApiHelper {
             jsonObject.put("gfpgan_visibility", 0.8);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
-            jsonObject.put("upscaling_resize", Math.min(4, 2560d / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
+            int canvasDim = 2560;
+            try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception e) {}
+            jsonObject.put("upscaling_resize", Math.min(4, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
             //jsonObject.put("upscaling_crop", true);

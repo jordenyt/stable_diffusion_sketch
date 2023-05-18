@@ -207,6 +207,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
                 break;
+            case R.id.mi_canvas_dim:
+                showTextInputDialog("canvasDim", "Canvas Dimension:", "", "2560");
+                break;
             case R.id.mi_sd_model:
                 sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");
                 break;
