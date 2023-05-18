@@ -10,6 +10,7 @@ public class SdCnParam {
     public String cnInputImage; //Background, Sketch
     public String cnModule;
     public String cnModelKey;
+    public int cnControlMode;
     public double cnWeight;
     public int inpaintPartial = 0;
     public int sdSize;
@@ -24,6 +25,10 @@ public class SdCnParam {
     public static final int SD_INPAINT_FILL_NOISE = 2;
     public static final int INPAINT_FULL = 0;
     public static final int INPAINT_PARTIAL = 1;
+
+    public static final String CN_MODE_BALANCED = "Balanced";
+    public static final String CN_MODE_PROMPT = "My prompt is more important";
+    public static final String CN_MODE_CONTROLNET = "ControlNet is more important";
 
 
 }

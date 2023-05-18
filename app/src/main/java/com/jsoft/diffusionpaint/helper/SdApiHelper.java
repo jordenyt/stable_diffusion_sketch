@@ -210,6 +210,9 @@ public class SdApiHelper {
             }
         }
 
+        if (param.cnInputImage != null) {
+            param.cnControlMode = 0;
+        }
 
         return param;
     }
@@ -266,7 +269,8 @@ public class SdApiHelper {
                 cnArgObject.put("guidance", 1);
                 cnArgObject.put("guidance_start", 0);
                 cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("control_mode", "ControlNet is more important");
+                cnArgObject.put("control_mode", param.cnControlMode == 0 ? SdCnParam.CN_MODE_BALANCED :
+                        param.cnControlMode == 1 ? SdCnParam.CN_MODE_PROMPT : SdCnParam.CN_MODE_CONTROLNET);
                 args.put(cnArgObject);
                 controlnet.put("args", args);
                 alwayson_scripts.put("controlnet", controlnet);
@@ -291,9 +295,7 @@ public class SdApiHelper {
                     mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(param.sdSize));
                 }
                 Bitmap bg = mCurrentSketch.getImgBackground();
-                if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_REF)) {
-                    bg = mCurrentSketch.getImgReference();
-                } else if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
+                if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
                     Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvasEdit = new Canvas(bmEdit);
                     canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
@@ -361,11 +363,11 @@ public class SdApiHelper {
                 JSONObject cnArgObject = new JSONObject();
 
                 Bitmap cnImage = null;
-                if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
+                if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_REF)) {
+                    cnImage = mCurrentSketch.getResizedImgReference();
+                } else if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
                     Bitmap bg = mCurrentSketch.getImgBackground();
-                    if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_REF)) {
-                        bg = mCurrentSketch.getImgReference();
-                    } else if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
+                    if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
                         Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                         Canvas canvasEdit = new Canvas(bmEdit);
                         canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
@@ -392,7 +394,8 @@ public class SdApiHelper {
                 cnArgObject.put("guidance", 1);
                 cnArgObject.put("guidance_start", 0);
                 cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("control_mode", "ControlNet is more important");
+                cnArgObject.put("control_mode", param.cnControlMode == 0 ? SdCnParam.CN_MODE_BALANCED :
+                        param.cnControlMode == 1 ? SdCnParam.CN_MODE_PROMPT : SdCnParam.CN_MODE_CONTROLNET);
                 args.put(cnArgObject);
                 controlnet.put("args", args);
                 alwayson_scripts.put("controlnet", controlnet);
