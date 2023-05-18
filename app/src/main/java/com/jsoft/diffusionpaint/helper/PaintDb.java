@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,14 +25,8 @@ public class PaintDb {
         String queryString =
                 "SELECT " + SketchEntry._ID
                         + ", " + SketchEntry.CREATE_DATE
-                        + ", " + SketchEntry.LAST_UPDATE_DATE
                         + ", " + SketchEntry.PREVIEW
-                        + ", " + SketchEntry.BACKGROUND
-                        + ", " + SketchEntry.PAINT
-                        + ", " + SketchEntry.MASK
-                        + ", " + SketchEntry.REF
                         + ", " + SketchEntry.PROMPT
-                        + ", " + SketchEntry.CN_MODE
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " ORDER BY " + SketchEntry.LAST_UPDATE_DATE + " DESC";
         Cursor c = db.rawQuery(queryString, new String[] {});
@@ -40,18 +35,56 @@ public class PaintDb {
             Sketch sketch = new Sketch();
             sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
             sketch.setCreateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.CREATE_DATE))));
-            sketch.setLastUpdateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.LAST_UPDATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
-            sketch.setCnMode(c.getString(c.getColumnIndexOrThrow(SketchEntry.CN_MODE)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
-            sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
-            sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
-            sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
-            sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
             sketches.add(sketch);
         }
         c.close();
         return sketches;
+    }
+
+    public Bitmap getSketchRef(int sketchId) {
+        String queryString =
+                "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.REF
+                        + " FROM " + SketchEntry.TABLE_NAME
+                        + " WHERE " + SketchEntry._ID + " = " + sketchId;
+        Cursor c = db.rawQuery(queryString, new String[] {});
+        List<Sketch> sketches = new ArrayList<>();
+        while (c.moveToNext()) {
+            Sketch sketch = new Sketch();
+            sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
+            sketches.add(sketch);
+        }
+        c.close();
+        if (sketches.size() > 0) {
+            return sketches.get(0).getImgReference();
+        } else {
+            return null;
+        }
+    }
+
+    public Bitmap getSketchBg(int sketchId) {
+        String queryString =
+                "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.BACKGROUND
+                        + " FROM " + SketchEntry.TABLE_NAME
+                        + " WHERE " + SketchEntry._ID + " = " + sketchId;
+        Cursor c = db.rawQuery(queryString, new String[] {});
+        List<Sketch> sketches = new ArrayList<>();
+        while (c.moveToNext()) {
+            Sketch sketch = new Sketch();
+            sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
+            sketches.add(sketch);
+        }
+        c.close();
+        if (sketches.size() > 0) {
+            return sketches.get(0).getImgBackground();
+        } else {
+            return null;
+        }
     }
 
     public Sketch getSketch(int sketchId) {
@@ -60,10 +93,8 @@ public class PaintDb {
                         + ", " + SketchEntry.CREATE_DATE
                         + ", " + SketchEntry.LAST_UPDATE_DATE
                         + ", " + SketchEntry.PREVIEW
-                        + ", " + SketchEntry.BACKGROUND
                         + ", " + SketchEntry.PAINT
                         + ", " + SketchEntry.MASK
-                        + ", " + SketchEntry.REF
                         + ", " + SketchEntry.PROMPT
                         + ", " + SketchEntry.CN_MODE
                         + " FROM " + SketchEntry.TABLE_NAME
@@ -78,15 +109,16 @@ public class PaintDb {
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
             sketch.setCnMode(c.getString(c.getColumnIndexOrThrow(SketchEntry.CN_MODE)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
-            sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
             sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
             sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
-            sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
             sketches.add(sketch);
         }
         c.close();
         if (sketches.size() > 0) {
-            return sketches.get(0);
+            Sketch result = sketches.get(0);
+            result.setImgReference(getSketchRef(sketchId));
+            result.setImgBackground(getSketchBg(sketchId));
+            return result;
         } else {
             return null;
         }
