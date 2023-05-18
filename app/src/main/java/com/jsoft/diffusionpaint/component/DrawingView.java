@@ -3,7 +3,6 @@ package com.jsoft.diffusionpaint.component;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -15,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.jsoft.diffusionpaint.helper.Sketch;
-import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.util.ArrayList;
 
@@ -27,8 +25,6 @@ public class DrawingView extends View
 	private Canvas mDrawCanvas;
 	private Bitmap mCanvasBitmap; //member of mDrawCanvas
 	private Bitmap mBaseBitmap; //Input Background
-
-
 	private Bitmap mPaintBitmap; //Input Paint from save data
 	private ArrayList<Path> mPaths = new ArrayList<>();
 	private ArrayList<Paint> mPaints = new ArrayList<>();
@@ -310,5 +306,7 @@ public class DrawingView extends View
 	public boolean isEmpty() {
 		return (mPaths.size() == 0);
 	}
+
+	public void setCanvasSize(int canvasSize) { this.maxImgSize = canvasSize; }
 
 }
