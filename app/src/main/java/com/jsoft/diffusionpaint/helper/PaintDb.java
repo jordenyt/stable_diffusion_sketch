@@ -168,6 +168,18 @@ public class PaintDb {
         db.delete(SketchEntry.TABLE_NAME, SketchEntry._ID + "=" + sketchId, null);
     }
 
+    public void deleteGroup(List<Sketch> sketchID) {
+        String whereClause = "";
+        for (int i=0;i<sketchID.size();i++) {
+            int id = sketchID.get(i).getId();
+            whereClause += SketchEntry._ID + "=" + id;
+            if (i < sketchID.size() - 1) {
+                whereClause += " OR ";
+            }
+        }
+        db.delete(SketchEntry.TABLE_NAME, whereClause, null);
+    }
+
     public boolean clearSketch() {
         return db.delete(SketchEntry.TABLE_NAME, null, null) > 0;
     }
