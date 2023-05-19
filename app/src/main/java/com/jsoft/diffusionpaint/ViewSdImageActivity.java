@@ -263,7 +263,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
         Gson gson = new Gson();
         String json = gson.toJson(param);
-        Log.e("diffusionpaint", json);
+        //Log.e("diffusionpaint", mCurrentSketch.getCnMode() + " : " + json);
         if (param.type.equals(SdCnParam.SD_MODE_TYPE_TXT2IMG)) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);
