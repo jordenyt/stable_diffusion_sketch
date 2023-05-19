@@ -151,6 +151,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     intent.putExtra("sketchId", -2);
                     intent.putExtra("bitmapPath", file.getAbsolutePath());
                     intent.putExtra("prompt", mCurrentSketch.getPrompt());
+                    if (mCurrentSketch.getId() >= 0) {
+                        intent.putExtra("parentId", mCurrentSketch.getId());
+                    }
                     drawingActivityResultLauncher.launch(intent);
                 });
             });

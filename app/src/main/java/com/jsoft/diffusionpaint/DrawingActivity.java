@@ -72,6 +72,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         db = new PaintDb(this);
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
+        int parentId = i.getIntExtra("parentId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
         aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         Bitmap rotatedBitmap = null;
@@ -83,6 +84,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             }
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
+            mCurrentSketch.setParentId(parentId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
             rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
             if (rotatedBitmap != null) {

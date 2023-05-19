@@ -6,11 +6,13 @@ import android.graphics.RectF;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class Sketch implements Serializable {
     private Date createDate;
     private Date lastUpdateDate;
     private int id;
+    private int parentId;
     private String prompt;
     private Bitmap imgPreview;
     private Bitmap imgBackground;
@@ -20,6 +22,8 @@ public class Sketch implements Serializable {
 
     private String cnMode;
     private RectF rectInpaint;
+
+    private List<Sketch> children;
 
     public static final String CN_MODE_SCRIBBLE = "scribble";
     public static final String CN_MODE_DEPTH = "depth";
@@ -106,6 +110,10 @@ public class Sketch implements Serializable {
         this.id = id;
     }
 
+    public int getParentId() { return parentId; }
+
+    public void setParentId(int parentId) { this.parentId = parentId; }
+
     public String getPrompt() {
         return prompt;
     }
@@ -117,6 +125,10 @@ public class Sketch implements Serializable {
     public void setRectInpaint(RectF rectInpaint) { this.rectInpaint = rectInpaint; }
 
     public RectF getRectInpaint() { return rectInpaint; }
+
+    public List<Sketch> getChildren() { return children; }
+
+    public void setChildren(List<Sketch> children) { this.children = children; }
 
     public static Bitmap getInpaintMaskFromPaint(Sketch s) {
         return Utils.getDilationMask(s.getImgPaint(), 0);
