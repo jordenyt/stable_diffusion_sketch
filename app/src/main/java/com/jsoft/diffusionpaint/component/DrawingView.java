@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.jsoft.diffusionpaint.helper.Sketch;
+import com.jsoft.diffusionpaint.dto.Sketch;
 
 import java.util.ArrayList;
 

@@ -1,8 +1,10 @@
-package com.jsoft.diffusionpaint.helper;
+package com.jsoft.diffusionpaint.dto;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
+
+import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.io.Serializable;
 import java.util.Date;

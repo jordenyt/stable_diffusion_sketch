@@ -1,4 +1,4 @@
-package com.jsoft.diffusionpaint.helper;
+package com.jsoft.diffusionpaint.component;
 
 import android.content.Context;
 import android.graphics.Canvas;
