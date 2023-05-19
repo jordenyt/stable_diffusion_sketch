@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint.adapter;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,9 +69,21 @@ public class GridViewImageAdapter extends BaseAdapter {
         if (currentSketch.getChildren() == null) {
             imageView.setOnClickListener(view -> activity.gotoDrawingActivity(currentSketch.getId()));
         } else {
+            textViewItem.setText("[PROJECT " + currentSketch.getId() + "]");
             imageView.setOnClickListener(view -> activity.showGrid(currentSketch.getId()));
         }
+        imageView.setOnLongClickListener(v -> showDialog(currentSketch));
 
         return convertView;
+    }
+
+    public boolean showDialog(Sketch s) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setMessage("Are you sure you want to delete this item?");
+        builder.setPositiveButton("Yes", (dialog, id) -> activity.deleteSketch(s));
+        builder.setNegativeButton("No", (dialog, id) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        return true;
     }
 }

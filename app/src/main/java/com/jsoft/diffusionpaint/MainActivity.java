@@ -134,23 +134,30 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             List<Sketch> showSketches = new ArrayList<>();
             Map<Integer, List<Sketch>> mapSketch = new HashMap<>();
 
-            for (Sketch sketch : dbSketchList) {
+            for (int i = 0; i < dbSketchList.size(); i++) {
+                Sketch sketch = dbSketchList.get(i);
                 int rootId = getRootId(dbSketchList, sketch.getId());
                 mapSketch.computeIfAbsent(rootId, k -> new ArrayList<>());
                 mapSketch.get(rootId).add(sketch);
             }
-            for (int rootId : mapSketch.keySet()) {
-                List<Sketch> members = mapSketch.get(rootId);
-                if (members.size() > 1) {
-                    Sketch sketchGroup = new Sketch();
-                    sketchGroup.setId(rootId);
-                    sketchGroup.setImgPreview(members.get(0).getImgPreview());
-                    sketchGroup.setChildren(members);
-                    sketchGroup.setCreateDate(members.get(0).getCreateDate());
-                    sketchGroup.setPrompt(members.get(0).getPrompt());
-                    showSketches.add(sketchGroup);
-                } else if (members.size() == 1) {
-                    showSketches.add(members.get(0));
+            List<Integer> addedId = new ArrayList<>();
+            for (int i = 0; i < dbSketchList.size(); i++) {
+                int sketchId = dbSketchList.get(i).getId();
+                int rootId = getRootId(dbSketchList, sketchId);
+                if (!addedId.contains(rootId)) {
+                    List<Sketch> members = mapSketch.get(rootId);
+                    if (members.size() > 1) {
+                        Sketch sketchGroup = new Sketch();
+                        sketchGroup.setId(rootId);
+                        sketchGroup.setImgPreview(members.get(0).getImgPreview());
+                        sketchGroup.setChildren(members);
+                        sketchGroup.setCreateDate(members.get(0).getCreateDate());
+                        sketchGroup.setPrompt(members.get(0).getPrompt());
+                        showSketches.add(sketchGroup);
+                    } else if (members.size() == 1) {
+                        showSketches.add(members.get(0));
+                    }
+                    addedId.add(rootId);
                 }
             }
             sketches = showSketches;
@@ -166,7 +173,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 }
             }
         }
+    }
 
+    public void deleteSketch(Sketch sketch) {
+        if (sketch.getChildren() == null) {
+            db.deleteSketch(sketch.getId());
+        } else {
+            db.deleteGroup(sketch.getChildren());
+        }
+        showGrid(-1);
     }
 
     public int getRootId(List<Sketch> sketches, int sketchId) {
