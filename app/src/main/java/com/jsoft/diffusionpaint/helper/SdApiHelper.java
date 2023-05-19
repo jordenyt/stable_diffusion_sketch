@@ -193,9 +193,9 @@ public class SdApiHelper {
                 JSONArray args = new JSONArray();
                 JSONObject cnArgObject = new JSONObject();
                 cnArgObject.put("input_image", Utils.jpg2Base64String(
-                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():
+                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)?mCurrentSketch.getImgPreview():
                         param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_REF)?mCurrentSketch.getResizedImgReference():
-                        mCurrentSketch.getImgPreview()));
+                        mCurrentSketch.getResizedImgBackground()));
                 //cnArgObject.put("mask", "");
                 cnArgObject.put("module", param.cnModule);
                 if (!"None".equals(sharedPreferences.getString(param.cnModelKey, "None"))) {
@@ -243,10 +243,13 @@ public class SdApiHelper {
                     canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     bg = bmEdit;
+                } else if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BG_REF)) {
+                    bg = mCurrentSketch.getImgBgRef();
                 }
                 baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
             } else {
-                baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
+                baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
+                        param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getResizedImgBgRef() : mCurrentSketch.getResizedImgBackground();
             }
             /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
             Log.e("diffusionpaint", "baseImage=" + baseImage.getWidth() + "X" + baseImage.getHeight());
@@ -318,7 +321,7 @@ public class SdApiHelper {
                     }
                     cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
                 } else {
-                    cnImage = param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_BACKGROUND)?mCurrentSketch.getResizedImgBackground():mCurrentSketch.getImgPreview();
+                    cnImage = param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)?mCurrentSketch.getImgPreview():mCurrentSketch.getResizedImgBackground();
                 }
 
                 cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));

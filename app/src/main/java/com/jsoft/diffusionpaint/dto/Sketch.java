@@ -152,6 +152,32 @@ public class Sketch implements Serializable {
         }
     }
 
+    public Bitmap getResizedImgBgRef() {
+        Bitmap imgBg = getResizedImgBackground();
+        Bitmap imgRef = getResizedImgReference();
+        for (int x=0;x<imgBg.getWidth();x++) {
+            for (int y=0;y<imgBg.getHeight();y++) {
+                if (Color.alpha(imgPaint.getPixel(x,y)) != 0) {
+                    imgBg.setPixel(x,y, imgRef.getPixel(x,y));
+                }
+            }
+        }
+        return imgBg;
+    }
+
+    public Bitmap getImgBgRef() {
+        Bitmap imgRef = Bitmap.createScaledBitmap(imgReference, imgBackground.getWidth(), imgBackground.getHeight(), true);
+        Bitmap imgPaintR = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), true);
+        for (int x=0;x<imgRef.getWidth();x++) {
+            for (int y=0;y<imgRef.getHeight();y++) {
+                if (Color.alpha(imgPaintR.getPixel(x,y)) == 0) {
+                    imgRef.setPixel(x,y, imgBackground.getPixel(x,y));
+                }
+            }
+        }
+        return imgRef;
+    }
+
     public RectF getInpaintRect(int sdSize) {
         int inpaintMargin = 64;
         if (imgBackground == null) {
