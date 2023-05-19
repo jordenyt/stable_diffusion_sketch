@@ -18,15 +18,15 @@
     <string name="deepfacelab">DeepFaceLab</string>
     <string name="ok">OK</string>
     <string-array name="cnmode_options">
-        <item>img2img with Scribble</item>
-        <item>img2img with Depth</item>
-        <item>img2img with Pose</item>
-        <item>txt2img with Canny</item>
-        <item>txt2img with Scribble</item>
-        <item>txt2img with Depth</item>
-        <item>Inpaint on background</item>
-        <item>Inpaint on sketch</item>
-        <item>Inpaint on sketch with background depth</item>
+        <item>img2img(sketch) + Scribble(sketch)</item>
+        <item>img2img(sketch) + Depth(sketch)</item>
+        <item>img2img(sketch) + Pose(sketch)</item>
+        <item>txt2img + Canny(sketch)</item>
+        <item>txt2img + Scribble(sketch)</item>
+        <item>txt2img + Depth(sketch)</item>
+        <item>Inpaint(background) </item>
+        <item>Inpaint(sketch)</item>
+        <item>Inpaint(sketch) + Depth(background)</item>
         <item>Custom Mode 1</item>
         <item>Custom Mode 2</item>
         <item>Custom Mode 3</item>

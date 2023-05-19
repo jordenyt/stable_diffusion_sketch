@@ -132,88 +132,28 @@ public class SdApiHelper {
     }
 
     public SdCnParam getSdCnParm(String cnMode) {
-        if (cnMode.equals(Sketch.CN_MODE_TXT) || cnMode.startsWith("custom") ) {
-            Gson gson = new Gson();
-            String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
-                            cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
-                            cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
-                            cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}") :
-                            sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}");
-            SdCnParam param = gson.fromJson(jsonMode, SdCnParam.class);
-            if (param.sdSize == 0) {
-                param.sdSize = sharedPreferences.getInt("sdImageSize", 512);
-            }
-            return param;
-        }
-        SdCnParam param = new SdCnParam();
-        if (cnMode.startsWith("txt")) {
-            param.type = SdCnParam.SD_MODE_TYPE_TXT2IMG;
-        } else if (cnMode.startsWith("inpaint")) {
-            param.type = SdCnParam.SD_MODE_TYPE_INPAINT;
-        } else {
-            param.type = SdCnParam.SD_MODE_TYPE_IMG2IMG;
-        }
 
-        param.cfgScale = 7;
-        param.steps = 40;
-        param.sdSize = sharedPreferences.getInt("sdImageSize", 512);
+        Gson gson = new Gson();
+        String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_CUSTOM_4) ? sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7, \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0, \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0, \"type\":\"txt2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7, \"type\":\"txt2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_TXT_DEPTH) ? "{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"type\":\"txt2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}" :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
+                        "{\"baseImage\":\"sketch\", \"cnInputImage\":\"background\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}";
+                        //Sketch.CN_MODE_INPAINT_DEPTH
 
-        if (param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
-            param.inpaintFill = cnMode.equals(Sketch.CN_MODE_INPAINT)? SdCnParam.SD_INPAINT_FILL_NOISE : SdCnParam.SD_INPAINT_FILL_ORIGINAL;
-            param.inpaintPartial = SdCnParam.INPAINT_FULL;
-        }
-        if (!param.type.equals(SdCnParam.SD_MODE_TYPE_TXT2IMG)) {
-            param.baseImage = cnMode.equals(Sketch.CN_MODE_INPAINT)? SdCnParam.SD_INPUT_IMAGE_BACKGROUND : SdCnParam.SD_INPUT_IMAGE_SKETCH;
-            param.denoise = cnMode.equals(Sketch.CN_MODE_INPAINT)?1:0.8;
-
-            if (!param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT) || cnMode.equals(Sketch.CN_MODE_INPAINT_DEPTH)) {
-                param.cnInputImage = cnMode.equals(Sketch.CN_MODE_INPAINT_DEPTH) ? SdCnParam.SD_INPUT_IMAGE_BACKGROUND : SdCnParam.SD_INPUT_IMAGE_SKETCH;
-                switch (cnMode) {
-                    case Sketch.CN_MODE_SCRIBBLE:
-                        param.cnModule = "none";
-                        param.cnModelKey = "cnScribbleModel";
-                        param.cnWeight = 0.7;
-                        break;
-                    case Sketch.CN_MODE_DEPTH:
-                    case Sketch.CN_MODE_INPAINT_DEPTH:
-                        param.cnModule = "depth_leres";
-                        param.cnModelKey = "cnDepthModel";
-                        param.cnWeight = 1;
-                        break;
-                    case Sketch.CN_MODE_POSE:
-                        param.cnModule = "openpose_full";
-                        param.cnModelKey = "cnPoseModel";
-                        param.cnWeight = 1;
-                        break;
-                }
-            }
-        } else {
-            if (!cnMode.equals(Sketch.CN_MODE_TXT)) {
-                param.cnInputImage = SdCnParam.SD_INPUT_IMAGE_SKETCH;
-                switch (cnMode) {
-                    case Sketch.CN_MODE_TXT_CANNY:
-                        param.cnModule = "canny";
-                        param.cnModelKey = "cnCannyModel";
-                        param.cnWeight = 1;
-                        break;
-                    case Sketch.CN_MODE_TXT_SCRIBBLE:
-                        param.cnModule = "scribble_hed";
-                        param.cnModelKey = "cnScribbleModel";
-                        param.cnWeight = 0.7;
-                        break;
-                    case Sketch.CN_MODE_TXT_DEPTH:
-                        param.cnModule = "depth_leres";
-                        param.cnModelKey = "cnDepthModel";
-                        param.cnWeight = 1;
-                        break;
-                }
-            }
-        }
-
-        if (param.cnInputImage != null) {
-            param.cnControlMode = 0;
-        }
-
+        SdCnParam param = gson.fromJson(jsonMode, SdCnParam.class);
+        if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
+        if (param.cfgScale == 0d) { param.cfgScale = 7.0; }
+        if (param.steps == 0) { param.steps = 40; }
         return param;
     }
 
