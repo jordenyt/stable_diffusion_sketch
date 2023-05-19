@@ -11,6 +11,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
+import com.jsoft.diffusionpaint.dto.SdCnParam;
+import com.jsoft.diffusionpaint.dto.Sketch;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -13,14 +13,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import androidx.exifinterface.media.ExifInterface;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -33,15 +29,10 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.jsoft.diffusionpaint.component.DrawingView;
 import com.jsoft.diffusionpaint.component.DrawingViewListener;
-import com.jsoft.diffusionpaint.helper.CircleView;
+import com.jsoft.diffusionpaint.component.CircleView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
-import com.jsoft.diffusionpaint.helper.Sketch;
+import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener
 {

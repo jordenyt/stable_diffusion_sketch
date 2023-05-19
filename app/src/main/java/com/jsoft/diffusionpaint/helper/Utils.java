@@ -20,13 +20,12 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.exifinterface.media.ExifInterface;
 
 import com.jsoft.diffusionpaint.DrawingActivity;
-import com.jsoft.diffusionpaint.MainActivity;
+import com.jsoft.diffusionpaint.dto.Sketch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

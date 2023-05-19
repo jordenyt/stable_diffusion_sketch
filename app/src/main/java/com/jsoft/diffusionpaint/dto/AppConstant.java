@@ -1,4 +1,4 @@
-package com.jsoft.diffusionpaint.helper;
+package com.jsoft.diffusionpaint.dto;
 
 public class AppConstant {
 

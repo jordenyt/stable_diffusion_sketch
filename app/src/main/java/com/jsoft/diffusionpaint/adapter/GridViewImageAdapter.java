@@ -1,7 +1,6 @@
 package com.jsoft.diffusionpaint.adapter;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 
 import com.jsoft.diffusionpaint.MainActivity;
 import com.jsoft.diffusionpaint.R;
-import com.jsoft.diffusionpaint.helper.Sketch;
+import com.jsoft.diffusionpaint.dto.Sketch;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

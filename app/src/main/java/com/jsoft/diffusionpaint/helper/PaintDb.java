@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.PaintDbHelper.SketchEntry;
 
 public class PaintDb {

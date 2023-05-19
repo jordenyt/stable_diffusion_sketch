@@ -17,7 +17,6 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,8 +27,8 @@ import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
-import com.jsoft.diffusionpaint.helper.SdCnParam;
-import com.jsoft.diffusionpaint.helper.Sketch;
+import com.jsoft.diffusionpaint.dto.SdCnParam;
+import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import org.json.JSONArray;

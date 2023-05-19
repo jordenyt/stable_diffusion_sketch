@@ -115,7 +115,7 @@
 
 
 
-    <com.jsoft.diffusionpaint.helper.CircleView
+    <com.jsoft.diffusionpaint.component.CircleView
         android:id="@+id/circle_pen"
         android:layout_width="80dp"
         android:layout_height="80dp"
