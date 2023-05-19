@@ -33,6 +33,8 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
   - Negative Prompt
 - 3 Canvas aspect ratio: landscape, portrait and square
 - Upscaler
+- Long press image on Main Screen to delete
+- Group related sketches
 
 ## Custom Modes
 Custom mode can be defined in JSON format.<br/>
