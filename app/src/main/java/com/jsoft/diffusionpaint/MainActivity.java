@@ -54,7 +54,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private SharedPreferences sharedPreferences;
     private static File mImageFile;
     private SdApiHelper sdApiHelper;
+    private int currentRootId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,9 +117,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     @Override
     public void onResume() {
         super.onResume();
-        sketches = db.getSketchList();
-        GridViewImageAdapter adapter = new GridViewImageAdapter(this, sketches);
-        gridView.setAdapter(adapter);
+        showGrid(-1);
     }
 
     protected void onNewIntent(Intent intent) {
@@ -126,9 +127,74 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
     }
 
+    public void showGrid(int rootSketchId) {
+        if (rootSketchId == -1) {
+            currentRootId = -1;
+            List<Sketch> dbSketchList = db.getSketchList();
+            List<Sketch> showSketches = new ArrayList<>();
+            Map<Integer, List<Sketch>> mapSketch = new HashMap<>();
+
+            for (Sketch sketch : dbSketchList) {
+                int rootId = getRootId(dbSketchList, sketch.getId());
+                mapSketch.computeIfAbsent(rootId, k -> new ArrayList<>());
+                mapSketch.get(rootId).add(sketch);
+            }
+            for (int rootId : mapSketch.keySet()) {
+                List<Sketch> members = mapSketch.get(rootId);
+                if (members.size() > 1) {
+                    Sketch sketchGroup = new Sketch();
+                    sketchGroup.setId(rootId);
+                    sketchGroup.setImgPreview(members.get(0).getImgPreview());
+                    sketchGroup.setChildren(members);
+                    sketchGroup.setCreateDate(members.get(0).getCreateDate());
+                    sketchGroup.setPrompt(members.get(0).getPrompt());
+                    showSketches.add(sketchGroup);
+                } else if (members.size() == 1) {
+                    showSketches.add(members.get(0));
+                }
+            }
+            sketches = showSketches;
+            GridViewImageAdapter adapter = new GridViewImageAdapter(this, showSketches);
+            gridView.setAdapter(adapter);
+        } else {
+            for (Sketch sketchGroup : sketches) {
+                if (sketchGroup.getId() == rootSketchId) {
+                    currentRootId = rootSketchId;
+                    GridViewImageAdapter adapter = new GridViewImageAdapter(this, sketchGroup.getChildren());
+                    gridView.setAdapter(adapter);
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public int getRootId(List<Sketch> sketches, int sketchId) {
+        for (Sketch sketch : sketches) {
+            if (sketch.getId() == sketchId) {
+                if (sketch.getParentId() >= 0) {
+                    int rootId = getRootId(sketches, sketch.getParentId());
+                    if (rootId >= 0) {
+                        return rootId;
+                    } else {
+                        return sketchId;
+                    }
+                } else if (sketch.getParentId() == -1) {
+                    return sketchId;
+                }
+                break;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public void onBackPressed() {
-        finish();
+        if (currentRootId != -1) {
+            showGrid(-1);
+        } else {
+            finish();
+        }
     }
 
     private GridView initGridLayout() {

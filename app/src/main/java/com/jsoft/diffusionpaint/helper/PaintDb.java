@@ -24,6 +24,7 @@ public class PaintDb {
     public List<Sketch> getSketchList() {
         String queryString =
                 "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.PARENT_ID
                         + ", " + SketchEntry.CREATE_DATE
                         + ", " + SketchEntry.PREVIEW
                         + ", " + SketchEntry.PROMPT
@@ -34,6 +35,7 @@ public class PaintDb {
         while (c.moveToNext()) {
             Sketch sketch = new Sketch();
             sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setParentId(c.getInt(c.getColumnIndexOrThrow(SketchEntry.PARENT_ID)));
             sketch.setCreateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.CREATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
@@ -87,9 +89,32 @@ public class PaintDb {
         }
     }
 
+    public int getSketchParent(int sketchId) {
+        String queryString =
+                "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.PARENT_ID
+                        + " FROM " + SketchEntry.TABLE_NAME
+                        + " WHERE " + SketchEntry._ID + " = " + sketchId;
+        Cursor c = db.rawQuery(queryString, new String[] {});
+        List<Sketch> sketches = new ArrayList<>();
+        while (c.moveToNext()) {
+            Sketch sketch = new Sketch();
+            sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setParentId(c.getInt(c.getColumnIndexOrThrow(SketchEntry.PARENT_ID)));
+            sketches.add(sketch);
+        }
+        c.close();
+        if (sketches.size() > 0) {
+            return sketches.get(0).getParentId();
+        } else {
+            return -1;
+        }
+    }
+
     public Sketch getSketch(int sketchId) {
         String queryString =
                 "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.PARENT_ID
                         + ", " + SketchEntry.CREATE_DATE
                         + ", " + SketchEntry.LAST_UPDATE_DATE
                         + ", " + SketchEntry.PREVIEW
@@ -104,6 +129,7 @@ public class PaintDb {
         while (c.moveToNext()) {
             Sketch sketch = new Sketch();
             sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setParentId(c.getInt(c.getColumnIndexOrThrow(SketchEntry.PARENT_ID)));
             sketch.setCreateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.CREATE_DATE))));
             sketch.setLastUpdateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.LAST_UPDATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
@@ -124,7 +150,21 @@ public class PaintDb {
         }
     }
 
+    private int updateChildUponDelete(int deleteId, int parentId) {
+        ContentValues values = new ContentValues();
+        values.put(SketchEntry.PARENT_ID, parentId);
+        String selection = SketchEntry.PARENT_ID + "=" + deleteId;
+
+        return db.update(
+                SketchEntry.TABLE_NAME,
+                values,
+                selection,
+                null);
+    }
+
     public void deleteSketch(int sketchId) {
+        int parentId = getSketchParent(sketchId);
+        updateChildUponDelete(sketchId, parentId);
         db.delete(SketchEntry.TABLE_NAME, SketchEntry._ID + "=" + sketchId, null);
     }
 
@@ -134,6 +174,7 @@ public class PaintDb {
 
     public long insertSketch(Sketch sketch) {
         ContentValues values = new ContentValues();
+        values.put(SketchEntry.PARENT_ID, sketch.getParentId());
         values.put(SketchEntry.CREATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.LAST_UPDATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.PROMPT, sketch.getPrompt());

@@ -15,6 +15,7 @@ public class PaintDbHelper extends SQLiteOpenHelper {
     public static abstract class SketchEntry implements BaseColumns {
         public static final String TABLE_NAME = "SD_SKETCH";
         public static final String _ID = "_id";
+        public static final String PARENT_ID = "parent_id";
         public static final String CREATE_DATE = "create_date";
         public static final String LAST_UPDATE_DATE = "last_update_date";
         public static final String PREVIEW = "img_preview";
@@ -31,21 +32,22 @@ public class PaintDbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "DIFFUSION_PAINT.DB";
 
     // database version
-    static final int DB_VERSION = 4;
+    static final int DB_VERSION = 5;
 
     static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     // Creating table query
     private static final String CREATE_TABLE = "create table IF NOT EXISTS " + SketchEntry.TABLE_NAME + "("
             + SketchEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + SketchEntry.PARENT_ID + " INTEGER DEFAULT -1, "
             + SketchEntry.CREATE_DATE + " TEXT NOT NULL, "
             + SketchEntry.LAST_UPDATE_DATE + " TEXT NOT NULL, "
             + SketchEntry.PREVIEW + " TEXT NOT NULL, "
-            + SketchEntry.BACKGROUND + " TEXT NOT NULL, "
-            + SketchEntry.PAINT + " TEXT NOT NULL, "
-            + SketchEntry.MASK + " TEXT NOT NULL, "
-            + SketchEntry.REF + " TEXT NOT NULL, "
-            + SketchEntry.CN_MODE + " TEXT NOT NULL, "
+            + SketchEntry.BACKGROUND + " TEXT DEFAULT '', "
+            + SketchEntry.PAINT + " TEXT DEFAULT '', "
+            + SketchEntry.MASK + " TEXT DEFAULT '', "
+            + SketchEntry.REF + " TEXT DEFAULT '', "
+            + SketchEntry.CN_MODE + " TEXT DEFAULT 'scribble', "
             + SketchEntry.PROMPT + " TEXT);";
 
     public PaintDbHelper(Context context) {
@@ -70,6 +72,9 @@ public class PaintDbHelper extends SQLiteOpenHelper {
         }
         if (oldVersion <= 3) {
             db.execSQL("ALTER TABLE " + SketchEntry.TABLE_NAME + " ADD COLUMN " + SketchEntry.REF + " TEXT DEFAULT ''");
+        }
+        if (oldVersion <= 4) {
+            db.execSQL("ALTER TABLE " + SketchEntry.TABLE_NAME + " ADD COLUMN " + SketchEntry.PARENT_ID + " INTEGER DEFAULT -1");
         }
         onCreate(db);
     }
