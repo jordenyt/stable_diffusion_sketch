@@ -205,14 +205,14 @@ public class SdApiHelper {
 
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
-                cnArgObject.put("processor_res", param.sdSize);
+                //cnArgObject.put("processor_res", param.sdSize);
+                cnArgObject.put("pixel_perfect", true);
                 cnArgObject.put("threshold_a", 64);
                 cnArgObject.put("threshold_b", 64);
                 cnArgObject.put("guidance", 1);
                 cnArgObject.put("guidance_start", 0);
                 cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("control_mode", param.cnControlMode == 0 ? SdCnParam.CN_MODE_BALANCED :
-                        param.cnControlMode == 1 ? SdCnParam.CN_MODE_PROMPT : SdCnParam.CN_MODE_CONTROLNET);
+                cnArgObject.put("control_mode", param.cnControlMode);
                 args.put(cnArgObject);
                 controlnet.put("args", args);
                 alwayson_scripts.put("controlnet", controlnet);
@@ -333,14 +333,14 @@ public class SdApiHelper {
                 cnArgObject.put("weight", param.cnWeight);
                 cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
                 cnArgObject.put("lowvram", false);
-                cnArgObject.put("processor_res", param.sdSize);
+                //cnArgObject.put("processor_res", param.sdSize);
+                cnArgObject.put("pixel_perfect", true);
                 cnArgObject.put("threshold_a", 64);
                 cnArgObject.put("threshold_b", 64);
                 cnArgObject.put("guidance", 1);
                 cnArgObject.put("guidance_start", 0);
                 cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("control_mode", param.cnControlMode == 0 ? SdCnParam.CN_MODE_BALANCED :
-                        param.cnControlMode == 1 ? SdCnParam.CN_MODE_PROMPT : SdCnParam.CN_MODE_CONTROLNET);
+                cnArgObject.put("control_mode", param.cnControlMode);
                 args.put(cnArgObject);
                 controlnet.put("args", args);
                 alwayson_scripts.put("controlnet", controlnet);
