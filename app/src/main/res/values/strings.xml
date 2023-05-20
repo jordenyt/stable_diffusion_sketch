@@ -31,6 +31,7 @@
         <item>Custom Mode 2</item>
         <item>Custom Mode 3</item>
         <item>Custom Mode 4</item>
+        <item>Custom Mode 5</item>
     </string-array>
     <string-array name="sd_size_options">
         <item>512px</item>
