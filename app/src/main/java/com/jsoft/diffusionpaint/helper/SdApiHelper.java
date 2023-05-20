@@ -132,6 +132,7 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_4) ? sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_CUSTOM_5) ? sharedPreferences.getString("modeCustom5", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7, \"denoise\":0.8, \"type\":\"img2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"denoise\":0.8, \"type\":\"img2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0, \"denoise\":0.8, \"type\":\"img2img\"}" :
