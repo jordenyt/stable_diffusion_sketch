@@ -221,30 +221,30 @@ public class Sketch implements Serializable {
 
         int inpaintWidth = Math.max(minWidth, x2 - x1 + 1 + 2 * inpaintMargin);
         int inpaintHeight =  Math.max(minHeight, y2 - y1 + 1 + 2 * inpaintMargin);
-        float scale = Math.max((float)inpaintWidth/imgBackground.getWidth(), (float)inpaintHeight/imgBackground.getHeight());
+        double scale = Math.max((double)inpaintWidth/imgBackground.getWidth(), (double)inpaintHeight/imgBackground.getHeight());
         if (scale > 1.0) scale = 1;
 
-        int left = (int)Math.round((x1 + (x2-x1)/2.0) - scale * imgBackground.getWidth() / 2.0);
-        int right = (int)Math.round(left + scale * imgBackground.getWidth());
-        int top = (int)Math.round((y1 + (y2-y1)/2.0) - scale * imgBackground.getHeight() / 2.0);
-        int bottom = (int)Math.round(top + scale * imgBackground.getHeight());
+        double left = (x1 + (x2-x1)/2.0) - (scale * imgBackground.getWidth() - 1)/ 2.0;
+        double right = left + (scale * imgBackground.getWidth()-1);
+        double top = (y1 + (y2-y1)/2.0) - (scale * imgBackground.getHeight() - 1)/ 2.0;
+        double bottom = top + (scale * imgBackground.getHeight()-1);
 
         if (left < 0) {
+            right = right - left;
             left = 0;
-            right = (int)Math.round(scale * imgBackground.getWidth());
-        } else if (right > imgBackground.getWidth()) {
-            left = (int) Math.max((1-scale)*imgBackground.getWidth(),  0);
-            right = imgBackground.getWidth();
+        } else if (right > imgBackground.getWidth()-1) {
+            left = left - (right - imgBackground.getWidth() + 1);
+            right = imgBackground.getWidth()-1;
         }
 
         if (top < 0) {
-            bottom = (int)Math.round(scale * imgBackground.getHeight());
+            bottom = bottom - top;
             top = 0;
-        } else if (bottom > imgBackground.getHeight()) {
-            top = (int) Math.max((1-scale)*imgBackground.getHeight(),  0);
-            bottom = imgBackground.getHeight();
+        } else if (bottom > imgBackground.getHeight()-1) {
+            top = top - (bottom - imgBackground.getHeight() + 1);
+            bottom = imgBackground.getHeight()-1;
         }
 
-        return new RectF(left,top,right,bottom);
+        return new RectF(Math.round(left), Math.round(top), Math.round(right), Math.round(bottom));
     }
 }

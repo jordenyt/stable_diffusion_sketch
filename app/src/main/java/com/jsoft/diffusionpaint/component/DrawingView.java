@@ -87,24 +87,24 @@ public class DrawingView extends View
 			canvas.drawRect(0, 0, this.getWidth(), this.getHeight(), mBackgroundPaint);
 		} else {
 			Bitmap bitmap = bm;
-			float bitmapWidth = bitmap.getWidth();
-			float bitmapHeight = bitmap.getHeight();
-			float canvasWidth = canvas.getWidth();
-			float canvasHeight = canvas.getHeight();
+			double bitmapWidth = bitmap.getWidth();
+			double bitmapHeight = bitmap.getHeight();
+			double canvasWidth = canvas.getWidth();
+			double canvasHeight = canvas.getHeight();
 
 			// Calculate the scale factor to fit the bitmap into the canvas while maintaining its aspect ratio
-			float scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
+			double scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
 
 			// Calculate the cropped bitmap dimensions
-			float croppedWidth = canvasWidth / scaleFactor;
-			float croppedHeight = canvasHeight / scaleFactor;
-			float xOffset = (bitmapWidth - croppedWidth) / 2;
-			float yOffset = (bitmapHeight - croppedHeight) / 2;
+			double croppedWidth = canvasWidth / scaleFactor;
+			double croppedHeight = canvasHeight / scaleFactor;
+			double xOffset = (bitmapWidth - croppedWidth) / 2;
+			double yOffset = (bitmapHeight - croppedHeight) / 2;
 
 			// Create a matrix to crop and scale the bitmap
 			Matrix matrix = new Matrix();
-			matrix.postScale(scaleFactor, scaleFactor);
-			matrix.postTranslate(-xOffset, -yOffset);
+			matrix.postScale((float)scaleFactor, (float)scaleFactor);
+			matrix.postTranslate((float)-xOffset, (float)-yOffset);
 
 			// Apply the matrix to the bitmap
 			Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, (int)xOffset, (int)yOffset, (int)croppedWidth, (int)croppedHeight, matrix, true);
