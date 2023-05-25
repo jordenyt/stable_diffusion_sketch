@@ -11,16 +11,16 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
   - shared image from other apps
 - Enhance your sketch with Stable Diffusion
   - Preset Modes:
-    - img2img with Scribble ControlNet Model
-    - img2img with Depth ControlNet Model
-    - img2img with Pose ControlNet Model
-    - txt2img with Scribble ControlNet Model
-    - txt2img with Depth ControlNet Model
-    - txt2img with Canny ControlNet Model
-    - basic inpaint
-    - inpaint with sketch
-    - inpaint with sketch and Depth
-	- 4 Custom Modes
+    - img2img(sketch) + Scribble(sketch)
+    - img2img(sketch) + Depth(sketch)
+    - img2img(sketch) + Pose(sketch)
+    - txt2img + Canny(sketch)
+    - txt2img + Scribble(sketch)
+    - txt2img + Depth(sketch)
+    - Inpaint(background) 
+    - Inpaint(sketch)
+    - Inpaint(sketch) + Depth(background)
+  - 5 Custom Modes
 - Painting Tools:
   - Palette
   - Paintbrush
@@ -46,46 +46,46 @@ Parameters for the mode definition JSON:
 | Variable | txt2img | img2img | inpainting | Value |
 | --- | --- | --- | --- | --- |
 | `type` | M | M | M | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting |
-| `steps` | M | M | M | integer from 1 to 120 |
+| `steps` | M | M | M | integer from 1 to 120, default value is 40 |
 | `cfgScale` | M | M | M | decimal from 0 to 30, default value is 7.0 |
 | `denoise` | - | M | M | decimal from 0 to 1 |
-| `baseImage` | - | M | M | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image |
-| `inpaintFill` | - | - | M | `0` - fill <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing |
-| `inpaintPartial` | - | - | O | `0` - Inpainting on whole image <br/> `1` - Inpainting on "painted" area and paste on original image |
+| `baseImage` | - | M | M | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image <br/> `bg_ref` - fill the inpainting area with reference image|
+| `inpaintFill` | - | - | M | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing |
+| `inpaintPartial` | - | - | O | `0` - Inpainting on whole image (DEFAULT) <br/> `1` - Inpainting on "painted" area and paste on original image |
 | `sdSize` | O | O | O | Output resolution of SD.  Default value is configured  in setting. <br/>Suggested value: 512 / 768 / 1024 / 1280 |
 | `cnInputImage` | O | O | O | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image |
 | `cnModelKey` | O | O | O | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model |
 | `cnModule` | O | O | O | CN Module that ControlNet provided.  Typical values are: `tile_resample` / `reference_only` / `openpose_full` / `canny` / `depth_midas` / `scribble_hed` <br/> For full list, please refer to the Automatic1111 web UI. |
-| `cnControlMode` | O | O | O | `0` - Balanced <br/> `1` - My prompt is more important <br/> `2` - ControlNet is more important |
+| `cnControlMode` | O | O | O | `0` - Balanced (DEFAULT) <br/> `1` - My prompt is more important <br/> `2` - ControlNet is more important |
 | `cnWeight` | O | O | O | decimal from 0 to 1 |
 
 ## Demo Video
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
 
-## Preset Modes
-| Mode | Input | Output |
-| --- | --- | --- |
-| img2img with Scribble | <img src="https://user-images.githubusercontent.com/5007252/228425856-3600d997-4c4d-4b03-9727-7d90bde2a528.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228426672-466d23e2-730e-4186-ab84-1658750099bb.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228426679-8dbc6c20-1e99-473f-9109-b96b2a29a542.png" width="140"> |
-| img2img with depth | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228435631-6500ea57-f8e5-453d-97ec-be8783e66453.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228435664-77d27294-df71-472c-8f9a-38957f7c7046.png" width="140"> |
-| img2img with pose | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436000-e6aec212-d912-42e0-821a-0df25683ee23.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436016-9cb7f092-99b7-445f-a06a-03beedea5d7f.png" width="140">
-| txt2img with canny | <img src="https://user-images.githubusercontent.com/5007252/228436349-638047c0-97e9-43b1-8c5a-9f8a95d6d256.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436419-1252130c-166c-462b-b4ae-b1f643492a71.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436480-9c1112ff-2517-4c26-9875-0d51ad888d7e.png" width="140"> |
-| txt2img with scribble | <img src="https://user-images.githubusercontent.com/5007252/228436349-638047c0-97e9-43b1-8c5a-9f8a95d6d256.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436620-5263c004-851a-4b95-a19b-b808a8184257.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436637-f0898e2e-d884-4a25-942c-6b3cff1a1aad.png" width="140"> |
-| txt2img with depth | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436747-7ec3b80a-686d-47cf-a505-c0ec27230100.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436764-d7962b77-6006-49b1-aecb-59fc3941858b.png" width="140"> |
-| inpainting on background | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437109-942bd67f-1c05-4004-874f-61d818314765.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437128-467737fe-850d-44d3-8eb2-3fbd6c136895.png" width="140"> |
-| inpainting on sketch | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437282-6acad62a-49f9-45e4-98b5-141ee02215a3.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437310-8cc54a11-f3fc-45aa-a846-3f080994cf1c.png" width="140"> |
-| inpainting on sketch with depth | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437537-77a49f88-18cb-48d7-969d-2cc3e74e4f45.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437574-e717bbc5-5744-4dcd-aaaa-171970135e74.png" width="140"> |
+## Preset Modes Demo
+| Mode | Config | Demo Input | Demo Output |
+| --- |------------------------------------------------------------------------------------------------------------------------------| --- |
+| img2img(sketch) + Scribble(sketch) | `{"baseImage":"sketch", "cnInputImage":"sketch", "cnModelKey":"cnScribbleModel", "cnModule":"none", "cnWeight":0.7, "denoise":0.8, "type":"img2img"}` | <img src="https://user-images.githubusercontent.com/5007252/228425856-3600d997-4c4d-4b03-9727-7d90bde2a528.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228426672-466d23e2-730e-4186-ab84-1658750099bb.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228426679-8dbc6c20-1e99-473f-9109-b96b2a29a542.png" width="140"> |
+| img2img(sketch) + Depth(sketch) | `{"baseImage":"sketch", "cnInputImage":"sketch", "cnModelKey":"cnDepthModel", "cnModule":"depth_leres", "cnWeight":1.0, "denoise":0.8, "type":"img2img"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228435631-6500ea57-f8e5-453d-97ec-be8783e66453.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228435664-77d27294-df71-472c-8f9a-38957f7c7046.png" width="140"> |
+| img2img(sketch) + Pose(sketch) | `{"baseImage":"sketch", "cnInputImage":"sketch", "cnModelKey":"cnPoseModel", "cnModule":"openpose_full", "cnWeight":1.0, "denoise":0.8, "type":"img2img"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436000-e6aec212-d912-42e0-821a-0df25683ee23.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436016-9cb7f092-99b7-445f-a06a-03beedea5d7f.png" width="140">
+| txt2img + Canny(sketch) | `{"cnInputImage":"sketch", "cnModelKey":"cnCannyModel", "cnModule":"canny", "cnWeight":1.0, "type":"txt2img"}` | <img src="https://user-images.githubusercontent.com/5007252/228436349-638047c0-97e9-43b1-8c5a-9f8a95d6d256.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436419-1252130c-166c-462b-b4ae-b1f643492a71.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436480-9c1112ff-2517-4c26-9875-0d51ad888d7e.png" width="140"> |
+| txt2img + Scribble(sketch) | `{"cnInputImage":"sketch", "cnModelKey":"cnScribbleModel", "cnModule":"scribble_hed", "cnWeight":0.7, "type":"txt2img"}` |<img src="https://user-images.githubusercontent.com/5007252/228436349-638047c0-97e9-43b1-8c5a-9f8a95d6d256.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436620-5263c004-851a-4b95-a19b-b808a8184257.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436637-f0898e2e-d884-4a25-942c-6b3cff1a1aad.png" width="140"> |
+| txt2img + Depth(sketch) | `{"cnInputImage":"sketch", "cnModelKey":"cnDepthModel", "cnModule":"depth_leres", "cnWeight":1.0, "type":"txt2img"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436747-7ec3b80a-686d-47cf-a505-c0ec27230100.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436764-d7962b77-6006-49b1-aecb-59fc3941858b.png" width="140"> |
+| Inpaint(background) | `{"baseImage":"background", "denoise":1.0, "inpaintFill":2, "type":"inpaint"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437109-942bd67f-1c05-4004-874f-61d818314765.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437128-467737fe-850d-44d3-8eb2-3fbd6c136895.png" width="140"> |
+| Inpaint(sketch) | `{"baseImage":"sketch", "denoise":0.8, "inpaintFill":1, "type":"inpaint"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437282-6acad62a-49f9-45e4-98b5-141ee02215a3.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437310-8cc54a11-f3fc-45aa-a846-3f080994cf1c.png" width="140"> |
+| Inpaint(sketch) + Depth(background) | `{"baseImage":"sketch", "cnInputImage":"background", "cnModelKey":"cnDepthModel", "cnModule":"depth_leres", "cnWeight":1.0, "denoise":0.8, "inpaintFill":1, "type":"inpaint"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437537-77a49f88-18cb-48d7-969d-2cc3e74e4f45.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437574-e717bbc5-5744-4dcd-aaaa-171970135e74.png" width="140"> |
 
 ## Prerequisites
 Before using Stable Diffusion Sketch, you need to install and set up the following on your server:
 
 1. [Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) by AUTOMATIC1111
-2. Install sd-webui-controlnet extension on Stable Diffusion Web UI
+2. Install [sd-webui-controlnet extension](https://github.com/Mikubill/sd-webui-controlnet) on Stable Diffusion Web UI
 3. Enable the API and listen on all network interfaces by editing the running script webui-user.bat:
 `set COMMANDLINE_ARGS=--api --listen`
 4. Put your perferenced SD model under stable-diffusion-webui/models/Stable-diffusion folder.  You may selected one from [Civitai](https://civitai.com/).
 5. Put your perferenced ControlNet Model under stable-diffusion-webui/extensions/sd-webui-controlnet/models folder.
-   - Scribble, Canny, Depth and Pose model are needed.
-   - Default supported model can be download from [lllyasviel's Hugging Face card](https://huggingface.co/lllyasviel/ControlNet/tree/main/models)
+   - Scribble, Canny, Depth, Tile and Pose model are needed.
+   - Default supported model can be download from [lllyasviel's ControlNet v1.1 Hugging Face card](https://huggingface.co/lllyasviel/ControlNet-v1-1/tree/main)
    - ControlNet Model needed to match with your SD model in order to get it working.  i.e. If your ControlNet model are build for SD1.5, then your SD model need to be SD1.5 based.
 
 ## Usage
@@ -97,7 +97,7 @@ Here's how to use Stable Diffusion Sketch:
    - If both of your Android device and Server are on the same intranet, you can use the intranet IP, i.e. 192.168.xxx.xxx / 10.xxx.xxx.xxx.  You can get this IP by running `ipconfig /all` on Windows or `ifconfig --all` on MacOS/Linux.
    - If your Android device is on public internet, and your server is on intranet, you need to config your router NAT/Firewall and DDNS. In this case, use the internet IP and translated port number as the server address.
    - You can test the server address by using it on Android device's web browser.  If it is valid, then you will see automatic1111's webui running on your web browser. 
-4. In the app, select SD Model, Inpaint Model, Sampler, Upscaler and ControlNet model.
+4. In the app, select SD Model, Inpainting Model, Sampler, Upscaler and ControlNet model.
 5. Start sketching and let Stable Diffusion do the magic!
 
 ## License
