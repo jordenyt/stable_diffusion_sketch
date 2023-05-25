@@ -239,6 +239,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sd_server_address:
                 showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
                 break;
+            case R.id.mi_dfl_api_address:
+                showTextInputDialog("dflApiAddress", "DFL API Address:", "http://192.168.1.101:7860", "");
+                break;
+            case R.id.mi_dfl_model:
+                showTextInputDialog("dflModel", "DFL Model:", "", "");
+                break;
             case R.id.mi_prompt_prefix:
                 showTextInputDialog("promptPrefix", "Prompt Prefix:", "Color drawing of ", "");
                 break;

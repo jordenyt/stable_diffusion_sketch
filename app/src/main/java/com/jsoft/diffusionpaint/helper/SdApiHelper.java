@@ -102,6 +102,7 @@ public class SdApiHelper {
     public JSONObject getDflJSON(Bitmap bitmap) {
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("model", sharedPreferences.getString("dflModel", ""));
             jsonObject.put("image", Utils.jpg2Base64String(bitmap));
         } catch (JSONException e) {
             e.printStackTrace();

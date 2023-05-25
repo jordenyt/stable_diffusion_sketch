@@ -138,14 +138,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else {
                 JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
                 showSpinner();
-                sdApiHelper.sendRequest("deepFaceLab", "http://jordentse.asuscomm.com:25000", "/upscaleimage", jsonObject, "POST");
+                String baseUrl = sharedPreferences.getString("dflApiAddress", "");
+                sdApiHelper.sendRequest("deepFaceLab", baseUrl, "/upscaleimage", jsonObject, "POST");
             }
         });
 
         dflButton.setOnClickListener(view -> {
             JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
             showSpinner();
-            sdApiHelper.sendRequest("deepFaceLab", "http://jordentse.asuscomm.com:25000", "/processimage", jsonObject, "POST");
+            String baseUrl = sharedPreferences.getString("dflApiAddress", "");
+            sdApiHelper.sendRequest("deepFaceLab", baseUrl, "/processimage", jsonObject, "POST");
         });
 
         editButton.setOnClickListener(view -> {
