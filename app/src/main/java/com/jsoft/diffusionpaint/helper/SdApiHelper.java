@@ -11,7 +11,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.jsoft.diffusionpaint.dto.SdCnParam;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.jsoft.diffusionpaint.dto.CnParam;
+import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.Sketch;
 
 import org.json.JSONArray;
@@ -124,7 +128,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public SdCnParam getSdCnParm(String cnMode) {
+    public SdParam getSdCnParm(String cnMode) {
 
         Gson gson = new Gson();
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
@@ -133,25 +137,41 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_4) ? sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_5) ? sharedPreferences.getString("modeCustom5", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7, \"denoise\":0.8, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"denoise\":0.8, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0, \"denoise\":0.8, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0, \"type\":\"txt2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7, \"type\":\"txt2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_DEPTH) ? "{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"type\":\"txt2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0}], \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_TXT_DEPTH) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
-                        "{\"baseImage\":\"sketch\", \"cnInputImage\":\"background\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0, \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}";
+                        "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"background\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}";
                         //Sketch.CN_MODE_INPAINT_DEPTH
 
-        SdCnParam param = gson.fromJson(jsonMode, SdCnParam.class);
+        JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
+        if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {
+            JsonObject cnObj = new JsonObject();
+            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight"};
+            for (String cnProp : cnProperties) {
+                if (rootObj.get(cnProp) != null) {
+                    cnObj.add(cnProp, rootObj.get(cnProp));
+                    rootObj.remove(cnProp);
+                }
+            }
+            JsonArray cnArray = new JsonArray();
+            cnArray.add(cnObj);
+            rootObj.add("cn", cnArray);
+            jsonMode = gson.toJson(rootObj);
+        }
+
+        SdParam param = gson.fromJson(jsonMode, SdParam.class);
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
         if (param.cfgScale == 0d) { param.cfgScale = 7.0; }
         if (param.steps == 0) { param.steps = 40; }
         return param;
     }
 
-    public JSONObject getControlnetTxt2imgJSON(String prompt, SdCnParam param, Sketch mCurrentSketch, String aspectRatio) {
+    public JSONObject getControlnetTxt2imgJSON(String prompt, SdParam param, Sketch mCurrentSketch, String aspectRatio) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
@@ -179,35 +199,37 @@ public class SdApiHelper {
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
 
-            if (param.cnInputImage != null) {
-                // ControlNet Args
-                JSONObject controlnet = new JSONObject();
-                JSONArray args = new JSONArray();
-                JSONObject cnArgObject = new JSONObject();
-                cnArgObject.put("input_image", Utils.jpg2Base64String(
-                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)?mCurrentSketch.getImgPreview():
-                        param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_REF)?mCurrentSketch.getResizedImgReference():
-                        mCurrentSketch.getResizedImgBackground()));
-                //cnArgObject.put("mask", "");
-                cnArgObject.put("module", param.cnModule);
-                if (!"None".equals(sharedPreferences.getString(param.cnModelKey, "None"))) {
-                    cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, "None"));
-                }
-                cnArgObject.put("weight", param.cnWeight);
+            for (CnParam cnparam: param.cn) {
+                if (cnparam.cnInputImage != null) {
+                    // ControlNet Args
+                    JSONObject controlnet = new JSONObject();
+                    JSONArray args = new JSONArray();
+                    JSONObject cnArgObject = new JSONObject();
+                    cnArgObject.put("input_image", Utils.jpg2Base64String(
+                            cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
+                                    cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getResizedImgReference() :
+                                            mCurrentSketch.getResizedImgBackground()));
+                    //cnArgObject.put("mask", "");
+                    cnArgObject.put("module", cnparam.cnModule);
+                    if (!"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
+                        cnArgObject.put("model", sharedPreferences.getString(cnparam.cnModelKey, "None"));
+                    }
+                    cnArgObject.put("weight", cnparam.cnWeight);
 
-                cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
-                cnArgObject.put("lowvram", false);
-                //cnArgObject.put("processor_res", param.sdSize);
-                cnArgObject.put("pixel_perfect", true);
-                cnArgObject.put("threshold_a", 64);
-                cnArgObject.put("threshold_b", 64);
-                cnArgObject.put("guidance", 1);
-                cnArgObject.put("guidance_start", 0);
-                cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("control_mode", param.cnControlMode);
-                args.put(cnArgObject);
-                controlnet.put("args", args);
-                alwayson_scripts.put("controlnet", controlnet);
+                    cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
+                    cnArgObject.put("lowvram", false);
+                    //cnArgObject.put("processor_res", param.sdSize);
+                    cnArgObject.put("pixel_perfect", true);
+                    cnArgObject.put("threshold_a", 64);
+                    cnArgObject.put("threshold_b", 64);
+                    cnArgObject.put("guidance", 1);
+                    cnArgObject.put("guidance_start", 0);
+                    cnArgObject.put("guidance_end", 1);
+                    cnArgObject.put("control_mode", cnparam.cnControlMode);
+                    args.put(cnArgObject);
+                    controlnet.put("args", args);
+                    alwayson_scripts.put("controlnet", controlnet);
+                }
             }
             jsonObject.put("alwayson_scripts", alwayson_scripts);
 
@@ -217,31 +239,31 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getControlnetImg2imgJSON(String prompt, SdCnParam param, Sketch mCurrentSketch, String aspectRatio) {
+    public JSONObject getControlnetImg2imgJSON(String prompt, SdParam param, Sketch mCurrentSketch, String aspectRatio) {
         JSONObject jsonObject = new JSONObject();
-        boolean isInpaint = param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT);
+        boolean isInpaint = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT);
         try {
             JSONArray init_images = new JSONArray();
 
             Bitmap baseImage;
-            if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
+            if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
                 if (mCurrentSketch.getRectInpaint() == null) {
                     mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(param.sdSize));
                 }
                 Bitmap bg = mCurrentSketch.getImgBackground();
-                if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
+                if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
                     Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvasEdit = new Canvas(bmEdit);
                     canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     bg = bmEdit;
-                } else if (param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BG_REF)) {
+                } else if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF)) {
                     bg = mCurrentSketch.getImgBgRef();
                 }
                 baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
             } else {
-                baseImage = param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                        param.baseImage.equals(SdCnParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getResizedImgBgRef() : mCurrentSketch.getResizedImgBackground();
+                baseImage = param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
+                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getResizedImgBgRef() : mCurrentSketch.getResizedImgBackground();
             }
             /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
             Log.e("diffusionpaint", "baseImage=" + baseImage.getWidth() + "X" + baseImage.getHeight());
@@ -257,7 +279,7 @@ public class SdApiHelper {
                     mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch));
                 }
                 Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
-                if (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL) {
+                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
                     Bitmap resizedBm = Bitmap.createScaledBitmap(mCurrentSketch.getImgInpaintMask(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), false);
                     imgInpaintMask = Utils.extractBitmap(resizedBm, mCurrentSketch.getRectInpaint());
                 }
@@ -294,48 +316,50 @@ public class SdApiHelper {
             JSONObject alwayson_scripts = new JSONObject();
 
             // ControlNet Args
-            if (param.cnInputImage != null) {
-                JSONObject controlnet = new JSONObject();
-                JSONArray args = new JSONArray();
-                JSONObject cnArgObject = new JSONObject();
+            for (CnParam cnparam: param.cn) {
+                if (cnparam.cnInputImage != null) {
+                    JSONObject controlnet = new JSONObject();
+                    JSONArray args = new JSONArray();
+                    JSONObject cnArgObject = new JSONObject();
 
-                Bitmap cnImage = null;
-                if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_REF)) {
-                    cnImage = mCurrentSketch.getResizedImgReference();
-                } else if (isInpaint && (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL)) {
-                    Bitmap bg = mCurrentSketch.getImgBackground();
-                    if (param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)) {
-                        Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
-                        Canvas canvasEdit = new Canvas(bmEdit);
-                        canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                        canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                        bg = bmEdit;
+                    Bitmap cnImage = null;
+                    if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF)) {
+                        cnImage = mCurrentSketch.getResizedImgReference();
+                    } else if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
+                        Bitmap bg = mCurrentSketch.getImgBackground();
+                        if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+                            Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                            Canvas canvasEdit = new Canvas(bmEdit);
+                            canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                            canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                            bg = bmEdit;
+                        }
+                        cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
+                    } else {
+                        cnImage = cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() : mCurrentSketch.getResizedImgBackground();
                     }
-                    cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
-                } else {
-                    cnImage = param.cnInputImage.equals(SdCnParam.SD_INPUT_IMAGE_SKETCH)?mCurrentSketch.getImgPreview():mCurrentSketch.getResizedImgBackground();
-                }
 
-                cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
-                //cnArgObject.put("mask", "");
-                cnArgObject.put("module", param.cnModule);
-                if (!"None".equals(sharedPreferences.getString(param.cnModelKey, "None"))) {
-                    cnArgObject.put("model", sharedPreferences.getString(param.cnModelKey, "None"));
+                    cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
+                    //cnArgObject.put("mask", "");
+                    cnArgObject.put("module", cnparam.cnModule);
+                    if (!"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
+                        cnArgObject.put("model", sharedPreferences.getString(cnparam.cnModelKey, "None"));
+                    }
+                    cnArgObject.put("weight", cnparam.cnWeight);
+                    cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
+                    cnArgObject.put("lowvram", false);
+                    //cnArgObject.put("processor_res", param.sdSize);
+                    cnArgObject.put("pixel_perfect", true);
+                    cnArgObject.put("threshold_a", 64);
+                    cnArgObject.put("threshold_b", 64);
+                    cnArgObject.put("guidance", 1);
+                    cnArgObject.put("guidance_start", 0);
+                    cnArgObject.put("guidance_end", 1);
+                    cnArgObject.put("control_mode", cnparam.cnControlMode);
+                    args.put(cnArgObject);
+                    controlnet.put("args", args);
+                    alwayson_scripts.put("controlnet", controlnet);
                 }
-                cnArgObject.put("weight", param.cnWeight);
-                cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
-                cnArgObject.put("lowvram", false);
-                //cnArgObject.put("processor_res", param.sdSize);
-                cnArgObject.put("pixel_perfect", true);
-                cnArgObject.put("threshold_a", 64);
-                cnArgObject.put("threshold_b", 64);
-                cnArgObject.put("guidance", 1);
-                cnArgObject.put("guidance_start", 0);
-                cnArgObject.put("guidance_end", 1);
-                cnArgObject.put("control_mode", param.cnControlMode);
-                args.put(cnArgObject);
-                controlnet.put("args", args);
-                alwayson_scripts.put("controlnet", controlnet);
             }
             jsonObject.put("alwayson_scripts", alwayson_scripts);
 

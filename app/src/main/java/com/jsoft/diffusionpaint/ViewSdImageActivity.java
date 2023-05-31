@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
-import com.jsoft.diffusionpaint.dto.SdCnParam;
+import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
@@ -172,8 +172,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void saveImage(String cnMode) {
         if (savedImageName==null) {
-            SdCnParam param = sdApiHelper.getSdCnParm(cnMode);
-            if (mCurrentSketch.getImgInpaintMask() != null && param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)) {
+            SdParam param = sdApiHelper.getSdCnParm(cnMode);
+            if (mCurrentSketch.getImgInpaintMask() != null && param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
                 int bmWidth = param.sdSize;
                 if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                     bmWidth = bmWidth * 3 / 4;
@@ -259,11 +259,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     public void callSD4Img() {
         isCallingSD = true;
-        SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        Gson gson = new Gson();
-        String json = gson.toJson(param);
-        //Log.e("diffusionpaint", mCurrentSketch.getCnMode() + " : " + json);
-        if (param.type.equals(SdCnParam.SD_MODE_TYPE_TXT2IMG)) {
+        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);
         } else {
@@ -282,8 +279,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if ("getConfig".equals(requestType)) {
                 JSONObject getConfigResponse = new JSONObject(responseBody);
                 String currentModel = getConfigResponse.getString("sd_model_checkpoint");
-                SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-                String preferredModel = param.type.equals(SdCnParam.SD_MODE_TYPE_INPAINT)?
+                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                String preferredModel = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)?
                         sharedPreferences.getString("sdInpaintModel", ""):
                         sharedPreferences.getString("sdModelCheckpoint", "");
                 if (!currentModel.equals(preferredModel)) {
@@ -303,8 +300,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = Utils.base64String2Bitmap((String) images.get(0));
                     sdImage.setImageBitmap(mBitmap);
                     if ("img2img".equals(requestType)) {
-                        SdCnParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-                        if (param.inpaintPartial == SdCnParam.INPAINT_PARTIAL) {
+                        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                        if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
                             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                             Canvas canvasEdit = new Canvas(bmEdit);
                             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
