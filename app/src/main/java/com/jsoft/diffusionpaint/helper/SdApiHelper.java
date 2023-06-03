@@ -47,6 +47,10 @@ public class SdApiHelper {
         sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
     }
 
+    public void setActivity(Activity activity) { this.activity  = activity;}
+    public void setListener(SdApiResponseListener listener) { this.listener  = listener;}
+
+
     public void sendGetRequest(String requestType, String url) {
         sendRequest(requestType, url, null, "GET");
     }

@@ -424,6 +424,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("txt2imgPrompt",prompt);
             editor.apply();
+            ViewSdImageActivity.mBitmap = null;
+            ViewSdImageActivity.isCallingAPI = false;
             Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", Sketch.CN_MODE_TXT);
