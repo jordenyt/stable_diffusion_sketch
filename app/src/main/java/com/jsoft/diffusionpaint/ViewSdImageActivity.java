@@ -2,15 +2,13 @@ package com.jsoft.diffusionpaint;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -43,8 +40,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
-    private Sketch mCurrentSketch;
-    private PaintDb db;
+    private static Sketch mCurrentSketch;
     private ImageView sdImage;
     private LinearLayout spinner_bg;
     private FloatingActionButton sdButton;
@@ -53,47 +49,71 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton dflButton;
     private FloatingActionButton editButton;
     private FloatingActionButton backButton;
-    private Bitmap mBitmap;
+    public static Bitmap mBitmap = null;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
     private SharedPreferences sharedPreferences;
     private String aspectRatio;
-    private SdApiHelper sdApiHelper;
+    @SuppressLint("StaticFieldLeak")
+    private static SdApiHelper sdApiHelper;
     private boolean isCallingSD = false;
     private String savedImageName = null;
-    private boolean hasCall = false;
+    public static boolean isCallingAPI = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
+        boolean isFirstCall = (mBitmap == null && !isCallingAPI);
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
         String cnMode = i.getStringExtra("cnMode");
-        this.sdApiHelper = new SdApiHelper(this, this);
+        if (sdApiHelper == null) {
+            sdApiHelper = new SdApiHelper(this, this);
+        } else {
+            sdApiHelper.setActivity(this);
+            sdApiHelper.setListener(this);
+        }
+        PaintDb db = new PaintDb(this);
 
-        db = new PaintDb(this);
-
-        if (sketchId >= 0) {
-            Sketch dbSketch = db.getSketch(sketchId);
-            if (dbSketch != null) {
-                mCurrentSketch = dbSketch;
-                mCurrentSketch.setCnMode(cnMode);
-                mBitmap = mCurrentSketch.getImgPreview();
+        if (isFirstCall) {
+            if (sketchId >= 0) {
+                Sketch dbSketch = db.getSketch(sketchId);
+                if (dbSketch != null) {
+                    mCurrentSketch = dbSketch;
+                    mCurrentSketch.setCnMode(cnMode);
+                    mBitmap = mCurrentSketch.getImgPreview();
+                    aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
+                }
+            } else if (sketchId == -3) {
+                mCurrentSketch = new Sketch();
+                mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
+                mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
+                mCurrentSketch.setId(-3);
+                aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
+            }
+            if (mCurrentSketch == null) {
+                mCurrentSketch = new Sketch();
+            }
+        } else {
+            aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
+            if (mCurrentSketch.getImgPreview() != null) {
                 aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
             }
-        } else if (sketchId == -3) {
-            mCurrentSketch=new Sketch();
-            mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
-            mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
-            mCurrentSketch.setId(-3);
-            aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         }
-        if (mCurrentSketch==null) {
-            mCurrentSketch=new Sketch();
-        }
-        setScreenRotation();
 
+        initUI(cnMode);
+
+        if (isFirstCall) {
+            if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) { hideSpinner(); }
+            else { getSdConfig();}
+        } else {
+            if (isCallingAPI) { showSpinner();}
+            else { hideSpinner();}
+        }
+    }
+
+    private void initUI(String cnMode) {
         setContentView(R.layout.activity_view_sd_image);
         sdImage = findViewById(R.id.sd_image);
         spinner_bg = findViewById(R.id.spinner_bg);
@@ -110,7 +130,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
 
         sdButton.setOnClickListener(view -> {
-            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdConfig(mCurrentSketch.getCnMode());
+            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdConfig();
         });
 
         backButton.setOnClickListener(view -> this.onBackPressed());
@@ -172,17 +192,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 });
             });
         });
-
-        if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-            hideSpinner();
-        } else {
-            int orientation = this.getResources().getConfiguration().orientation;
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE)
-                    || (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT) && orientation == Configuration.ORIENTATION_PORTRAIT)
-                    || (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE) && orientation== Configuration.ORIENTATION_LANDSCAPE)) {
-                getSdConfig(mCurrentSketch.getCnMode());
-            }
-        }
     }
 
     private void saveImage(String cnMode) {
@@ -215,35 +224,22 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Lock the orientation to portrait
-        setScreenRotation();
-    }
-
-    @Override
     public void onBackPressed() {
         if (isCallingSD) {
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
             isCallingSD = false;
         }
+        isCallingAPI = false;
         super.onBackPressed();
     }
 
-    public void setScreenRotation() {
-        if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
-    }
-
-    private void getSdConfig(String cnMode) {
+    private void getSdConfig() {
         showSpinner();
         sdApiHelper.sendGetRequest("getConfig", "/sdapi/v1/options");
     }
 
     private void showSpinner() {
+        isCallingAPI = true;
         spinner_bg.setVisibility(View.VISIBLE);
         sdButton.setVisibility(View.GONE);
         saveButton.setVisibility(View.GONE);
@@ -254,6 +250,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     private void hideSpinner() {
+        isCallingAPI = false;
         spinner_bg.setVisibility(View.GONE);
         sdButton.setVisibility(View.VISIBLE);
         saveButton.setVisibility(View.VISIBLE);
@@ -269,7 +266,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Request Type: " + requestType)
                 .setTitle("Call Stable Diffusion API failed")
-                .setPositiveButton("OK", (dialog, id) -> ViewSdImageActivity.this.onBackPressed());
+                .setPositiveButton("OK", (dialog, id) -> {
+                    hideSpinner();
+                    //ViewSdImageActivity.this.onBackPressed();
+                });
         AlertDialog alert = builder.create();
         alert.show();
     }

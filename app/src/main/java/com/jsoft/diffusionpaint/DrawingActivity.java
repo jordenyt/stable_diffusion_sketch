@@ -393,6 +393,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             result -> {});
 
     public void gotoViewSdImageActivity(int sketchID, String cnMode) {
+        ViewSdImageActivity.mBitmap = null;
+        ViewSdImageActivity.isCallingAPI = false;
         Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
         intent.putExtra("sketchId", sketchID);
         intent.putExtra("cnMode", cnMode);
