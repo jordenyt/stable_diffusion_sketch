@@ -7,6 +7,8 @@ public class CnParam {
     public String cnModelKey;
     public int cnControlMode;
     public double cnWeight;
+    public double cnModuleParamA;
+    public double cnModuleParamB;
 
     public static final String CN_MODE_BALANCED = "Balanced";
     public static final String CN_MODE_PROMPT = "My prompt is more important";

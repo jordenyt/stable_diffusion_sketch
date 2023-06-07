@@ -155,7 +155,7 @@ public class SdApiHelper {
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {
             JsonObject cnObj = new JsonObject();
-            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight"};
+            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB"};
             for (String cnProp : cnProperties) {
                 if (rootObj.get(cnProp) != null) {
                     cnObj.add(cnProp, rootObj.get(cnProp));
@@ -172,6 +172,25 @@ public class SdApiHelper {
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
         if (param.cfgScale == 0d) { param.cfgScale = 7.0; }
         if (param.steps == 0) { param.steps = 40; }
+        if (param.cn != null) {
+            for (CnParam cnParam : param.cn) {
+                if (cnParam.cnModuleParamA == 0d) {
+                    if (cnParam.cnModule.contains("reference")) {
+                            cnParam.cnModuleParamA = 0.5;
+                    } else if (cnParam.cnModule.contains("tile_resample")) {
+                        cnParam.cnModuleParamA = 1;
+                    } else if (cnParam.cnModule.contains("tile_colorfix+sharp")) {
+                        cnParam.cnModuleParamA = 8;
+                        cnParam.cnModuleParamB = 1;
+                    } else if (cnParam.cnModule.contains("tile_colorfix")) {
+                        cnParam.cnModuleParamA = 8;
+                    } else if (cnParam.cnModule.contains("mlsd")) {
+                        cnParam.cnModuleParamA = 8;
+                        cnParam.cnModuleParamB = 1;
+                    }
+                }
+            }
+        }
         return param;
     }
 
@@ -224,8 +243,8 @@ public class SdApiHelper {
                         cnArgObject.put("lowvram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
-                        cnArgObject.put("threshold_a", 64);
-                        cnArgObject.put("threshold_b", 64);
+                        cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
+                        cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
                         cnArgObject.put("guidance", 1);
                         cnArgObject.put("guidance_start", 0);
                         cnArgObject.put("guidance_end", 1);
@@ -356,8 +375,8 @@ public class SdApiHelper {
                         cnArgObject.put("lowvram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
-                        cnArgObject.put("threshold_a", 64);
-                        cnArgObject.put("threshold_b", 64);
+                        cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
+                        cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
                         cnArgObject.put("guidance", 1);
                         cnArgObject.put("guidance_start", 0);
                         cnArgObject.put("guidance_end", 1);

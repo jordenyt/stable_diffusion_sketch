@@ -278,6 +278,21 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_cn_canny:
                 sdApiHelper.sendGetRequest("setCnCanny", "/controlnet/model_list");
                 break;
+            case R.id.mi_cn_normal:
+                sdApiHelper.sendGetRequest("setCnNormal", "/controlnet/model_list");
+                break;
+            case R.id.mi_cn_mlsd:
+                sdApiHelper.sendGetRequest("setCnMlsd", "/controlnet/model_list");
+                break;
+            case R.id.mi_cn_lineart:
+                sdApiHelper.sendGetRequest("setCnLineart", "/controlnet/model_list");
+                break;
+            case R.id.mi_cn_softedge:
+                sdApiHelper.sendGetRequest("setCnSoftedge", "/controlnet/model_list");
+                break;
+            case R.id.mi_cn_seg:
+                sdApiHelper.sendGetRequest("setCnSeg", "/controlnet/model_list");
+                break;
             case R.id.mi_cn_tile:
                 sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
                 break;
@@ -534,6 +549,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Canny Model", "cnCannyModel", "control_v11p_sd15_canny [d14c016b]", "canny");
             } else if ("setCnTile".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Tile Model", "cnTileModel", "control_v11f1e_sd15_tile [a371b31b]", "tile");
+            } else if ("setCnNormal".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Normal Model", "cnNormalModel", "control_v11p_sd15_normalbae [316696f1]", "normal");
+            } else if ("setCnMlsd".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet MLSD Model", "cnMlsdModel", "control_v11p_sd15_mlsd [aca30ff0]", "mlsd");
+            }else if ("setCnLineart".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Line Art Model", "cnLineartModel", "control_v11p_sd15s2_lineart_anime [3825e83e]", "lineart");
+            } else if ("setCnSoftedge".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Soft Edge Model", "cnSoftedgeModel", "control_v11p_sd15_softedge [a8575a2a]", "softedge");
+            } else if ("setCnSeg".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Seg Model", "cnSegModel", "control_v11p_sd15_seg [e1f51eb9]", "seg");
             }
         } catch (JSONException e) {
             e.printStackTrace();
