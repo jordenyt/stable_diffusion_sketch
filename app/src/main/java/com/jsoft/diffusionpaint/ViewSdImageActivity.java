@@ -150,17 +150,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         expandButton.setOnClickListener(view -> {
-            if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1600) {
+            //if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1600) {
                 JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
                 showSpinner();
                 isCallingSD = true;
                 sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
-            } else {
+            /*} else {
                 JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
                 showSpinner();
                 String baseUrl = sharedPreferences.getString("dflApiAddress", "");
                 sdApiHelper.sendRequest("deepFaceLab", baseUrl, "/upscaleimage", jsonObject, "POST");
-            }
+            }*/
         });
 
         dflButton.setOnClickListener(view -> {
