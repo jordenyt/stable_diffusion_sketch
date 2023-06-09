@@ -63,10 +63,6 @@ public class TouchImageView extends AppCompatImageView {
         });
     }
 
-    public void setMaxZoom(float x) {
-        maxScale = x;
-    }
-
     private class ScaleListener extends
             ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
