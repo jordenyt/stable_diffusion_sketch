@@ -16,11 +16,11 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.jsoft.diffusionpaint.component.TouchImageView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -41,7 +41,7 @@ import java.util.concurrent.CompletableFuture;
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
     private static Sketch mCurrentSketch;
-    private ImageView sdImage;
+    private TouchImageView sdImage;
     private LinearLayout spinner_bg;
     private FloatingActionButton sdButton;
     private FloatingActionButton saveButton;
@@ -298,7 +298,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONArray images = jsonObject.getJSONArray("images");
                 if (images.length() > 0) {
                     mBitmap = Utils.base64String2Bitmap((String) images.get(0));
-                    sdImage.setImageBitmap(mBitmap);
                     if ("img2img".equals(requestType)) {
                         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
@@ -307,9 +306,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(), null);
                             mBitmap = bmEdit;
-                            sdImage.setImageBitmap(mBitmap);
                         }
                     }
+                    sdImage.resetView();
+                    sdImage.setImageBitmap(mBitmap);
                 }
                 savedImageName = null;
                 hideSpinner();
@@ -318,6 +318,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONObject jsonObject = new JSONObject(responseBody);
                 String imageStr = jsonObject.getString("image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
+                sdImage.resetView();
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
                 hideSpinner();
