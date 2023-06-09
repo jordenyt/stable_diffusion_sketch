@@ -325,18 +325,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
                 hideSpinner();
-<<<<<<< Updated upstream
-=======
-            } else if ("deepFaceLab".equals(requestType)) {
-                isCallingSD = false;
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String imageStr = jsonObject.getString("processed_image");
-                mBitmap = Utils.base64String2Bitmap(imageStr);
-                sdImage.resetView();
-                sdImage.setImageBitmap(mBitmap);
-                savedImageName = null;
-                hideSpinner();
->>>>>>> Stashed changes
             }
         } catch (JSONException e) {
             e.printStackTrace();
