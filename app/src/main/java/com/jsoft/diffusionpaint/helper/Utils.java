@@ -153,7 +153,7 @@ public class Utils {
     }
 
     public static Bitmap extractBitmap(Bitmap sourceBitmap, RectF r) {
-        return Bitmap.createBitmap(sourceBitmap, (int)r.left, (int)r.top, (int)r.width()+1, (int)r.height()+1);
+        return Bitmap.createBitmap(sourceBitmap, (int)r.left, (int)r.top, (int)r.width(), (int)r.height());
     }
 
     public static boolean isEmptyBitmap(Bitmap bitmap) {
