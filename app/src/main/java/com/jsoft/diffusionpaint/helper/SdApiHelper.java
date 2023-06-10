@@ -281,9 +281,6 @@ public class SdApiHelper {
 
             Bitmap baseImage;
             if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
-                if (mCurrentSketch.getRectInpaint() == null) {
-                    mCurrentSketch.setRectInpaint(mCurrentSketch.getInpaintRect(param.sdSize));
-                }
                 Bitmap bg = mCurrentSketch.getImgBackground();
                 if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
                     Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
@@ -294,15 +291,16 @@ public class SdApiHelper {
                 } else if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF)) {
                     bg = mCurrentSketch.getImgBgRef();
                 }
-                baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
+                baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
+                /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
+                Log.e("diffusionpaint", "Rect=" + mCurrentSketch.getRectInpaint(param.sdSize).width() + "X" + mCurrentSketch.getRectInpaint(param.sdSize).height());
+                Log.e("diffusionpaint", "Rect=(" + mCurrentSketch.getRectInpaint(param.sdSize).left + "," + mCurrentSketch.getRectInpaint(param.sdSize).top + ") -> ("
+                        + mCurrentSketch.getRectInpaint(param.sdSize).right + "," + mCurrentSketch.getRectInpaint(param.sdSize).bottom + ")");*/
             } else {
                 baseImage = param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
                         param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getResizedImgBgRef() : mCurrentSketch.getResizedImgBackground();
             }
-            /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
-            Log.e("diffusionpaint", "baseImage=" + baseImage.getWidth() + "X" + baseImage.getHeight());
-            Log.e("diffusionpaint", "Rect=(" + mCurrentSketch.getRectInpaint().left + "," + mCurrentSketch.getRectInpaint().top + ") -> ("
-                            + mCurrentSketch.getRectInpaint().right + "," + mCurrentSketch.getRectInpaint().bottom + ")");*/
+
             init_images.put(Utils.jpg2Base64String(baseImage));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);
@@ -315,7 +313,7 @@ public class SdApiHelper {
                 Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
                     Bitmap resizedBm = Bitmap.createScaledBitmap(mCurrentSketch.getImgInpaintMask(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), false);
-                    imgInpaintMask = Utils.extractBitmap(resizedBm, mCurrentSketch.getRectInpaint());
+                    imgInpaintMask = Utils.extractBitmap(resizedBm, mCurrentSketch.getRectInpaint(param.sdSize));
                 }
                 jsonObject.put("mask", Utils.png2Base64String(imgInpaintMask));
                 jsonObject.put("mask_blur", 10);
@@ -329,15 +327,30 @@ public class SdApiHelper {
             jsonObject.put("seed", -1);
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                jsonObject.put("width", param.sdSize * 3 / 4);
+            if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
+                RectF inpaintRect = mCurrentSketch.getRectInpaint(param.sdSize);
+                if (inpaintRect.width() >= inpaintRect.height()) {
+                    jsonObject.put("width", param.sdSize);
+                    double h = param.sdSize / (inpaintRect.width() - 1) * (inpaintRect.height() - 1);
+                    h = 64 * Math.round(h / 64);
+                    jsonObject.put("height", h);
+                } else {
+                    jsonObject.put("height", param.sdSize);
+                    double w = param.sdSize / (inpaintRect.height() - 1) * (inpaintRect.width() - 1);
+                    w = 64 * Math.round(w / 64);
+                    jsonObject.put("width", w);
+                }
             } else {
-                jsonObject.put("width", param.sdSize);
-            }
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                jsonObject.put("height", param.sdSize * 3 / 4);
-            } else {
-                jsonObject.put("height", param.sdSize);
+                if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
+                    jsonObject.put("width", param.sdSize * 3 / 4);
+                } else {
+                    jsonObject.put("width", param.sdSize);
+                }
+                if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
+                    jsonObject.put("height", param.sdSize * 3 / 4);
+                } else {
+                    jsonObject.put("height", param.sdSize);
+                }
             }
             jsonObject.put("restore_faces", false);
             jsonObject.put("tiling", false);
@@ -369,7 +382,7 @@ public class SdApiHelper {
                                 canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                                 bg = bmEdit;
                             }
-                            cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint());
+                            cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
                         } else {
                             cnImage = cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() : mCurrentSketch.getResizedImgBackground();
                         }

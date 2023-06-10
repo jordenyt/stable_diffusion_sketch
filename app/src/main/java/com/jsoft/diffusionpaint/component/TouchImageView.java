@@ -1,5 +1,6 @@
 package com.jsoft.diffusionpaint.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
@@ -39,6 +40,7 @@ public class TouchImageView extends AppCompatImageView {
         sharedConstructing(context);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void sharedConstructing(Context context) {
         super.setClickable(true);
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
@@ -48,18 +50,13 @@ public class TouchImageView extends AppCompatImageView {
         setImageMatrix(matrix);
         setScaleType(ImageView.ScaleType.MATRIX);
 
-        setOnTouchListener(new View.OnTouchListener() {
+        setOnTouchListener((v, event) -> {
+            mScaleDetector.onTouchEvent(event);
+            mGestureDetector.onTouchEvent(event);
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScaleDetector.onTouchEvent(event);
-                mGestureDetector.onTouchEvent(event);
-
-                setImageMatrix(matrix);
-                invalidate();
-                return true; // indicate event was handled
-            }
-
+            setImageMatrix(matrix);
+            invalidate();
+            return true; // indicate event was handled
         });
     }
 
@@ -123,8 +120,7 @@ public class TouchImageView extends AppCompatImageView {
             matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2f,
                     viewHeight / 2f);
         else
-            matrix.postScale(mScaleFactor, mScaleFactor,
-                    focusX, focusY);
+            matrix.postScale(mScaleFactor, mScaleFactor, focusX, focusY);
 
         fixTrans();
     }

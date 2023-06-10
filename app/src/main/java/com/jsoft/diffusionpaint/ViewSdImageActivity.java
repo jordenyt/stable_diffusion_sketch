@@ -324,7 +324,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                             Canvas canvasEdit = new Canvas(bmEdit);
                             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                            canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(), null);
+                            canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
                             mBitmap = bmEdit;
                         }
                     }

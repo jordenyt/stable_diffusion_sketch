@@ -127,7 +127,12 @@ public class Sketch implements Serializable {
 
     public void setRectInpaint(RectF rectInpaint) { this.rectInpaint = rectInpaint; }
 
-    public RectF getRectInpaint() { return rectInpaint; }
+    public RectF getRectInpaint(int sdSize) {
+        if (rectInpaint == null) {
+            rectInpaint = getInpaintRect(sdSize);
+        }
+        return rectInpaint;
+    }
 
     public List<Sketch> getChildren() { return children; }
 
@@ -189,8 +194,9 @@ public class Sketch implements Serializable {
         }
     }
 
-    public RectF getInpaintRect(int sdSize) {
+    private RectF getInpaintRect(int sdSize) {
         int inpaintMargin = 64;
+        int sdBlockSize = 64;
         if (imgBackground == null) {
             return null;
         }
@@ -210,24 +216,44 @@ public class Sketch implements Serializable {
                 }
             }
         }
-        String aspectRatio = Utils.getAspectRatio(imgBackground);
-        int minWidth = sdSize;
-        int minHeight = sdSize;
-        if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-            minWidth = sdSize * 3 / 4;
-        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-            minHeight = sdSize * 3 / 4;
+
+        double scale = 1d;
+        int inpaintWidth = x2 - x1 + 1 + 2 * inpaintMargin;
+        int inpaintHeight = y2 - y1 + 1 + 2 * inpaintMargin;
+        if ((inpaintWidth > sdSize) && (x2-x1 >= y2-y1)) {
+            scale = (inpaintWidth-1d) / (sdSize-1d);
+        } else if ((inpaintHeight > sdSize) && (y2-y1 >= x2-x1)) {
+            scale = (inpaintHeight-1d) / (sdSize-1d);
         }
 
-        int inpaintWidth = Math.max(minWidth, x2 - x1 + 1 + 2 * inpaintMargin);
-        int inpaintHeight =  Math.max(minHeight, y2 - y1 + 1 + 2 * inpaintMargin);
-        double scale = Math.max((double)inpaintWidth/imgBackground.getWidth(), (double)inpaintHeight/imgBackground.getHeight());
-        if (scale > 1.0) scale = 1;
+        if (scale == 1d) {
+            inpaintWidth = sdSize;
+            inpaintHeight = sdSize;
+        }
 
-        double left = (x1 + (x2-x1)/2.0) - (scale * imgBackground.getWidth() - 1)/ 2.0;
-        double right = left + (scale * imgBackground.getWidth()-1);
-        double top = (y1 + (y2-y1)/2.0) - (scale * imgBackground.getHeight() - 1)/ 2.0;
-        double bottom = top + (scale * imgBackground.getHeight()-1);
+        double blockWidth = sdBlockSize * scale;
+        if (x2-x1 >= y2-y1) {
+            inpaintHeight = inpaintWidth;
+            for (int i=0; i < sdSize / sdBlockSize; i++) {
+                if (inpaintHeight - blockWidth * (i + 1) < y2 - y1 + 1 + 2 * inpaintMargin) {
+                    inpaintHeight = (int) Math.round(inpaintHeight - blockWidth * i);
+                    break;
+                }
+            }
+        } else {
+            inpaintWidth = inpaintHeight;
+            for (int i=0; i < sdSize / sdBlockSize; i++) {
+                if (inpaintWidth - blockWidth * (i + 1) < x2 - x1 + 1 + 2 * inpaintMargin) {
+                    inpaintWidth = (int) Math.round(inpaintWidth - blockWidth * i);
+                    break;
+                }
+            }
+        }
+
+        double left = (x1 + (x2-x1)/2d) - (inpaintWidth-1)/2d;
+        double right = left + (inpaintWidth-1);
+        double top = (y1 + (y2-y1)/2d) - (inpaintHeight-1)/ 2d;
+        double bottom = top + (inpaintHeight-1);
 
         if (left < 0) {
             right = right - left;
