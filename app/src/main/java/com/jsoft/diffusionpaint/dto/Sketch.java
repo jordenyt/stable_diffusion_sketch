@@ -218,36 +218,21 @@ public class Sketch implements Serializable {
         }
 
         double scale = 1d;
-        int inpaintWidth = x2 - x1 + 1 + 2 * inpaintMargin;
-        int inpaintHeight = y2 - y1 + 1 + 2 * inpaintMargin;
+        int inpaintWidth = Math.min(imgBackground.getWidth(), x2 - x1 + 1 + 2 * inpaintMargin);
+        int inpaintHeight = Math.min(imgBackground.getHeight(), y2 - y1 + 1 + 2 * inpaintMargin);
         if ((inpaintWidth > sdSize) && (x2-x1 >= y2-y1)) {
             scale = (inpaintWidth-1d) / (sdSize-1d);
         } else if ((inpaintHeight > sdSize) && (y2-y1 >= x2-x1)) {
             scale = (inpaintHeight-1d) / (sdSize-1d);
         }
 
-        if (scale == 1d) {
-            inpaintWidth = sdSize;
-            inpaintHeight = sdSize;
-        }
-
         double blockWidth = sdBlockSize * scale;
         if (x2-x1 >= y2-y1) {
-            inpaintHeight = inpaintWidth;
-            for (int i=0; i < sdSize / sdBlockSize; i++) {
-                if (inpaintHeight - blockWidth * (i + 1) < y2 - y1 + 1 + 2 * inpaintMargin) {
-                    inpaintHeight = (int) Math.round(inpaintHeight - blockWidth * i);
-                    break;
-                }
-            }
+            inpaintWidth = (int)Math.round(sdSize * scale);
+            inpaintHeight = (int)Math.round(blockWidth * Math.ceil(inpaintHeight / blockWidth));
         } else {
-            inpaintWidth = inpaintHeight;
-            for (int i=0; i < sdSize / sdBlockSize; i++) {
-                if (inpaintWidth - blockWidth * (i + 1) < x2 - x1 + 1 + 2 * inpaintMargin) {
-                    inpaintWidth = (int) Math.round(inpaintWidth - blockWidth * i);
-                    break;
-                }
-            }
+            inpaintHeight = (int)Math.round(sdSize * scale);
+            inpaintWidth = (int)Math.round(blockWidth * Math.ceil(inpaintWidth / blockWidth));
         }
 
         double left = (x1 + (x2-x1)/2d) - (inpaintWidth-1)/2d;
@@ -258,17 +243,17 @@ public class Sketch implements Serializable {
         if (left < 0) {
             right = right - left;
             left = 0;
-        } else if (right > imgBackground.getWidth()-1) {
-            left = left - (right - imgBackground.getWidth() + 1);
-            right = imgBackground.getWidth()-1;
+        } else if (right > imgBackground.getWidth()) {
+            left = left - (right - imgBackground.getWidth());
+            right = imgBackground.getWidth();
         }
 
         if (top < 0) {
             bottom = bottom - top;
             top = 0;
-        } else if (bottom > imgBackground.getHeight()-1) {
-            top = top - (bottom - imgBackground.getHeight() + 1);
-            bottom = imgBackground.getHeight()-1;
+        } else if (bottom > imgBackground.getHeight()) {
+            top = top - (bottom - imgBackground.getHeight() );
+            bottom = imgBackground.getHeight();
         }
 
         return new RectF(Math.round(left), Math.round(top), Math.round(right), Math.round(bottom));
