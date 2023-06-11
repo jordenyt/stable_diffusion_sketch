@@ -211,14 +211,20 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
 
                 Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(2.0 * ratio));
-
                 Bitmap bmResizedMask = Bitmap.createScaledBitmap(bmMask, bmEdit.getWidth(), bmEdit.getHeight(), false);
-
-                for (int x = 0; x < bmEdit.getWidth(); x++)
-                    for (int y = 0; y < bmEdit.getHeight(); y++) {
-                        if (bmResizedMask.getPixel(x, y) == Color.BLACK)
-                            bmEdit.setPixel(x, y, mCurrentSketch.getImgBackground().getPixel(x, y));
+                int[] editPixels = new int[bmEdit.getWidth() * bmEdit.getHeight()];
+                int[] maskPixels = new int[bmResizedMask.getWidth() * bmResizedMask.getHeight()];
+                int[] bgPixels = new int[mCurrentSketch.getImgBackground().getWidth() * mCurrentSketch.getImgBackground().getHeight()];
+                bmEdit.getPixels(editPixels, 0, bmEdit.getWidth(), 0, 0, bmEdit.getWidth(), bmEdit.getHeight());
+                bmResizedMask.getPixels(maskPixels, 0, bmResizedMask.getWidth(), 0, 0, bmResizedMask.getWidth(), bmResizedMask.getHeight());
+                mCurrentSketch.getImgBackground().getPixels(bgPixels, 0, mCurrentSketch.getImgBackground().getWidth(), 0, 0, mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight());
+                for (int i = 0; i < editPixels.length; i++) {
+                    if (Color.alpha(maskPixels[i]) == Color.BLACK) {
+                        editPixels[i] = bgPixels[i];
                     }
+                }
+                bmEdit = Bitmap.createBitmap(editPixels, bmEdit.getWidth(), bmEdit.getHeight(), Bitmap.Config.ARGB_8888);
+
                 mBitmap = bmEdit;
             }
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
