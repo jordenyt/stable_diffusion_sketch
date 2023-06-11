@@ -85,9 +85,9 @@ public class Utils {
         String aspectRatio = Sketch.ASPECT_RATIO_SQUARE;
         double ratio = (double) bm.getWidth() / (double) bm.getHeight();
         if (bm != null) {
-            if (ratio >= 1.125) {
+            if (ratio >= 7d/6d) {
                 aspectRatio = Sketch.ASPECT_RATIO_LANDSCAPE;
-            } else if (ratio <= 0.875) {
+            } else if (ratio <= 7d/8d) {
                 aspectRatio = Sketch.ASPECT_RATIO_PORTRAIT;
             }
         }
