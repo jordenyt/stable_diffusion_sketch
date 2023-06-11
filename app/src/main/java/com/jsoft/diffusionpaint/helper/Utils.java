@@ -120,19 +120,20 @@ public class Utils {
 
     public static Bitmap getDilationMask(Bitmap originalBitmap, int expandPixel) {
         // Create a new Bitmap with the same dimensions and a black background
-        Bitmap newBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
+        int[] newPixels = new int[originalBitmap.getWidth() * originalBitmap.getHeight()];
+        int[] originalPixels = new int[originalBitmap.getWidth() * originalBitmap.getHeight()];
+        originalBitmap.getPixels(originalPixels, 0, originalBitmap.getWidth(), 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight());
         // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
-        for (int x = 0; x < originalBitmap.getWidth(); x++) {
-            for (int y = 0; y < originalBitmap.getHeight(); y++) {
-                int color = originalBitmap.getPixel(x,y);
-                if (Color.alpha(color) != 0) {
-                    newBitmap.setPixel(x,y,Color.WHITE);
-                } else {
-                    newBitmap.setPixel(x, y, Color.TRANSPARENT);
-                }
+        for (int i = 0; i < originalPixels.length; i++) {
+            int color = originalPixels[i];
+            if (Color.alpha(color) != 0) {
+                newPixels[i] = Color.WHITE;
+            } else {
+                newPixels[i] = Color.TRANSPARENT;
             }
         }
+        Bitmap newBitmap = Bitmap.createBitmap(newPixels, originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
         Bitmap bmMask = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas cvMask = new Canvas(bmMask);
@@ -159,19 +160,18 @@ public class Utils {
     public static boolean isEmptyBitmap(Bitmap bitmap) {
         if (bitmap == null) return true;
         boolean allTransparent = true;
-        for (int x = 0; x < bitmap.getWidth(); x++) {
-            for (int y = 0; y < bitmap.getHeight(); y++) {
-                int pixel = bitmap.getPixel(x, y);
-                int alpha = Color.alpha(pixel);
-                if (alpha != 0) {
-                    allTransparent = false;
-                    break;
-                }
-            }
-            if (!allTransparent) {
+
+        int pixels[] = new int[bitmap.getWidth() * bitmap.getHeight()];
+        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        for (int i = 0; i < pixels.length; i++) {
+            int pixel = pixels[i];
+            int alpha = Color.alpha(pixel);
+            if (alpha != 0) {
+                allTransparent = false;
                 break;
             }
         }
+
         return allTransparent;
     }
 

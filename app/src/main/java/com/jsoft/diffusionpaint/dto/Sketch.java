@@ -125,8 +125,6 @@ public class Sketch implements Serializable {
         this.prompt = prompt;
     }
 
-    public void setRectInpaint(RectF rectInpaint) { this.rectInpaint = rectInpaint; }
-
     public RectF getRectInpaint(int sdSize) {
         if (rectInpaint == null) {
             rectInpaint = getInpaintRect(sdSize);
@@ -162,14 +160,22 @@ public class Sketch implements Serializable {
         if (imgReference != null) {
             Bitmap imgBg = getResizedImgBackground();
             Bitmap imgRef = getResizedImgReference();
-            Bitmap result = imgBg.copy(Bitmap.Config.ARGB_8888, true);
-            for (int x = 0; x < imgBg.getWidth(); x++) {
-                for (int y = 0; y < imgBg.getHeight(); y++) {
-                    if (Color.alpha(imgPaint.getPixel(x, y)) != 0) {
-                        result.setPixel(x, y, imgRef.getPixel(x, y));
-                    }
+
+            int[] paintPixel = new int[imgPaint.getWidth() * imgPaint.getHeight()];
+            int[] resultPixel = new int[imgBg.getWidth() * imgBg.getHeight()];
+            int[] refPixel = new int[imgRef.getWidth() * imgRef.getHeight()];
+            imgBg.getPixels(resultPixel, 0, imgBg.getWidth(), 0, 0, imgBg.getWidth(), imgBg.getHeight());
+            imgPaint.getPixels(paintPixel, 0, imgPaint.getWidth(), 0, 0, imgPaint.getWidth(), imgPaint.getHeight());
+            imgRef.getPixels(refPixel, 0, imgRef.getWidth(), 0, 0, imgRef.getWidth(), imgRef.getHeight());
+
+            for (int i = 0; i < paintPixel.length; i++) {
+                if (Color.alpha(paintPixel[i]) != 0) {
+                    resultPixel[i] = refPixel[i];
                 }
             }
+
+            Bitmap result = Bitmap.createBitmap(resultPixel, imgBg.getWidth(), imgBg.getHeight(), Bitmap.Config.ARGB_8888);
+
             return result;
         } else {
             return getResizedImgBackground();
@@ -180,14 +186,23 @@ public class Sketch implements Serializable {
         if (imgReference != null) {
             Bitmap imgRef = Bitmap.createScaledBitmap(imgReference, imgBackground.getWidth(), imgBackground.getHeight(), true);
             Bitmap imgPaintR = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), true);
-            Bitmap result = imgRef.copy(Bitmap.Config.ARGB_8888, true);
-            for (int x = 0; x < imgRef.getWidth(); x++) {
-                for (int y = 0; y < imgRef.getHeight(); y++) {
-                    if (Color.alpha(imgPaintR.getPixel(x, y)) == 0) {
-                        result.setPixel(x, y, imgBackground.getPixel(x, y));
-                    }
+
+            int[] refPixels = new int[imgRef.getWidth() * imgRef.getHeight()];
+            int[] paintPixels = new int[imgPaintR.getWidth() * imgPaintR.getHeight()];
+            int[] backgroundPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
+
+            imgRef.getPixels(refPixels, 0, imgRef.getWidth(), 0, 0, imgRef.getWidth(), imgRef.getHeight());
+            imgPaintR.getPixels(paintPixels, 0, imgPaintR.getWidth(), 0, 0, imgPaintR.getWidth(), imgPaintR.getHeight());
+            imgBackground.getPixels(backgroundPixels, 0, imgBackground.getWidth(), 0, 0, imgBackground.getWidth(), imgBackground.getHeight());
+
+            for (int i = 0; i < refPixels.length; i++) {
+                if (Color.alpha(paintPixels[i]) == 0) {
+                    refPixels[i] = backgroundPixels[i];
                 }
             }
+
+            Bitmap result = Bitmap.createBitmap(refPixels, imgRef.getWidth(), imgRef.getHeight(), Bitmap.Config.ARGB_8888);
+
             return result;
         } else {
             return imgBackground;
@@ -204,10 +219,15 @@ public class Sketch implements Serializable {
         int y1 = imgBackground.getHeight();
         int x2 = -1;
         int y2 = -1;
+
+
         Bitmap resizedImgPaint = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), false);
+        int[] paintPixel = new int[resizedImgPaint.getWidth() * resizedImgPaint.getHeight()];
+        resizedImgPaint.getPixels(paintPixel, 0, resizedImgPaint.getWidth(), 0, 0, resizedImgPaint.getWidth(), resizedImgPaint.getHeight());
         for (int x=0;x<imgBackground.getWidth();x++) {
             for (int y=0;y<imgBackground.getHeight();y++) {
-                int color = resizedImgPaint.getPixel(x,y);
+                int i = y * resizedImgPaint.getWidth() + x;
+                int color = paintPixel[i];
                 if (Color.alpha(color) != 0) {
                     if (x < x1) x1 = x;
                     if (y < y1) y1 = y;
