@@ -226,9 +226,7 @@ public class Sketch implements Serializable {
         resizedImgPaint.getPixels(paintPixel, 0, resizedImgPaint.getWidth(), 0, 0, resizedImgPaint.getWidth(), resizedImgPaint.getHeight());
         for (int x=0;x<imgBackground.getWidth();x++) {
             for (int y=0;y<imgBackground.getHeight();y++) {
-                int i = y * resizedImgPaint.getWidth() + x;
-                int color = paintPixel[i];
-                if (Color.alpha(color) != 0) {
+                if (Color.alpha(paintPixel[y * resizedImgPaint.getWidth() + x]) != 0) {
                     if (x < x1) x1 = x;
                     if (y < y1) y1 = y;
                     if (x > x2) x2 = x;
@@ -256,9 +254,9 @@ public class Sketch implements Serializable {
         }
 
         double left = (x1 + (x2-x1)/2d) - (inpaintWidth-1)/2d;
-        double right = left + (inpaintWidth-1);
+        double right = left + inpaintWidth;
         double top = (y1 + (y2-y1)/2d) - (inpaintHeight-1)/ 2d;
-        double bottom = top + (inpaintHeight-1);
+        double bottom = top + inpaintHeight;
 
         if (left < 0) {
             right = right - left;
