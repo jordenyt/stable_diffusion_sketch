@@ -223,6 +223,51 @@ public class Utils {
         }
     }
 
+    public static Bitmap getOutpaintBmp(Bitmap bm, boolean isExpandVertically, int fillColor, boolean isPaint) {
+        int originalWidth = bm.getWidth();
+        int originalHeight = bm.getHeight();
+        int newWidth = originalWidth;
+        int newHeight = originalHeight;
+        String aspectRatio = Utils.getAspectRatio(bm);
+        int expandPixel = 0;
+        if (isExpandVertically) {
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE) || aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE) ) {
+                expandPixel = originalHeight / 6;
+            } else {
+                return bm;
+            }
+            newHeight += 2 * expandPixel;
+        } else {
+            if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE) || aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT) ) {
+                expandPixel = originalWidth / 6;
+            } else {
+                return bm;
+            }
+            newWidth += 2 * expandPixel;
+        }
+        Bitmap expandBmp = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(expandBmp);
+        Paint paint = new Paint();
+        paint.setColor(fillColor); // replace with the desired color
+        if (!isPaint) {
+            int x = (newWidth - originalWidth) / 2;
+            int y = (newHeight - originalHeight) / 2;
+            canvas.drawRect(0, 0, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            canvas.drawBitmap(bm, x, y, null);
+        } else {
+            expandPixel = expandPixel + 32;
+            if (isExpandVertically) {
+                canvas.drawRect(0, 0, expandBmp.getWidth(), expandPixel, paint);
+                canvas.drawRect(0, expandBmp.getHeight() - expandPixel, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            } else {
+                canvas.drawRect(0, 0, expandPixel, expandBmp.getHeight(), paint);
+                canvas.drawRect(expandBmp.getWidth() - expandPixel, 0, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            }
+        }
+
+        return expandBmp;
+    }
+
     public static Bitmap getBitmapFromPath(String filePath) {
         if (filePath != null) {
             Bitmap imageBitmap = BitmapFactory.decodeFile(filePath);

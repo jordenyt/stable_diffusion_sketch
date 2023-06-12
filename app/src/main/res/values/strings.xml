@@ -27,6 +27,8 @@
         <item>Inpaint(background) </item>
         <item>Inpaint(sketch)</item>
         <item>Inpaint(sketch) + Depth(background)</item>
+        <item>Outpaint Horizontally</item>
+        <item>Outpaint Vertically</item>
         <item>Custom Mode 1</item>
         <item>Custom Mode 2</item>
         <item>Custom Mode 3</item>

@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -52,7 +53,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static Bitmap mBitmap = null;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
     private SharedPreferences sharedPreferences;
-    private String aspectRatio;
+    //private String aspectRatio;
     @SuppressLint("StaticFieldLeak")
     private static SdApiHelper sdApiHelper;
     private boolean isCallingSD = false;
@@ -83,25 +84,31 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch = dbSketch;
                     mCurrentSketch.setCnMode(cnMode);
                     mBitmap = mCurrentSketch.getImgPreview();
-                    aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
+                    //aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
                 }
             } else if (sketchId == -3) {
                 mCurrentSketch = new Sketch();
                 mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
                 mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
                 mCurrentSketch.setId(-3);
-                aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
+                //aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
             }
             if (mCurrentSketch == null) {
                 mCurrentSketch = new Sketch();
             }
-        } else {
+        } /*else {
             aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
             if (mCurrentSketch.getImgPreview() != null) {
                 aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
             }
-        }
+        }*/
 
+        if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_V) || cnMode.equals(Sketch.CN_MODE_OUTPAINT_H)) {
+            mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode.equals(Sketch.CN_MODE_OUTPAINT_V), Color.BLACK, false));
+            mCurrentSketch.setImgPreview(Utils.getOutpaintBmp(mCurrentSketch.getImgPreview(), cnMode.equals(Sketch.CN_MODE_OUTPAINT_V), Color.BLUE, false));
+            mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode.equals(Sketch.CN_MODE_OUTPAINT_V), Color.BLACK, true));
+            mBitmap = mCurrentSketch.getImgPreview();
+        }
         initUI(cnMode);
 
         if (isFirstCall) {
@@ -201,8 +208,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (savedImageName==null) {
             SdParam param = sdApiHelper.getSdCnParm(cnMode);
             if (mCurrentSketch.getImgInpaintMask() != null && param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
+                //Log.e("diffusionpaint", "mCurrentSketch.getImgBackground()=" + mCurrentSketch.getImgBackground().getWidth() + " X " + mCurrentSketch.getImgBackground().getHeight());
                 int bmWidth = param.sdSize;
-                if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
+                if (Utils.getAspectRatio(mCurrentSketch.getImgBackground()).equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                     bmWidth = bmWidth * 3 / 4;
                 }
                 double ratio = (mCurrentSketch.getImgBackground().getWidth() + 0.0) / bmWidth;
@@ -224,6 +232,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     }
                 }
                 mBitmap = Bitmap.createBitmap(editPixels, bmEdit.getWidth(), bmEdit.getHeight(), Bitmap.Config.ARGB_8888);
+                //Log.e("diffusionpaint", "mBitmap=" + mBitmap.getWidth() + " X " + mBitmap.getHeight());
             }
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
@@ -284,6 +293,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void callSD4Img() {
         isCallingSD = true;
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        String aspectRatio = (mCurrentSketch.getImgBackground() != null) ?
+                Utils.getAspectRatio(mCurrentSketch.getImgBackground()) : sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);

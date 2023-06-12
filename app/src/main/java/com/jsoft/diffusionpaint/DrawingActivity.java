@@ -307,20 +307,26 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             case Sketch.CN_MODE_INPAINT_DEPTH:
                 sdMode.setSelection(8);
                 break;
-            case Sketch.CN_MODE_CUSTOM_1:
+            case Sketch.CN_MODE_OUTPAINT_H:
                 sdMode.setSelection(9);
                 break;
-            case Sketch.CN_MODE_CUSTOM_2:
+            case Sketch.CN_MODE_OUTPAINT_V:
                 sdMode.setSelection(10);
                 break;
-            case Sketch.CN_MODE_CUSTOM_3:
+            case Sketch.CN_MODE_CUSTOM_1:
                 sdMode.setSelection(11);
                 break;
-            case Sketch.CN_MODE_CUSTOM_4:
+            case Sketch.CN_MODE_CUSTOM_2:
                 sdMode.setSelection(12);
                 break;
-            case Sketch.CN_MODE_CUSTOM_5:
+            case Sketch.CN_MODE_CUSTOM_3:
                 sdMode.setSelection(13);
+                break;
+            case Sketch.CN_MODE_CUSTOM_4:
+                sdMode.setSelection(14);
+                break;
+            case Sketch.CN_MODE_CUSTOM_5:
+                sdMode.setSelection(15);
                 break;
             default:
                 sdMode.setSelection(0);
@@ -359,18 +365,24 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     mCurrentSketch.setCnMode(Sketch.CN_MODE_INPAINT_DEPTH);
                     break;
                 case 9:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_1);
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_OUTPAINT_H);
                     break;
                 case 10:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_2);
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_OUTPAINT_V);
                     break;
                 case 11:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_3);
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_1);
                     break;
                 case 12:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_4);
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_2);
                     break;
                 case 13:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_3);
+                    break;
+                case 14:
+                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_4);
+                    break;
+                case 15:
                     mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_5);
                     break;
             }
