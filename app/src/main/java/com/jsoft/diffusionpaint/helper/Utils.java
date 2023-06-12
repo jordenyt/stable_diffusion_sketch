@@ -126,12 +126,7 @@ public class Utils {
         originalBitmap.getPixels(originalPixels, 0, originalBitmap.getWidth(), 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight());
         // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
         for (int i = 0; i < originalPixels.length; i++) {
-            int color = originalPixels[i];
-            if (Color.alpha(color) != 0) {
-                newPixels[i] = Color.WHITE;
-            } else {
-                newPixels[i] = Color.TRANSPARENT;
-            }
+            newPixels[i] = (Color.alpha(originalPixels[i]) != 0) ? Color.WHITE : Color.TRANSPARENT;
         }
         Bitmap newBitmap = Bitmap.createBitmap(newPixels, originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
@@ -164,9 +159,7 @@ public class Utils {
         int pixels[] = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
         for (int i = 0; i < pixels.length; i++) {
-            int pixel = pixels[i];
-            int alpha = Color.alpha(pixel);
-            if (alpha != 0) {
+            if (Color.alpha(pixels[i]) != 0) {
                 allTransparent = false;
                 break;
             }

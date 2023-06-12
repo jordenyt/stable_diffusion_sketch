@@ -194,8 +194,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvasEdit = new Canvas(bmEdit);
                 canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-
                 Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(2.0 * ratio));
+
                 Bitmap bmResizedMask = Bitmap.createScaledBitmap(bmMask, bmEdit.getWidth(), bmEdit.getHeight(), false);
                 int[] editPixels = new int[bmEdit.getWidth() * bmEdit.getHeight()];
                 int[] maskPixels = new int[bmResizedMask.getWidth() * bmResizedMask.getHeight()];
@@ -208,9 +208,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                         editPixels[i] = bgPixels[i];
                     }
                 }
-                bmEdit = Bitmap.createBitmap(editPixels, bmEdit.getWidth(), bmEdit.getHeight(), Bitmap.Config.ARGB_8888);
-
-                mBitmap = bmEdit;
+                mBitmap = Bitmap.createBitmap(editPixels, bmEdit.getWidth(), bmEdit.getHeight(), Bitmap.Config.ARGB_8888);
             }
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
