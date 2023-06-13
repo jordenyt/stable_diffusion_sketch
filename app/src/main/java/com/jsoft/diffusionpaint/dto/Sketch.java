@@ -7,8 +7,11 @@ import android.graphics.RectF;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Sketch implements Serializable {
     private Date createDate;
@@ -36,9 +39,13 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
     public static final String CN_MODE_INPAINT = "inpaintNoise";
     public static final String CN_MODE_INPAINT_COLOR = "inpaintColor";
-    public static final String CN_MODE_INPAINT_DEPTH = "inpaintDepth";
+    public static final String CN_MODE_INPAINT_PARTIAL = "inpaintPartial";
     public static final String CN_MODE_OUTPAINT_H = "outpaintH";
+    public static final String CN_MODE_OUTPAINT_H_LEFT = "outpaintHL";
+    public static final String CN_MODE_OUTPAINT_H_RIGHT = "outpaintHR";
     public static final String CN_MODE_OUTPAINT_V = "outpaintV";
+    public static final String CN_MODE_OUTPAINT_V_TOP = "outpaintVT";
+    public static final String CN_MODE_OUTPAINT_V_BOTTOM = "outpaintVB";
     public static final String CN_MODE_CUSTOM_1 = "custom1";
     public static final String CN_MODE_CUSTOM_2 = "custom2";
     public static final String CN_MODE_CUSTOM_3 = "custom3";
@@ -49,6 +56,31 @@ public class Sketch implements Serializable {
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
     public static final String ASPECT_RATIO_SQUARE = "square";
 
+    public static final Map<String, String> cnModeMap;
+    static {
+        Map<String, String> cnMode = new LinkedHashMap<>();
+        cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_SCRIBBLE);
+        cnMode.put("img2img(sketch) + Depth(sketch)", CN_MODE_DEPTH);
+        cnMode.put("img2img(sketch) + Pose(sketch)", CN_MODE_POSE);
+        cnMode.put("txt2img + Canny(sketch)", CN_MODE_TXT_CANNY);
+        cnMode.put("txt2img + Scribble(sketch)", CN_MODE_TXT_SCRIBBLE);
+        cnMode.put("txt2img + Depth(sketch)", CN_MODE_TXT_DEPTH);
+        cnMode.put("Inpaint(background)", CN_MODE_INPAINT);
+        cnMode.put("Inpaint(sketch)", CN_MODE_INPAINT_COLOR);
+        cnMode.put("Partial Inpaint(background)", CN_MODE_INPAINT_PARTIAL);
+        cnMode.put("Outpaint Horizontally", CN_MODE_OUTPAINT_H);
+        cnMode.put("Outpaint on Left", CN_MODE_OUTPAINT_H_LEFT);
+        cnMode.put("Outpaint on Right", CN_MODE_OUTPAINT_H_RIGHT);
+        cnMode.put("Outpaint Vertically", CN_MODE_OUTPAINT_V);
+        cnMode.put("Outpaint on Top", CN_MODE_OUTPAINT_V_TOP);
+        cnMode.put("Outpaint on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
+        cnMode.put("Custom Mode 1", CN_MODE_CUSTOM_1);
+        cnMode.put("Custom Mode 2", CN_MODE_CUSTOM_2);
+        cnMode.put("Custom Mode 3", CN_MODE_CUSTOM_3);
+        cnMode.put("Custom Mode 4", CN_MODE_CUSTOM_4);
+        cnMode.put("Custom Mode 5", CN_MODE_CUSTOM_5);
+        cnModeMap = Collections.unmodifiableMap(cnMode);
+    }
 
     public Sketch() {
         this.id = -1;

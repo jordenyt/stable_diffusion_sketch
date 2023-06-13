@@ -157,12 +157,12 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_DEPTH) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
+                        cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
+                        cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_OUTPAINT_H) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
-                        cnMode.equals(Sketch.CN_MODE_OUTPAINT_V) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
-                        "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"background\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}";
-                        //Sketch.CN_MODE_INPAINT_DEPTH
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
+                                "{\"type\":\"txt2img\"}";
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {

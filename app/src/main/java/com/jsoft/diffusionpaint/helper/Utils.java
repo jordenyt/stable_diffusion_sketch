@@ -223,14 +223,14 @@ public class Utils {
         }
     }
 
-    public static Bitmap getOutpaintBmp(Bitmap bm, boolean isExpandVertically, int fillColor, boolean isPaint) {
+    public static Bitmap getOutpaintBmp(Bitmap bm, String cnMode, int fillColor, boolean isPaint) {
         int originalWidth = bm.getWidth();
         int originalHeight = bm.getHeight();
         int newWidth = originalWidth;
         int newHeight = originalHeight;
         String aspectRatio = Utils.getAspectRatio(bm);
         int expandPixel = 0;
-        if (isExpandVertically) {
+        if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V)) {
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE) || aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE) ) {
                 expandPixel = originalHeight / 6;
             } else {
@@ -252,16 +252,34 @@ public class Utils {
         if (!isPaint) {
             int x = (newWidth - originalWidth) / 2;
             int y = (newHeight - originalHeight) / 2;
+            if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_H_RIGHT) || cnMode.equals(Sketch.CN_MODE_OUTPAINT_V_BOTTOM)) {
+                x = 0;
+                y = 0;
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_H_LEFT)) {
+                x = (newWidth - originalWidth);
+                y = 0;
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_V_TOP)) {
+                x = 0;
+                y = (newHeight - originalHeight);
+            }
             canvas.drawRect(0, 0, expandBmp.getWidth(), expandBmp.getHeight(), paint);
             canvas.drawBitmap(bm, x, y, null);
         } else {
-            expandPixel = expandPixel + 32;
-            if (isExpandVertically) {
-                canvas.drawRect(0, 0, expandBmp.getWidth(), expandPixel, paint);
-                canvas.drawRect(0, expandBmp.getHeight() - expandPixel, expandBmp.getWidth(), expandBmp.getHeight(), paint);
-            } else {
-                canvas.drawRect(0, 0, expandPixel, expandBmp.getHeight(), paint);
-                canvas.drawRect(expandBmp.getWidth() - expandPixel, 0, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            int margin = expandPixel / 8;
+            if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_V)) {
+                canvas.drawRect(0, 0, expandBmp.getWidth(), expandPixel + margin, paint);
+                canvas.drawRect(0, expandBmp.getHeight() - expandPixel - margin, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_V_TOP)) {
+                canvas.drawRect(0, 0, expandBmp.getWidth(), expandPixel * 2 + margin, paint);
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_V_BOTTOM)) {
+                canvas.drawRect(0, expandBmp.getHeight() - expandPixel * 2 - margin, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_H)){
+                canvas.drawRect(0, 0, expandPixel + margin, expandBmp.getHeight(), paint);
+                canvas.drawRect(expandBmp.getWidth() - expandPixel - margin, 0, expandBmp.getWidth(), expandBmp.getHeight(), paint);
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_H_LEFT)) {
+                canvas.drawRect(0, 0, 2 * expandPixel + margin, expandBmp.getHeight(), paint);
+            } else if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_H_RIGHT)){
+                canvas.drawRect(expandBmp.getWidth() - expandPixel * 2 - margin, 0, expandBmp.getWidth(), expandBmp.getHeight(), paint);
             }
         }
 

@@ -15,7 +15,6 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -103,10 +102,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
         }*/
 
-        if (cnMode.equals(Sketch.CN_MODE_OUTPAINT_V) || cnMode.equals(Sketch.CN_MODE_OUTPAINT_H)) {
-            mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode.equals(Sketch.CN_MODE_OUTPAINT_V), Color.BLACK, false));
-            mCurrentSketch.setImgPreview(Utils.getOutpaintBmp(mCurrentSketch.getImgPreview(), cnMode.equals(Sketch.CN_MODE_OUTPAINT_V), Color.BLUE, false));
-            mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode.equals(Sketch.CN_MODE_OUTPAINT_V), Color.BLACK, true));
+        if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
+            mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode, Color.BLACK, false));
+            mCurrentSketch.setImgPreview(Utils.getOutpaintBmp(mCurrentSketch.getImgPreview(), cnMode, Color.BLUE, false));
+            mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode, Color.BLACK, true));
             mBitmap = mCurrentSketch.getImgPreview();
         }
         initUI(cnMode);

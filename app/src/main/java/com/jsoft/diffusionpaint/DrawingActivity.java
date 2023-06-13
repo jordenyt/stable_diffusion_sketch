@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint;
 
+import static com.jsoft.diffusionpaint.dto.Sketch.*;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -34,6 +37,10 @@ import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener
 {
     private DrawingView mDrawingView;
@@ -44,7 +51,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private Sketch mCurrentSketch;
     private SeekBar seekWidth;
     private String aspectRatio;
-    private SharedPreferences sharedPreferences;
     FloatingActionButton paletteButton;
     FloatingActionButton undoButton;
     FloatingActionButton redoButton;
@@ -58,14 +64,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         mCurrentSketch = new Sketch();
         db = new PaintDb(this);
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
         int parentId = i.getIntExtra("parentId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
-        aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
+        aspectRatio = sharedPreferences.getString("sdImageAspect", ASPECT_RATIO_SQUARE);
         Bitmap rotatedBitmap = null;
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
@@ -89,7 +95,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         mDrawingView = findViewById(R.id.drawing_view);
         int canvasDim = 2560;
-        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception e) {}
+        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
         mDrawingView.setCanvasSize(canvasDim);
         mCurrentColor = Color.BLUE;
         mDrawingView.setPaintColor(mCurrentColor);
@@ -104,9 +110,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
 
         ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
-        if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
+        if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
             loParam.dimensionRatio = "4:3";
-        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
+        } else if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
             loParam.dimensionRatio = "3:4";
         } else {
             loParam.dimensionRatio = "1:1";
@@ -265,9 +271,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     public void setScreenRotation() {
 
-        if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
+        if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
+        } else if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
     }
@@ -282,113 +288,43 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         editText.setText(mCurrentSketch.getPrompt());
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
-        switch (mCurrentSketch.getCnMode()) {
-            case Sketch.CN_MODE_DEPTH:
-                sdMode.setSelection(1);
+        
+        List<String> filteredModes = new ArrayList<>();
+        for (String mode : cnModeMap.keySet()) {
+            if (Objects.requireNonNull(cnModeMap.get(mode)).startsWith(CN_MODE_OUTPAINT_H)) {
+                if (!aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
+                    filteredModes.add(mode);
+                }
+            } else if (Objects.requireNonNull(cnModeMap.get(mode)).startsWith(CN_MODE_OUTPAINT_V)) {
+                if (!aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
+                    filteredModes.add(mode);
+                }
+            } else {
+                filteredModes.add(mode);
+            }
+        }
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdMode.setAdapter(adapter);
+        for (int i=0; i<cnModeMap.size(); i++) {
+            String modeDesc = sdMode.getItemAtPosition(i).toString();
+            if (Objects.equals(cnModeMap.get(modeDesc), mCurrentSketch.getCnMode())) {
+                sdMode.setSelection(i);
                 break;
-            case Sketch.CN_MODE_POSE:
-                sdMode.setSelection(2);
-                break;
-            case Sketch.CN_MODE_TXT_CANNY:
-                sdMode.setSelection(3);
-                break;
-            case Sketch.CN_MODE_TXT_SCRIBBLE:
-                sdMode.setSelection(4);
-                break;
-            case Sketch.CN_MODE_TXT_DEPTH:
-                sdMode.setSelection(5);
-                break;
-            case Sketch.CN_MODE_INPAINT:
-                sdMode.setSelection(6);
-                break;
-            case Sketch.CN_MODE_INPAINT_COLOR:
-                sdMode.setSelection(7);
-                break;
-            case Sketch.CN_MODE_INPAINT_DEPTH:
-                sdMode.setSelection(8);
-                break;
-            case Sketch.CN_MODE_OUTPAINT_H:
-                sdMode.setSelection(9);
-                break;
-            case Sketch.CN_MODE_OUTPAINT_V:
-                sdMode.setSelection(10);
-                break;
-            case Sketch.CN_MODE_CUSTOM_1:
-                sdMode.setSelection(11);
-                break;
-            case Sketch.CN_MODE_CUSTOM_2:
-                sdMode.setSelection(12);
-                break;
-            case Sketch.CN_MODE_CUSTOM_3:
-                sdMode.setSelection(13);
-                break;
-            case Sketch.CN_MODE_CUSTOM_4:
-                sdMode.setSelection(14);
-                break;
-            case Sketch.CN_MODE_CUSTOM_5:
-                sdMode.setSelection(15);
-                break;
-            default:
-                sdMode.setSelection(0);
-                break;
+            }
         }
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = editText.getText().toString();
             mCurrentSketch.setPrompt(inputText);
-            switch (sdMode.getSelectedItemPosition()) {
-                case 0:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_SCRIBBLE);
-                    break;
-                case 1:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_DEPTH);
-                    break;
-                case 2:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_POSE);
-                    break;
-                case 3:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT_CANNY);
-                    break;
-                case 4:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT_SCRIBBLE);
-                    break;
-                case 5:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT_DEPTH);
-                    break;
-                case 6:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_INPAINT);
-                    break;
-                case 7:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_INPAINT_COLOR);
-                    break;
-                case 8:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_INPAINT_DEPTH);
-                    break;
-                case 9:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_OUTPAINT_H);
-                    break;
-                case 10:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_OUTPAINT_V);
-                    break;
-                case 11:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_1);
-                    break;
-                case 12:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_2);
-                    break;
-                case 13:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_3);
-                    break;
-                case 14:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_4);
-                    break;
-                case 15:
-                    mCurrentSketch.setCnMode(Sketch.CN_MODE_CUSTOM_5);
-                    break;
-            }
+            String selectMode = sdMode.getSelectedItem().toString();
+            mCurrentSketch.setCnMode(cnModeMap.get(selectMode));
+
             saveSketch();
             if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
-                gotoViewSdImageActivity(mCurrentSketch.getId(), Sketch.CN_MODE_ORIGIN);
+                gotoViewSdImageActivity(mCurrentSketch.getId(), CN_MODE_ORIGIN);
             } else {
                 gotoViewSdImageActivity(mCurrentSketch.getId(), mCurrentSketch.getCnMode());
             }
