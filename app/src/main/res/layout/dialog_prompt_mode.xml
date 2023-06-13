@@ -25,6 +25,5 @@
     <Spinner
         android:id="@+id/sd_mode_selection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/cnmode_options" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

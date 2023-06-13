@@ -16,24 +16,6 @@
     <string name="delete_sketch">Delete Sketch</string>
     <string name="go_back">Go Back</string>
     <string name="ok">OK</string>
-    <string-array name="cnmode_options">
-        <item>img2img(sketch) + Scribble(sketch)</item>
-        <item>img2img(sketch) + Depth(sketch)</item>
-        <item>img2img(sketch) + Pose(sketch)</item>
-        <item>txt2img + Canny(sketch)</item>
-        <item>txt2img + Scribble(sketch)</item>
-        <item>txt2img + Depth(sketch)</item>
-        <item>Inpaint(background) </item>
-        <item>Inpaint(sketch)</item>
-        <item>Inpaint(sketch) + Depth(background)</item>
-        <item>Outpaint Horizontally</item>
-        <item>Outpaint Vertically</item>
-        <item>Custom Mode 1</item>
-        <item>Custom Mode 2</item>
-        <item>Custom Mode 3</item>
-        <item>Custom Mode 4</item>
-        <item>Custom Mode 5</item>
-    </string-array>
     <string-array name="sd_size_options">
         <item>512px</item>
         <item>768px</item>
