@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint.dto;
 
+import static java.lang.Math.*;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
@@ -270,8 +272,8 @@ public class Sketch implements Serializable {
         }
 
         double scale = 1d;
-        int inpaintWidth = Math.min(imgBackground.getWidth(), x2 - x1 + 1 + 2 * inpaintMargin);
-        int inpaintHeight = Math.min(imgBackground.getHeight(), y2 - y1 + 1 + 2 * inpaintMargin);
+        int inpaintWidth = min(imgBackground.getWidth(), x2 - x1 + 1 + 2 * inpaintMargin);
+        int inpaintHeight = min(imgBackground.getHeight(), y2 - y1 + 1 + 2 * inpaintMargin);
         if ((inpaintWidth > sdSize) && (x2-x1 >= y2-y1)) {
             scale = (inpaintWidth-1d) / (sdSize-1d);
         } else if ((inpaintHeight > sdSize) && (y2-y1 >= x2-x1)) {
@@ -280,11 +282,11 @@ public class Sketch implements Serializable {
 
         double blockWidth = sdBlockSize * scale;
         if (x2-x1 >= y2-y1) {
-            inpaintWidth = (int)Math.round(sdSize * scale);
-            inpaintHeight = (int)Math.round(blockWidth * Math.ceil(inpaintHeight / blockWidth));
+            inpaintWidth = (int)round(sdSize * scale);
+            inpaintHeight = (int)round(blockWidth * ceil(inpaintHeight / blockWidth));
         } else {
-            inpaintHeight = (int)Math.round(sdSize * scale);
-            inpaintWidth = (int)Math.round(blockWidth * Math.ceil(inpaintWidth / blockWidth));
+            inpaintHeight = (int)round(sdSize * scale);
+            inpaintWidth = (int)round(blockWidth * ceil(inpaintWidth / blockWidth));
         }
 
         double left = (x1 + (x2-x1)/2d) - (inpaintWidth-1)/2d;
@@ -308,6 +310,6 @@ public class Sketch implements Serializable {
             bottom = imgBackground.getHeight();
         }
 
-        return new RectF(Math.round(left), Math.round(top), Math.round(right), Math.round(bottom));
+        return new RectF(max(0, round(left)), max(0, round(top)), min(imgBackground.getWidth(), round(right)), min(imgBackground.getHeight(), round(bottom)));
     }
 }
