@@ -102,17 +102,21 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
         }*/
 
-        if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
-            mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode, Color.BLACK, false));
-            mCurrentSketch.setImgPreview(Utils.getOutpaintBmp(mCurrentSketch.getImgPreview(), cnMode, Color.BLUE, false));
-            mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode, Color.BLACK, true));
-            mBitmap = mCurrentSketch.getImgPreview();
-        }
         initUI(cnMode);
 
         if (isFirstCall) {
-            if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) { hideSpinner(); }
-            else { getSdConfig();}
+            if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
+                hideSpinner();
+            } else {
+                if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
+                    mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode, Color.BLACK, false));
+                    mCurrentSketch.setImgPreview(Utils.getOutpaintBmp(mCurrentSketch.getImgPreview(), cnMode, Color.BLUE, false));
+                    mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode, Color.BLACK, true));
+                    mBitmap = mCurrentSketch.getImgPreview();
+                    sdImage.setImageBitmap(mBitmap);
+                }
+                getSdConfig();
+            }
         } else {
             if (isCallingAPI) { showSpinner();}
             else { hideSpinner();}
@@ -226,7 +230,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 bmResizedMask.getPixels(maskPixels, 0, bmResizedMask.getWidth(), 0, 0, bmResizedMask.getWidth(), bmResizedMask.getHeight());
                 mCurrentSketch.getImgBackground().getPixels(bgPixels, 0, mCurrentSketch.getImgBackground().getWidth(), 0, 0, mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight());
                 for (int i = 0; i < editPixels.length; i++) {
-                    if (Color.alpha(maskPixels[i]) == Color.BLACK) {
+                    if (maskPixels[i] == Color.BLACK) {
                         editPixels[i] = bgPixels[i];
                     }
                 }
