@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.jsoft.diffusionpaint.dto.CnParam;
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.Sketch;
@@ -23,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -36,11 +37,11 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class SdApiHelper {
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
     private Activity activity;
     private SdApiResponseListener listener;
     OkHttpClient client = new OkHttpClient();
-    private String baseUrl;
+
     public SdApiHelper(Activity activity, SdApiResponseListener listener) {
         this.activity  = activity;
         this.listener = listener;
@@ -116,7 +117,7 @@ public class SdApiHelper {
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
             int canvasDim = 2560;
-            try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception e) {}
+            try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
             jsonObject.put("upscaling_resize", Math.min(4, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
@@ -409,6 +410,36 @@ public class SdApiHelper {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    public List<String> getLoras(String responseBody) {
+        try {
+            JSONArray loraArray = new JSONArray(responseBody);
+
+            List<JSONObject> jsonList = new ArrayList<>();
+            for (int i = 0; i < loraArray.length(); i++) {
+                try {
+                    jsonList.add(loraArray.getJSONObject(i));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            jsonList.sort((jsonObject1, jsonObject2) -> {
+                String name1 = jsonObject1.optString("path");
+                String name2 = jsonObject2.optString("path");
+                return name1.compareToIgnoreCase(name2);
+            });
+            loraArray = new JSONArray(jsonList);
+
+            List<String> loraList = new ArrayList<>();
+            for (int i = 0; i < loraArray.length(); i++) {
+                loraList.add("<lora:" + loraArray.getJSONObject(i).getString("name") + ":0.5>");
+            }
+            return loraList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

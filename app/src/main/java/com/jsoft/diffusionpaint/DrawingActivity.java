@@ -22,8 +22,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
@@ -35,14 +35,16 @@ import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.component.CircleView;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.dto.Sketch;
+import com.jsoft.diffusionpaint.helper.SdApiHelper;
+import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener
-{
+public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener, SdApiResponseListener {
+
     private DrawingView mDrawingView;
     private CircleView circleView;
     private int mCurrentColor;
@@ -51,6 +53,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private Sketch mCurrentSketch;
     private SeekBar seekWidth;
     private String aspectRatio;
+    private SdApiHelper sdApiHelper;
     FloatingActionButton paletteButton;
     FloatingActionButton undoButton;
     FloatingActionButton redoButton;
@@ -60,6 +63,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     ImageView modeIcon;
     ImageView imgRef;
     Bitmap bmRef;
+    public static List<String> loraList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         mCurrentSketch = new Sketch();
         db = new PaintDb(this);
+        sdApiHelper = new SdApiHelper(this, this);
+        if (loraList == null) {
+            sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
+        }
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
         int parentId = i.getIntExtra("parentId", -1);
@@ -284,8 +292,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         View dialogView = inflater.inflate(R.layout.dialog_prompt_mode, null);
         builder.setView(dialogView);
 
-        final EditText editText = dialogView.findViewById(R.id.sd_prompt);
+        final MultiAutoCompleteTextView editText = dialogView.findViewById(R.id.sd_prompt);
         editText.setText(mCurrentSketch.getPrompt());
+        if (loraList != null) {
+            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, loraList);
+            editText.setAdapter(loraAdapter);
+            editText.setThreshold(1);
+            editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        }
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
@@ -303,7 +317,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 filteredModes.add(mode);
             }
         }
-
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -408,4 +421,20 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             });
 
 
+    @Override
+    public void onSdApiFailure(String requestType) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Request Type: " + requestType)
+                .setTitle("Call Stable Diffusion API failed")
+                .setPositiveButton("OK", (dialog, id) -> {});
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    @Override
+    public void onSdApiResponse(String requestType, String responseBody) {
+        if ("getLoras".equals(requestType)) {
+            loraList = sdApiHelper.getLoras(responseBody);
+        }
+    }
 }
