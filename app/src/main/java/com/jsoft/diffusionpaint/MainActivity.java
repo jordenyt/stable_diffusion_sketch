@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -46,10 +48,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -81,7 +83,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         addCameraButton.setOnClickListener(view -> launchCamera());
 
         FloatingActionButton addTxt2img = findViewById(R.id.fab_add_txt2img);
-        addTxt2img.setOnClickListener(view -> showPromptDialog());
+        addTxt2img.setOnClickListener(v -> {
+            if (DrawingActivity.loraList == null) {
+                sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
+            } else {
+                showPromptDialog();
+            }
+        });
 
         isPermissionGranted();
 
@@ -94,10 +102,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
-
-    ActivityResultLauncher<Intent> viewSdImageActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {});
 
@@ -131,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 Sketch sketch = dbSketchList.get(i);
                 int rootId = getRootId(dbSketchList, sketch.getId());
                 mapSketch.computeIfAbsent(rootId, k -> new ArrayList<>());
-                mapSketch.get(rootId).add(sketch);
+                Objects.requireNonNull(mapSketch.get(rootId)).add(sketch);
             }
             List<Integer> addedId = new ArrayList<>();
             for (int i = 0; i < dbSketchList.size(); i++) {
@@ -139,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 int rootId = getRootId(dbSketchList, sketchId);
                 if (!addedId.contains(rootId)) {
                     List<Sketch> members = mapSketch.get(rootId);
+                    assert members != null;
                     if (members.size() > 1) {
                         Sketch sketchGroup = new Sketch();
                         sketchGroup.setId(rootId);
@@ -232,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -344,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     throw new RuntimeException(e);
                 }
             }
-            Collections.sort(jsonList, (jsonObject1, jsonObject2) -> {
+            jsonList.sort((jsonObject1, jsonObject2) -> {
                 String name1 = jsonObject1.optString(jsonKey);
                 String name2 = jsonObject2.optString(jsonKey);
                 return name1.compareToIgnoreCase(name2);
@@ -437,8 +443,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         TextView tvTitle = dialogView.findViewById(R.id.text_title);
         tvTitle.setText("What do you want me to draw?");
-        EditText editText = dialogView.findViewById(R.id.edit_text);
+        MultiAutoCompleteTextView editText = dialogView.findViewById(R.id.edit_text);
         editText.setText(sharedPreferences.getString("txt2imgPrompt", ""));
+        if (DrawingActivity.loraList != null) {
+            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, DrawingActivity.loraList);
+            editText.setAdapter(loraAdapter);
+            editText.setThreshold(1);
+            editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        }
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String prompt = editText.getText().toString();
@@ -565,6 +577,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Soft Edge Model", "cnSoftedgeModel", "control_v11p_sd15_softedge [a8575a2a]", "softedge");
             } else if ("setCnSeg".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Seg Model", "cnSegModel", "control_v11p_sd15_seg [e1f51eb9]", "seg");
+            } else if ("getLoras".equals(requestType)) {
+                DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
+                showPromptDialog();
             }
         } catch (JSONException e) {
             e.printStackTrace();

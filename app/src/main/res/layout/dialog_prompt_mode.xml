@@ -11,7 +11,7 @@
         android:text="What is it?"
         android:textAppearance="?android:textAppearanceMedium" />
 
-    <EditText
+    <MultiAutoCompleteTextView
         android:id="@+id/sd_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
