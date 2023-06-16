@@ -3,7 +3,9 @@ package com.jsoft.diffusionpaint.dto;
 import static java.lang.Math.*;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 
 import com.jsoft.diffusionpaint.helper.Utils;
@@ -48,6 +50,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_OUTPAINT_V = "outpaintV";
     public static final String CN_MODE_OUTPAINT_V_TOP = "outpaintVT";
     public static final String CN_MODE_OUTPAINT_V_BOTTOM = "outpaintVB";
+    public static final String CN_MODE_MERGE = "mergeReference";
     public static final String CN_MODE_CUSTOM_1 = "custom1";
     public static final String CN_MODE_CUSTOM_2 = "custom2";
     public static final String CN_MODE_CUSTOM_3 = "custom3";
@@ -77,6 +80,7 @@ public class Sketch implements Serializable {
         cnMode.put("Outpaint on Top", CN_MODE_OUTPAINT_V_TOP);
         cnMode.put("Outpaint on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original", CN_MODE_ORIGIN);
+        cnMode.put("Merge Reference", CN_MODE_MERGE);
         cnMode.put("Custom Mode 1", CN_MODE_CUSTOM_1);
         cnMode.put("Custom Mode 2", CN_MODE_CUSTOM_2);
         cnMode.put("Custom Mode 3", CN_MODE_CUSTOM_3);
@@ -211,12 +215,58 @@ public class Sketch implements Serializable {
                 }
             }
 
-            Bitmap result = Bitmap.createBitmap(resultPixel, imgBg.getWidth(), imgBg.getHeight(), Bitmap.Config.ARGB_8888);
-
-            return result;
+            return Bitmap.createBitmap(resultPixel, imgBg.getWidth(), imgBg.getHeight(), Bitmap.Config.ARGB_8888);
         } else {
             return getResizedImgBackground();
         }
+    }
+
+    public Bitmap getImgBgRefPreview() {
+        Bitmap previewBitmap = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas cvPreview = new Canvas(previewBitmap);
+        cvPreview.drawBitmap(imgBackground, 0, 0, null);
+        cvPreview.drawBitmap(imgPaint, 0, 0, null);
+        return previewBitmap;
+    }
+
+    public Bitmap getImgBgRefPaint(int boundaryWidth) {
+        Bitmap sketchBitmap = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), true);
+        int[] sketchPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
+        sketchBitmap.getPixels(sketchPixels, 0, sketchBitmap.getWidth(), 0, 0, sketchBitmap.getWidth(), sketchBitmap.getHeight());
+
+        Bitmap paintBitmap = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas cvPaint = new Canvas(paintBitmap);
+
+        Paint boundaryPaint = new Paint();
+        boundaryPaint.setColor(Color.BLUE);
+        boundaryPaint.setStyle(Paint.Style.FILL);
+        for (int i = 0; i < sketchPixels.length; i++) {
+            if (Color.alpha(sketchPixels[i]) != 0) {
+                boolean isBoundary = false;
+                for (int dx=-1; dx<=1; dx++) {
+                    for (int dy=-1; dy<=1; dy++) {
+                        if (!(dx==0 && dy==0)) {
+                            int x = i % sketchBitmap.getWidth() + dx;
+                            int y = i / sketchBitmap.getWidth() + dy;
+                            if (x >= 0 && x < sketchBitmap.getWidth() && y >= 0 && y < sketchBitmap.getHeight()) {
+                                if (Color.alpha(sketchPixels[x + y * sketchBitmap.getWidth()]) == 0) {
+                                    isBoundary = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (isBoundary) break;
+                }
+                if (isBoundary) {
+                    int x = i % sketchBitmap.getWidth();
+                    int y = i / sketchBitmap.getWidth();
+                    cvPaint.drawCircle(x, y, boundaryWidth, boundaryPaint);
+                }
+            }
+        }
+
+        return paintBitmap;
     }
 
     public Bitmap getImgBgRef() {
@@ -238,9 +288,7 @@ public class Sketch implements Serializable {
                 }
             }
 
-            Bitmap result = Bitmap.createBitmap(refPixels, imgRef.getWidth(), imgRef.getHeight(), Bitmap.Config.ARGB_8888);
-
-            return result;
+            return Bitmap.createBitmap(refPixels, imgRef.getWidth(), imgRef.getHeight(), Bitmap.Config.ARGB_8888);
         } else {
             return imgBackground;
         }

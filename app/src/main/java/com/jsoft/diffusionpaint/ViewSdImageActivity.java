@@ -109,6 +109,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode, Color.BLACK, true));
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
+                } else if (cnMode.equals(Sketch.CN_MODE_MERGE)) {
+                    mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef());
+                    mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(64));
+                    mCurrentSketch.setImgPreview(mCurrentSketch.getImgBgRefPreview());
+                    mBitmap = mCurrentSketch.getImgPreview();
+                    sdImage.setImageBitmap(mBitmap);
                 }
                 getSdConfig();
             }
