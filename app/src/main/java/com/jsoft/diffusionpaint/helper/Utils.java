@@ -118,34 +118,58 @@ public class Utils {
         }
     }
 
-    public static Bitmap getDilationMask(Bitmap originalBitmap, int expandPixel) {
+    public static Bitmap getDilationMask(Bitmap sketchBitmap, int expandPixel) {
         // Create a new Bitmap with the same dimensions and a black background
 
-        int[] newPixels = new int[originalBitmap.getWidth() * originalBitmap.getHeight()];
-        int[] originalPixels = new int[originalBitmap.getWidth() * originalBitmap.getHeight()];
-        originalBitmap.getPixels(originalPixels, 0, originalBitmap.getWidth(), 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight());
+        int[] maskPixels = new int[sketchBitmap.getWidth() * sketchBitmap.getHeight()];
+        int[] sketchPixels = new int[sketchBitmap.getWidth() * sketchBitmap.getHeight()];
+        sketchBitmap.getPixels(sketchPixels, 0, sketchBitmap.getWidth(), 0, 0, sketchBitmap.getWidth(), sketchBitmap.getHeight());
         // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
-        for (int i = 0; i < originalPixels.length; i++) {
-            newPixels[i] = (Color.alpha(originalPixels[i]) != 0) ? Color.WHITE : Color.TRANSPARENT;
+        for (int i = 0; i < sketchPixels.length; i++) {
+            maskPixels[i] = (Color.alpha(sketchPixels[i]) != 0) ? Color.WHITE : Color.TRANSPARENT;
         }
-        Bitmap newBitmap = Bitmap.createBitmap(newPixels, originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmap = Bitmap.createBitmap(maskPixels, sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
-        Bitmap bmMask = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas cvMask = new Canvas(bmMask);
-        Paint mBackgroundPaint = new Paint();
-        mBackgroundPaint.setColor(Color.BLACK);
-        mBackgroundPaint.setStyle(Paint.Style.FILL);
-        cvMask.drawRect(0, 0, bmMask.getWidth(), bmMask.getHeight(), mBackgroundPaint);
-        int step = (int) Math.round(Math.max(1,(expandPixel + 0.0)/5));
-        for (int i=-expandPixel;i<=expandPixel;i=i+step) {
-            for (int j=-expandPixel;j<=expandPixel;j=j+step) {
-                double d = Math.sqrt(i^2 + j^2);
-                if (d <= expandPixel) {
-                    cvMask.drawBitmap(newBitmap, i, j, null);
+        Bitmap dilatedBitmap = Bitmap.createBitmap(sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas cvMask = new Canvas(dilatedBitmap);
+
+        Paint backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.BLACK);
+        backgroundPaint.setStyle(Paint.Style.FILL);
+        cvMask.drawRect(0, 0, dilatedBitmap.getWidth(), dilatedBitmap.getHeight(), backgroundPaint);
+
+        cvMask.drawBitmap(maskBitmap, 0, 0, null);
+
+        Paint boundaryPaint = new Paint();
+        boundaryPaint.setColor(Color.WHITE);
+        boundaryPaint.setStyle(Paint.Style.FILL);
+        for (int i = 0; i < sketchPixels.length; i++) {
+            if (Color.alpha(sketchPixels[i]) != 0) {
+                boolean isBoundary = false;
+                for (int dx=-1; dx<=1; dx++) {
+                    for (int dy=-1; dy<=1; dy++) {
+                        if (!(dx==0 && dy==0)) {
+                            int x = i % sketchBitmap.getWidth() + dx;
+                            int y = i / sketchBitmap.getWidth() + dy;
+                            if (x >= 0 && x < sketchBitmap.getWidth() && y >= 0 && y < sketchBitmap.getHeight()) {
+                                if (Color.alpha(sketchPixels[x + y * sketchBitmap.getWidth()]) == 0) {
+                                    isBoundary = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (isBoundary) break;
+                }
+                if (isBoundary) {
+                    int x = i % sketchBitmap.getWidth();
+                    int y = i / sketchBitmap.getWidth();
+                    cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
                 }
             }
         }
-        return bmMask;
+
+        return dilatedBitmap;
     }
 
     public static Bitmap extractBitmap(Bitmap sourceBitmap, RectF r) {

@@ -76,6 +76,7 @@ public class Sketch implements Serializable {
         cnMode.put("Outpaint Vertically", CN_MODE_OUTPAINT_V);
         cnMode.put("Outpaint on Top", CN_MODE_OUTPAINT_V_TOP);
         cnMode.put("Outpaint on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
+        cnMode.put("Original", CN_MODE_ORIGIN);
         cnMode.put("Custom Mode 1", CN_MODE_CUSTOM_1);
         cnMode.put("Custom Mode 2", CN_MODE_CUSTOM_2);
         cnMode.put("Custom Mode 3", CN_MODE_CUSTOM_3);
