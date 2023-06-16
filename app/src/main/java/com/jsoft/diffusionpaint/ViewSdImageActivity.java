@@ -82,29 +82,24 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch = dbSketch;
                     mCurrentSketch.setCnMode(cnMode);
                     mBitmap = mCurrentSketch.getImgPreview();
-                    //aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
                 }
             } else if (sketchId == -3) {
                 mCurrentSketch = new Sketch();
                 mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
                 mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
                 mCurrentSketch.setId(-3);
-                //aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
             }
             if (mCurrentSketch == null) {
                 mCurrentSketch = new Sketch();
             }
-        } /*else {
-            aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
-            if (mCurrentSketch.getImgPreview() != null) {
-                aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
-            }
-        }*/
+        }
 
         initUI(cnMode);
 
         if (isFirstCall) {
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
+                mBitmap = mCurrentSketch.getImgBackground();
+                sdImage.setImageBitmap(mBitmap);
                 hideSpinner();
             } else {
                 if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
