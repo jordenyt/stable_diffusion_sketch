@@ -98,7 +98,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         if (isFirstCall) {
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-                mBitmap = mCurrentSketch.getImgBackground();
+                if (mCurrentSketch.getImgReference() != null) {
+                    mBitmap = mCurrentSketch.getImgBgRef();
+                } else {
+                    mBitmap = mCurrentSketch.getImgBackground();
+                }
                 sdImage.setImageBitmap(mBitmap);
                 hideSpinner();
             } else {
@@ -110,7 +114,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     sdImage.setImageBitmap(mBitmap);
                 } else if (cnMode.equals(Sketch.CN_MODE_MERGE)) {
                     mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef());
-                    mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(64));
+                    mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(32));
                     mCurrentSketch.setImgPreview(mCurrentSketch.getImgBgRefPreview());
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
@@ -274,7 +278,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     //ViewSdImageActivity.this.onBackPressed();
                 });
         AlertDialog alert = builder.create();
-        alert.show();
+        if(!isFinishing()) alert.show();
     }
 
     public void callSD4Img() {
