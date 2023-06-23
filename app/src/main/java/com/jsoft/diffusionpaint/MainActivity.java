@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
-        dialog.show();
+        if(!isFinishing()) dialog.show();
     }
 
     private void showOutputDimenDialog() {

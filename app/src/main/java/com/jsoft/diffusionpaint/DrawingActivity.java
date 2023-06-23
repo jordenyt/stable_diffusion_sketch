@@ -346,7 +346,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
-        dialog.show();
+        if(!isFinishing()) dialog.show();
     }
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
@@ -428,7 +428,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 .setTitle("Call Stable Diffusion API failed")
                 .setPositiveButton("OK", (dialog, id) -> {});
         AlertDialog alert = builder.create();
-        alert.show();
+        if(!isFinishing()) alert.show();
     }
 
     @Override
