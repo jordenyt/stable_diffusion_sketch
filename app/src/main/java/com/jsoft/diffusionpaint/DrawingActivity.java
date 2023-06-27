@@ -355,6 +355,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     public void gotoViewSdImageActivity(int sketchID, String cnMode) {
         ViewSdImageActivity.mBitmap = null;
+        ViewSdImageActivity.inpaintBitmap = null;
         ViewSdImageActivity.isCallingAPI = false;
         Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
         intent.putExtra("sketchId", sketchID);

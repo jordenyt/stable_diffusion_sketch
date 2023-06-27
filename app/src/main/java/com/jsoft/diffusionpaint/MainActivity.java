@@ -458,6 +458,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             editor.putString("txt2imgPrompt",prompt);
             editor.apply();
             ViewSdImageActivity.mBitmap = null;
+            ViewSdImageActivity.inpaintBitmap = null;
             ViewSdImageActivity.isCallingAPI = false;
             Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
