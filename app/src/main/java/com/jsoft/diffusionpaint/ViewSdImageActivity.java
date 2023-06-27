@@ -165,23 +165,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         expandButton.setOnClickListener(view -> {
-            //if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1600) {
-                JSONObject jsonObject;
-                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-                if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
-                    jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
-                } else {
-                    jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
-                }
-                showSpinner();
-                isCallingSD = true;
-                sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
-            /*} else {
-                JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
-                showSpinner();
-                String baseUrl = sharedPreferences.getString("dflApiAddress", "");
-                sdApiHelper.sendRequest("deepFaceLab", baseUrl, "/upscaleimage", jsonObject, "POST");
-            }*/
+            JSONObject jsonObject;
+            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+            if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
+                jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
+            } else {
+                jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+            }
+            showSpinner();
+            isCallingSD = true;
+            sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
         });
 
         dflButton.setOnClickListener(view -> {
@@ -361,6 +354,18 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONObject jsonObject = new JSONObject(responseBody);
                 String imageStr = jsonObject.getString("processed_image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
+                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL && inpaintBitmap != null) {
+                    inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+                    Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvasEdit = new Canvas(bmEdit);
+                    canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                    canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
+                    mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, 10);
+                } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
+                    inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+                    mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, 10);
+                }
                 sdImage.resetView();
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
