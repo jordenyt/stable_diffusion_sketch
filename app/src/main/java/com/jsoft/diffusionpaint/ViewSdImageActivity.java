@@ -49,6 +49,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton editButton;
     private FloatingActionButton backButton;
     public static Bitmap mBitmap = null;
+    public static Bitmap inpaintBitmap = null;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
     private SharedPreferences sharedPreferences;
     //private String aspectRatio;
@@ -166,7 +167,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         expandButton.setOnClickListener(view -> {
             if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1600) {
-                JSONObject jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+                JSONObject jsonObject;
+                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL && inpaintBitmap != null) {
+                    jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
+                } else {
+                    jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+                }
                 showSpinner();
                 isCallingSD = true;
                 sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
@@ -327,6 +334,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     if ("img2img".equals(requestType)) {
                         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
+                            inpaintBitmap = mBitmap;
                             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                             Canvas canvasEdit = new Canvas(bmEdit);
                             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
@@ -344,6 +352,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONObject jsonObject = new JSONObject(responseBody);
                 String imageStr = jsonObject.getString("image");
                 mBitmap = Utils.base64String2Bitmap(imageStr);
+                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL && inpaintBitmap != null) {
+                    inpaintBitmap = mBitmap;
+                    Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvasEdit = new Canvas(bmEdit);
+                    canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                    canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
+                    mBitmap = bmEdit;
+                }
                 sdImage.resetView();
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
