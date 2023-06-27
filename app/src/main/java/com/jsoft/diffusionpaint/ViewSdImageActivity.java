@@ -357,7 +357,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void updateMBitmap() {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        if (param.inpaintPartial == SdParam.INPAINT_PARTIAL && inpaintBitmap != null) {
+        if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvasEdit = new Canvas(bmEdit);
