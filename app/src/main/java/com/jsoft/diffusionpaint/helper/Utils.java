@@ -140,31 +140,33 @@ public class Utils {
 
         cvMask.drawBitmap(maskBitmap, 0, 0, null);
 
-        Paint boundaryPaint = new Paint();
-        boundaryPaint.setColor(Color.WHITE);
-        boundaryPaint.setStyle(Paint.Style.FILL);
-        for (int i = 0; i < sketchPixels.length; i++) {
-            if (Color.alpha(sketchPixels[i]) != 0) {
-                boolean isBoundary = false;
-                for (int dx=-1; dx<=1; dx++) {
-                    for (int dy=-1; dy<=1; dy++) {
-                        if (!(dx==0 && dy==0)) {
-                            int x = i % sketchBitmap.getWidth() + dx;
-                            int y = i / sketchBitmap.getWidth() + dy;
-                            if (x >= 0 && x < sketchBitmap.getWidth() && y >= 0 && y < sketchBitmap.getHeight()) {
-                                if (Color.alpha(sketchPixels[x + y * sketchBitmap.getWidth()]) == 0) {
-                                    isBoundary = true;
-                                    break;
+        if (expandPixel > 0) {
+            Paint boundaryPaint = new Paint();
+            boundaryPaint.setColor(Color.WHITE);
+            boundaryPaint.setStyle(Paint.Style.FILL);
+            for (int i = 0; i < sketchPixels.length; i++) {
+                if (Color.alpha(sketchPixels[i]) != 0) {
+                    boolean isBoundary = false;
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
+                            if (!(dx == 0 && dy == 0)) {
+                                int x = i % sketchBitmap.getWidth() + dx;
+                                int y = i / sketchBitmap.getWidth() + dy;
+                                if (x >= 0 && x < sketchBitmap.getWidth() && y >= 0 && y < sketchBitmap.getHeight()) {
+                                    if (Color.alpha(sketchPixels[x + y * sketchBitmap.getWidth()]) == 0) {
+                                        isBoundary = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        if (isBoundary) break;
                     }
-                    if (isBoundary) break;
-                }
-                if (isBoundary) {
-                    int x = i % sketchBitmap.getWidth();
-                    int y = i / sketchBitmap.getWidth();
-                    cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
+                    if (isBoundary) {
+                        int x = i % sketchBitmap.getWidth();
+                        int y = i / sketchBitmap.getWidth();
+                        cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
+                    }
                 }
             }
         }
