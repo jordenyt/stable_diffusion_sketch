@@ -100,11 +100,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         if (isFirstCall) {
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-                if (mCurrentSketch.getImgReference() != null) {
-                    mBitmap = mCurrentSketch.getImgBgRef();
-                } else {
-                    mBitmap = mCurrentSketch.getImgBackground();
-                }
+                mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
                 hideSpinner();
             } else {
@@ -172,7 +168,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             //if (Math.max(mBitmap.getHeight(), mBitmap.getWidth()) <= 1600) {
                 JSONObject jsonObject;
                 SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL && inpaintBitmap != null) {
+                if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
                     jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
                 } else {
                     jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
@@ -221,34 +217,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void saveImage(String cnMode) {
         if (savedImageName==null) {
-            SdParam param = sdApiHelper.getSdCnParm(cnMode);
-            if (mCurrentSketch.getImgInpaintMask() != null && param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
-                //Log.e("diffusionpaint", "mCurrentSketch.getImgBackground()=" + mCurrentSketch.getImgBackground().getWidth() + " X " + mCurrentSketch.getImgBackground().getHeight());
-                int bmWidth = param.sdSize;
-                if (Utils.getAspectRatio(mCurrentSketch.getImgBackground()).equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                    bmWidth = bmWidth * 3 / 4;
-                }
-                double ratio = (mCurrentSketch.getImgBackground().getWidth() + 0.0) / bmWidth;
-                Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvasEdit = new Canvas(bmEdit);
-                canvasEdit.drawBitmap(mBitmap, null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                Bitmap bmMask = Utils.getDilationMask(mCurrentSketch.getImgPaint(), (int)Math.round(2.0 * ratio));
-
-                Bitmap bmResizedMask = Bitmap.createScaledBitmap(bmMask, bmEdit.getWidth(), bmEdit.getHeight(), false);
-                int[] editPixels = new int[bmEdit.getWidth() * bmEdit.getHeight()];
-                int[] maskPixels = new int[bmResizedMask.getWidth() * bmResizedMask.getHeight()];
-                int[] bgPixels = new int[mCurrentSketch.getImgBackground().getWidth() * mCurrentSketch.getImgBackground().getHeight()];
-                bmEdit.getPixels(editPixels, 0, bmEdit.getWidth(), 0, 0, bmEdit.getWidth(), bmEdit.getHeight());
-                bmResizedMask.getPixels(maskPixels, 0, bmResizedMask.getWidth(), 0, 0, bmResizedMask.getWidth(), bmResizedMask.getHeight());
-                mCurrentSketch.getImgBackground().getPixels(bgPixels, 0, mCurrentSketch.getImgBackground().getWidth(), 0, 0, mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight());
-                for (int i = 0; i < editPixels.length; i++) {
-                    if (maskPixels[i] == Color.BLACK) {
-                        editPixels[i] = bgPixels[i];
-                    }
-                }
-                mBitmap = Bitmap.createBitmap(editPixels, bmEdit.getWidth(), bmEdit.getHeight(), Bitmap.Config.ARGB_8888);
-                //Log.e("diffusionpaint", "mBitmap=" + mBitmap.getWidth() + " X " + mBitmap.getHeight());
-            }
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
         }
@@ -351,12 +319,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     if ("img2img".equals(requestType)) {
                         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
-                            inpaintBitmap = mBitmap;
+                            inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
                             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                             Canvas canvasEdit = new Canvas(bmEdit);
                             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
-                            mBitmap = bmEdit;
+                            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, 10);
+                        } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
+                            inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+                            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, 10);
                         }
                     }
                     sdImage.resetView();
@@ -371,12 +342,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mBitmap = Utils.base64String2Bitmap(imageStr);
                 SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL && inpaintBitmap != null) {
-                    inpaintBitmap = mBitmap;
+                    inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
                     Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvasEdit = new Canvas(bmEdit);
                     canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
-                    mBitmap = bmEdit;
+                    mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, 10);
+                } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
+                    inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+                    mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, 10);
                 }
                 sdImage.resetView();
                 sdImage.setImageBitmap(mBitmap);

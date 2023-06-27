@@ -270,25 +270,31 @@ public class Sketch implements Serializable {
     }
 
     public Bitmap getImgBgRef() {
-        if (imgReference != null) {
-            Bitmap imgRef = Bitmap.createScaledBitmap(imgReference, imgBackground.getWidth(), imgBackground.getHeight(), true);
-            Bitmap imgPaintR = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), true);
+        return getImgBgMerge(imgReference, 0);
+    }
 
-            int[] refPixels = new int[imgRef.getWidth() * imgRef.getHeight()];
+
+    public Bitmap getImgBgMerge(Bitmap bmMerge, int boundary) {
+        if (bmMerge != null) {
+            Bitmap imgDilatedMask = Utils.getDilationMask(imgPaint, boundary);
+            Bitmap imgMerge = Bitmap.createScaledBitmap(bmMerge, imgBackground.getWidth(), imgBackground.getHeight(), true);
+            Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), true);
+
+            int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];
             int[] paintPixels = new int[imgPaintR.getWidth() * imgPaintR.getHeight()];
             int[] backgroundPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
 
-            imgRef.getPixels(refPixels, 0, imgRef.getWidth(), 0, 0, imgRef.getWidth(), imgRef.getHeight());
+            imgMerge.getPixels(mergePixels, 0, imgMerge.getWidth(), 0, 0, imgMerge.getWidth(), imgMerge.getHeight());
             imgPaintR.getPixels(paintPixels, 0, imgPaintR.getWidth(), 0, 0, imgPaintR.getWidth(), imgPaintR.getHeight());
             imgBackground.getPixels(backgroundPixels, 0, imgBackground.getWidth(), 0, 0, imgBackground.getWidth(), imgBackground.getHeight());
 
-            for (int i = 0; i < refPixels.length; i++) {
-                if (Color.alpha(paintPixels[i]) == 0) {
-                    refPixels[i] = backgroundPixels[i];
+            for (int i = 0; i < mergePixels.length; i++) {
+                if (paintPixels[i] == Color.BLACK) {
+                    mergePixels[i] = backgroundPixels[i];
                 }
             }
 
-            return Bitmap.createBitmap(refPixels, imgRef.getWidth(), imgRef.getHeight(), Bitmap.Config.ARGB_8888);
+            return Bitmap.createBitmap(mergePixels, imgMerge.getWidth(), imgMerge.getHeight(), Bitmap.Config.ARGB_8888);
         } else {
             return imgBackground;
         }
