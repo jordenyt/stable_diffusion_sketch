@@ -383,6 +383,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 sdImage.resetView();
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
+                addResult(requestType);
                 hideSpinner();
             }
         } catch (JSONException e) {
