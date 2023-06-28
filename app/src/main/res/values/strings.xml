@@ -16,6 +16,8 @@
     <string name="delete_sketch">Delete Sketch</string>
     <string name="go_back">Go Back</string>
     <string name="ok">OK</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
     <string-array name="sd_size_options">
         <item>512px</item>
         <item>768px</item>
