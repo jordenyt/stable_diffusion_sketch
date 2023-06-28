@@ -178,7 +178,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         dflButton.setOnClickListener(view -> {
-            JSONObject jsonObject = sdApiHelper.getDflJSON(mBitmap);
+            JSONObject jsonObject;
+            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+            if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
+                jsonObject = sdApiHelper.getDflJSON(inpaintBitmap);
+            } else {
+                jsonObject = sdApiHelper.getDflJSON(mBitmap);
+            }
             showSpinner();
             String baseUrl = sharedPreferences.getString("dflApiAddress", "");
             sdApiHelper.sendRequest("deepFaceLab", baseUrl, "/processimage", jsonObject, "POST");
