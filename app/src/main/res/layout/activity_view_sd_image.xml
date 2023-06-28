@@ -86,6 +86,32 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@android:color/white" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/previous"
+        app:layout_constraintEnd_toStartOf="@+id/fab_next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/ic_undo_white_24dp"
+        app:backgroundTint="@color/purple_500"
+        app:tint="@android:color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/next"
+        android:src="@drawable/ic_redo_white_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:backgroundTint="@color/purple_500"
+        app:tint="@android:color/white" />
+
     <LinearLayout
         android:id="@+id/spinner_bg"
         android:layout_width="match_parent"

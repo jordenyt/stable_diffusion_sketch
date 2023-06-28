@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jsoft.diffusionpaint.component.TouchImageView;
+import com.jsoft.diffusionpaint.dto.ApiResult;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -34,7 +35,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,6 +51,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton expandButton;
     private FloatingActionButton dflButton;
     private FloatingActionButton editButton;
+    private FloatingActionButton prevButton;
+    private FloatingActionButton nextButton;
     private FloatingActionButton backButton;
     public static Bitmap mBitmap = null;
     public static Bitmap inpaintBitmap = null;
@@ -57,8 +62,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @SuppressLint("StaticFieldLeak")
     private static SdApiHelper sdApiHelper;
     private boolean isCallingSD = false;
-    private String savedImageName = null;
+    private static String savedImageName = null;
     public static boolean isCallingAPI = false;
+    public static List<ApiResult> apiResultList;
+    public static int currentResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -99,6 +106,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         initUI(cnMode);
 
         if (isFirstCall) {
+            apiResultList = new ArrayList<>();
+            currentResult = 0;
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
                 mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
@@ -133,6 +142,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         sdButton = findViewById(R.id.fab_stable_diffusion2);
         saveButton = findViewById(R.id.fab_save2);
         backButton = findViewById(R.id.fab_back);
+        prevButton = findViewById(R.id.fab_prev);
+        nextButton = findViewById(R.id.fab_next);
         expandButton = findViewById(R.id.fab_expand);
         editButton = findViewById(R.id.fab_paint_again);
         dflButton = findViewById(R.id.fab_dfl);
@@ -212,6 +223,30 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 });
             });
         });
+
+        prevButton.setOnClickListener(view -> {
+            if (currentResult > 0) {
+                currentResult -= 1;
+                changeResult();
+            }
+        });
+
+        nextButton.setOnClickListener(view -> {
+            if (currentResult < apiResultList.size() - 1) {
+                currentResult += 1;
+                changeResult();
+            }
+        });
+    }
+
+    private void changeResult() {
+        ApiResult r = apiResultList.get(currentResult);
+        savedImageName = r.savedImageName;
+        mBitmap = r.mBitmap;
+        inpaintBitmap = r.inpaintBitmap;
+        saveButton.setVisibility((savedImageName != null)?View.GONE:View.VISIBLE);
+        sdImage.resetView();
+        sdImage.setImageBitmap(mBitmap);
     }
 
     private void saveImage(String cnMode) {
@@ -242,6 +277,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         sdButton.setVisibility(View.GONE);
         saveButton.setVisibility(View.GONE);
         backButton.setVisibility(View.GONE);
+        prevButton.setVisibility(View.GONE);
+        nextButton.setVisibility(View.GONE);
         expandButton.setVisibility(View.GONE);
         dflButton.setVisibility(View.GONE);
         editButton.setVisibility(View.GONE);
@@ -253,6 +290,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         sdButton.setVisibility(View.VISIBLE);
         saveButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
+        prevButton.setVisibility(View.VISIBLE);
+        nextButton.setVisibility(View.VISIBLE);
         expandButton.setVisibility(View.VISIBLE);
         dflButton.setVisibility(View.VISIBLE);
         editButton.setVisibility(View.VISIBLE);
@@ -322,6 +361,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     sdImage.setImageBitmap(mBitmap);
                 }
                 savedImageName = null;
+                addResult(requestType);
                 hideSpinner();
             } else if ("extraSingleImage".equals(requestType)) {
                 isCallingSD = false;
@@ -332,6 +372,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 sdImage.resetView();
                 sdImage.setImageBitmap(mBitmap);
                 savedImageName = null;
+                addResult(requestType);
                 hideSpinner();
             } else if ("deepFaceLab".equals(requestType)) {
                 isCallingSD = false;
@@ -348,6 +389,18 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             e.printStackTrace();
             onSdApiFailure(requestType);
         }
+    }
+
+    private void addResult(String requestType) {
+        ApiResult r = new ApiResult();
+        r.requestType = requestType;
+        r.mBitmap = mBitmap.copy(mBitmap.getConfig(), true);
+        if (inpaintBitmap != null) {
+            r.inpaintBitmap = inpaintBitmap.copy(inpaintBitmap.getConfig(), true);
+        }
+        r.savedImageName = savedImageName;
+        apiResultList.add(r);
+        currentResult = apiResultList.size() - 1;
     }
 
     private void updateMBitmap() {
