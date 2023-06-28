@@ -237,6 +237,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (savedImageName==null) {
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
+            apiResultList.get(currentResult).savedImageName = savedImageName;
         }
     }
 
