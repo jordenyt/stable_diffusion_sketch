@@ -54,7 +54,7 @@ Parameters for the mode definition JSON:
 | `steps` | M | M | M | integer from 1 to 120, default value is 40 |
 | `cfgScale` | M | M | M | decimal from 0 to 30, default value is 7.0 |
 | `denoise` | - | M | M | decimal from 0 to 1 |
-| `baseImage` | - | M | M | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image <br/> `bg_ref` - fill the inpainting area with reference image|
+| `baseImage` | - | M | M | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image |
 | `inpaintFill` | - | - | M | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing |
 | `inpaintPartial` | - | - | O | `0` - Inpainting on whole image (DEFAULT) <br/> `1` - Inpainting on "painted" area and paste on original image |
 | `sdSize` | O | O | O | Output resolution of SD.  Default value is configured  in setting. <br/>Suggested value: 512 / 768 / 1024 / 1280 |
@@ -64,7 +64,7 @@ Parameters for ControlNet Object:
 | Variable | Value |
 | --- | --- |
 | `cnInputImage` | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image |
-| `cnModelKey` | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model |
+| `cnModelKey` | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model <br/> `cnNormalModel` - CN Normal Model <br/> `cnMlsdModel` - CN MLSD Model <br/> `cnLineartModel` - CN Line Art Model <br/> `cnSoftedgeModel` - CN Soft Edge Model <br/> `cnSegModel` - CN Seg Model |
 | `cnModule` | CN Module that ControlNet provided.  Typical values are: `tile_resample` / `reference_only` / `openpose_full` / `canny` / `depth_midas` / `scribble_hed` <br/> For full list, please refer to the Automatic1111 web UI. |
 | `cnControlMode` | `0` - Balanced (DEFAULT) <br/> `1` - My prompt is more important <br/> `2` - ControlNet is more important |
 | `cnWeight` | decimal from 0 to 1 |
