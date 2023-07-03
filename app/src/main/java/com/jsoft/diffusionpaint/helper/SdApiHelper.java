@@ -61,7 +61,7 @@ public class SdApiHelper {
     }
 
     private void sendRequest(String requestType, String url, JSONObject jsonObject, String httpMethod) {
-        baseUrl = sharedPreferences.getString("sdServerAddress", "");
+        String baseUrl = sharedPreferences.getString("sdServerAddress", "");
         client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)

@@ -9,9 +9,4 @@ public class CnParam {
     public double cnWeight;
     public double cnModuleParamA;
     public double cnModuleParamB;
-
-    public static final String CN_MODE_BALANCED = "Balanced";
-    public static final String CN_MODE_PROMPT = "My prompt is more important";
-    public static final String CN_MODE_CONTROLNET = "ControlNet is more important";
-
 }
