@@ -161,7 +161,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         saveButton.setOnClickListener(view -> {
             showSpinner();
             CompletableFuture.supplyAsync(() -> {
-                saveImage(cnMode);
+                saveImage();
                 return "";
             }).thenRun(() -> {
                 runOnUiThread(() -> {
@@ -188,7 +188,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         editButton.setOnClickListener(view -> {
             showSpinner();
             CompletableFuture.supplyAsync(() -> {
-                saveImage(cnMode);
+                saveImage();
                 return "";
             }).thenRun(() -> {
                 runOnUiThread(() -> {
@@ -233,7 +233,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         sdImage.setImageBitmap(mBitmap);
     }
 
-    private void saveImage(String cnMode) {
+    private void saveImage() {
         if (savedImageName==null) {
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
