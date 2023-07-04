@@ -249,17 +249,31 @@ public class Utils {
         }
     }
 
-    public static Bitmap getOutpaintBmp(Bitmap bm, String cnMode, int fillColor, boolean isPaint) {
+    public static Bitmap getOutpaintBmp(Bitmap bm, String cnMode, int fillColor, boolean isPaint, int sdSize) {
         int originalWidth = bm.getWidth();
         int originalHeight = bm.getHeight();
         int newWidth = originalWidth;
         int newHeight = originalHeight;
         int expandPixel;
         if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V)) {
-            expandPixel = originalHeight / 6;
+            if (originalHeight * 4 / 3 >= originalWidth) {
+                double ratio =  Math.round((double)originalWidth / (originalHeight * 4d / 3d) * sdSize / 64d) * 64d / originalWidth;
+                expandPixel = (int) (Math.round(sdSize / ratio) - originalHeight) / 2;
+            } else {
+                double ratio = (double)sdSize / (double)originalWidth;
+                expandPixel = (int) (Math.round((originalHeight * 4d / 3d) * ratio / 64d) * 64d / ratio - originalHeight) / 2;
+            }
+            //expandPixel = originalHeight / 6;
             newHeight += 2 * expandPixel;
         } else {
-            expandPixel = originalWidth / 6;
+            if (originalWidth * 4 / 3 >= originalHeight) {
+                double ratio =  Math.round((double)originalHeight / (originalWidth * 4d / 3d) * sdSize / 64d) * 64d / originalHeight;
+                expandPixel = (int) (Math.round(sdSize / ratio) - originalWidth) / 2;
+            } else {
+                double ratio = (double)sdSize / (double)originalHeight;
+                expandPixel = (int) (Math.round((originalWidth * 4d / 3d) * ratio / 64d) * 64d / ratio - originalWidth) / 2;
+            }
+            //expandPixel = originalWidth / 6;
             newWidth += 2 * expandPixel;
         }
         Bitmap expandBmp = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
