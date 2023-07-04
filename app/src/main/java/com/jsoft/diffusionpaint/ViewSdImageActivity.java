@@ -111,6 +111,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
                 mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
+                addResult("original");
                 hideSpinner();
             } else {
                 if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
