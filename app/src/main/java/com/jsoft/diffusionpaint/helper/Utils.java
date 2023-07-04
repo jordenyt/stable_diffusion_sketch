@@ -85,9 +85,9 @@ public class Utils {
         String aspectRatio = Sketch.ASPECT_RATIO_SQUARE;
         double ratio = (double) bm.getWidth() / (double) bm.getHeight();
         if (bm != null) {
-            if (ratio >= 7d/6d) {
+            if (ratio > 1d) {
                 aspectRatio = Sketch.ASPECT_RATIO_LANDSCAPE;
-            } else if (ratio <= 7d/8d) {
+            } else if (ratio <1d) {
                 aspectRatio = Sketch.ASPECT_RATIO_PORTRAIT;
             }
         }
@@ -254,21 +254,12 @@ public class Utils {
         int originalHeight = bm.getHeight();
         int newWidth = originalWidth;
         int newHeight = originalHeight;
-        String aspectRatio = Utils.getAspectRatio(bm);
-        int expandPixel = 0;
+        int expandPixel;
         if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V)) {
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE) || aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE) ) {
-                expandPixel = originalHeight / 6;
-            } else {
-                return bm;
-            }
+            expandPixel = originalHeight / 6;
             newHeight += 2 * expandPixel;
         } else {
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE) || aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT) ) {
-                expandPixel = originalWidth / 6;
-            } else {
-                return bm;
-            }
+            expandPixel = originalWidth / 6;
             newWidth += 2 * expandPixel;
         }
         Bitmap expandBmp = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
@@ -310,6 +301,14 @@ public class Utils {
         }
 
         return expandBmp;
+    }
+
+    public static long getShortSize(Bitmap bm, int longSize) {
+        if (bm.getWidth() >= bm.getHeight()) {
+            return Math.round((double)bm.getHeight() / (double)bm.getWidth() * longSize  / 64d) * 64;
+        } else {
+            return Math.round((double)bm.getWidth() / (double)bm.getHeight() * longSize  / 64d) * 64;
+        }
     }
 
     public static Bitmap getBitmapFromPath(String filePath) {

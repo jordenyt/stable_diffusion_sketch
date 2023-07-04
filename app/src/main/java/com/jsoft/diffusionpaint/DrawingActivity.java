@@ -118,12 +118,18 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
 
         ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
-        if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
-            loParam.dimensionRatio = "4:3";
-        } else if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
-            loParam.dimensionRatio = "3:4";
+        if (sketchId == -2) {
+            loParam.dimensionRatio = rotatedBitmap.getWidth() + ":" + rotatedBitmap.getHeight();
+        } else if (sketchId >= 0) {
+            loParam.dimensionRatio = mCurrentSketch.getImgPreview().getWidth() + ":" + mCurrentSketch.getImgPreview().getHeight();
         } else {
-            loParam.dimensionRatio = "1:1";
+            if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
+                loParam.dimensionRatio = "4:3";
+            } else if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
+                loParam.dimensionRatio = "3:4";
+            } else {
+                loParam.dimensionRatio = "1:1";
+            }
         }
 
         if (sketchId >= 0) {
@@ -305,7 +311,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         
         List<String> filteredModes = new ArrayList<>();
         for (String mode : cnModeMap.keySet()) {
-            if (Objects.requireNonNull(cnModeMap.get(mode)).startsWith(CN_MODE_OUTPAINT_H)) {
+            /*if (Objects.requireNonNull(cnModeMap.get(mode)).startsWith(CN_MODE_OUTPAINT_H)) {
                 if (!aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
                     filteredModes.add(mode);
                 }
@@ -313,9 +319,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 if (!aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
                     filteredModes.add(mode);
                 }
-            } else {
+            } else {*/
                 filteredModes.add(mode);
-            }
+            //}
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);

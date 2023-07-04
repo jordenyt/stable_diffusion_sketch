@@ -218,12 +218,20 @@ public class SdApiHelper {
             jsonObject.put("steps", param.steps);
             jsonObject.put("cfg_scale", param.cfgScale);
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                jsonObject.put("width", param.sdSize * 3 / 4);
+                if (mCurrentSketch.getImgBackground() != null) {
+                    jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
+                } else {
+                    jsonObject.put("width", param.sdSize * 3 / 4);
+                }
             } else {
                 jsonObject.put("width", param.sdSize);
             }
             if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                jsonObject.put("height", param.sdSize * 3 / 4);
+                if (mCurrentSketch.getImgBackground() != null) {
+                    jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
+                } else {
+                    jsonObject.put("height", param.sdSize * 3 / 4);
+                }
             } else {
                 jsonObject.put("height", param.sdSize);
             }
@@ -347,12 +355,20 @@ public class SdApiHelper {
                 }
             } else {
                 if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                    jsonObject.put("width", param.sdSize * 3 / 4);
+                    if (mCurrentSketch.getImgBackground() != null) {
+                        jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
+                    } else {
+                        jsonObject.put("width", param.sdSize * 3 / 4);
+                    }
                 } else {
                     jsonObject.put("width", param.sdSize);
                 }
                 if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                    jsonObject.put("height", param.sdSize * 3 / 4);
+                    if (mCurrentSketch.getImgBackground() != null) {
+                        jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
+                    } else {
+                        jsonObject.put("height", param.sdSize * 3 / 4);
+                    }
                 } else {
                     jsonObject.put("height", param.sdSize);
                 }
