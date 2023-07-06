@@ -311,17 +311,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         
         List<String> filteredModes = new ArrayList<>();
         for (String mode : cnModeMap.keySet()) {
-            /*if (Objects.requireNonNull(cnModeMap.get(mode)).startsWith(CN_MODE_OUTPAINT_H)) {
-                if (!aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
-                    filteredModes.add(mode);
-                }
-            } else if (Objects.requireNonNull(cnModeMap.get(mode)).startsWith(CN_MODE_OUTPAINT_V)) {
-                if (!aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
-                    filteredModes.add(mode);
-                }
-            } else {*/
-                filteredModes.add(mode);
-            //}
+            filteredModes.add(mode);
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
