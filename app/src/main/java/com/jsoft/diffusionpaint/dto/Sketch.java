@@ -285,7 +285,6 @@ public class Sketch implements Serializable {
             Bitmap bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int)round(bmMerge.getWidth() * ratio), (int)round(bmMerge.getHeight() * ratio), true);
             cvMerge.drawBitmap(bmMergeScaled, (imgBackground.getWidth() - bmMergeScaled.getWidth()) / 2f, (imgBackground.getHeight() - bmMergeScaled.getHeight()) / 2f, null);
 
-            //Bitmap imgMerge = Bitmap.createScaledBitmap(bmMerge, imgBackground.getWidth(), imgBackground.getHeight(), true);
             Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), true);
 
             int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];
