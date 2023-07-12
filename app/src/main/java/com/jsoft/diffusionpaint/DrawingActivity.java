@@ -91,6 +91,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setId(sketchId);
             mCurrentSketch.setParentId(parentId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
+            mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
             rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
             if (rotatedBitmap != null) {
                 aspectRatio = Utils.getAspectRatio(rotatedBitmap);
@@ -298,13 +299,15 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         View dialogView = inflater.inflate(R.layout.dialog_prompt_mode, null);
         builder.setView(dialogView);
 
-        final MultiAutoCompleteTextView editText = dialogView.findViewById(R.id.sd_prompt);
-        editText.setText(mCurrentSketch.getPrompt());
+        final MultiAutoCompleteTextView promptTV = dialogView.findViewById(R.id.sd_prompt);
+        final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
+        promptTV.setText(mCurrentSketch.getPrompt());
+        negPromptTV.setText(mCurrentSketch.getNegPrompt());
         if (loraList != null) {
             ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, loraList);
-            editText.setAdapter(loraAdapter);
-            editText.setThreshold(1);
-            editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+            promptTV.setAdapter(loraAdapter);
+            promptTV.setThreshold(1);
+            promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
@@ -326,11 +329,12 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
 
         builder.setPositiveButton("OK", (dialog, which) -> {
-            String inputText = editText.getText().toString();
-            mCurrentSketch.setPrompt(inputText);
+            String promptText = promptTV.getText().toString();
+            mCurrentSketch.setPrompt(promptText);
             String selectMode = sdMode.getSelectedItem().toString();
             mCurrentSketch.setCnMode(cnModeMap.get(selectMode));
-
+            String negPromptText = negPromptTV.getText().toString();
+            mCurrentSketch.setNegPrompt(negPromptText);
             saveSketch();
             if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
                 gotoViewSdImageActivity(mCurrentSketch.getId(), CN_MODE_ORIGIN);

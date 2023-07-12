@@ -219,6 +219,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     intent.putExtra("sketchId", -2);
                     intent.putExtra("bitmapPath", file.getAbsolutePath());
                     intent.putExtra("prompt", mCurrentSketch.getPrompt());
+                    intent.putExtra("negPrompt", mCurrentSketch.getNegPrompt());
                     if (mCurrentSketch.getId() >= 0) {
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }
@@ -322,10 +323,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         String aspectRatio = (mCurrentSketch.getImgBackground() != null) ?
                 Utils.getAspectRatio(mCurrentSketch.getImgBackground()) : sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
+            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);
         } else {
-            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(mCurrentSketch.getPrompt(), param, mCurrentSketch, aspectRatio);
+            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject);
         }
     }
