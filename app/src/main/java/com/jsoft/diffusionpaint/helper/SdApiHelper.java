@@ -81,14 +81,14 @@ public class SdApiHelper {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-                activity.runOnUiThread(() -> listener.onSdApiFailure(requestType));
+                activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, e.getMessage()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        activity.runOnUiThread(() -> listener.onSdApiFailure(requestType));
+                        activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, "Response Code: " + response.code()));
                     }
 
                     Headers responseHeaders = response.headers();
@@ -102,7 +102,7 @@ public class SdApiHelper {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    activity.runOnUiThread(() -> listener.onSdApiFailure(requestType));
+                    activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, e.getMessage()));
                 }
             }
         });
@@ -118,7 +118,7 @@ public class SdApiHelper {
             jsonObject.put("codeformer_weight", 0);
             int canvasDim = 2560;
             try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
-            jsonObject.put("upscaling_resize", Math.min(4, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
+            jsonObject.put("upscaling_resize", Math.min(4d, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
             //jsonObject.put("upscaling_crop", true);
@@ -176,7 +176,7 @@ public class SdApiHelper {
         SdParam param = gson.fromJson(jsonMode, SdParam.class);
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
         if (param.cfgScale == 0d) { param.cfgScale = 7.0; }
-        if (param.steps == 0) { param.steps = 40; }
+        if (param.steps == 0) { param.steps = 50; }
         if (param.cn != null) {
             for (CnParam cnParam : param.cn) {
                 if (cnParam.cnModuleParamA == 0d) {

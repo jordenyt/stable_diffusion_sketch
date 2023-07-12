@@ -529,11 +529,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     @Override
-    public void onSdApiFailure(String requestType) {
+    public void onSdApiFailure(String requestType, String errMessage) {
         if (!"setSDModel1".equals(requestType) ) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Request Type: " + requestType)
-                    .setTitle("Call Stable Diffusion API failed.  Please check the server address.")
+                    .setTitle("Call Stable Diffusion API failed.")
+                    .setMessage(errMessage)
                     .setPositiveButton("OK", (dialog, id) -> {
                     });
             AlertDialog alert = builder.create();
