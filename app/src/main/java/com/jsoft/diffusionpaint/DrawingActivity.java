@@ -419,10 +419,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
 
     @Override
-    public void onSdApiFailure(String requestType) {
+    public void onSdApiFailure(String requestType, String errMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Request Type: " + requestType)
                 .setTitle("Call Stable Diffusion API failed")
+                .setMessage(errMessage)
                 .setPositiveButton("OK", (dialog, id) -> {});
         AlertDialog alert = builder.create();
         if(!isFinishing()) alert.show();

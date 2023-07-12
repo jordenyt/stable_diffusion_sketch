@@ -96,21 +96,16 @@ public class DrawingView extends View
 			double scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
 
 			// Calculate the cropped bitmap dimensions
-			double croppedWidth = canvasWidth / scaleFactor;
-			double croppedHeight = canvasHeight / scaleFactor;
-			double xOffset = (bitmapWidth - croppedWidth) / 2;
-			double yOffset = (bitmapHeight - croppedHeight) / 2;
-
-			// Create a matrix to crop and scale the bitmap
-			Matrix matrix = new Matrix();
-			matrix.postScale((float)scaleFactor, (float)scaleFactor);
-			matrix.postTranslate((float)-xOffset, (float)-yOffset);
+			double resizedBmWidth = bitmapWidth * scaleFactor;
+			double resizedBmHeight = bitmapHeight * scaleFactor;
+			double xOffset = (canvasWidth - resizedBmWidth) / 2d;
+			double yOffset = (canvasHeight - resizedBmHeight) / 2d;
 
 			// Apply the matrix to the bitmap
-			Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, (int)xOffset, (int)yOffset, (int)croppedWidth, (int)croppedHeight, matrix, true);
+			Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int)Math.round(resizedBmWidth),  (int)Math.round(resizedBmHeight), true);
 
 			// Draw the cropped bitmap onto the canvas
-			canvas.drawBitmap(croppedBitmap, 0, 0, null);
+			canvas.drawBitmap(resizedBitmap, (int)xOffset, (int)yOffset, null);
 		}
 	}
 
@@ -244,7 +239,7 @@ public class DrawingView extends View
 	public Sketch prepareBitmap(Sketch s, Bitmap bmRef) {
 		s.setImgPreview(getPreview());
 		s.setImgReference(getCroppedBitmap(bmRef));
-		s.setImgBackground(getBgBitmap());
+		s.setImgBackground(getCroppedBitmap(mBaseBitmap));
 		s.setImgPaint(getPaintBitmap());
 		return s;
 	}
@@ -257,35 +252,16 @@ public class DrawingView extends View
 
 	public Bitmap getCroppedBitmap(Bitmap bm) {
 		if (bm != null) {
-			float bitmapWidth = bm.getWidth();
-			float bitmapHeight = bm.getHeight();
-			float canvasWidth = mDrawCanvas.getWidth();
-			float canvasHeight = mDrawCanvas.getHeight();
+			double bitmapWidth = bm.getWidth();
+			double bitmapHeight = bm.getHeight();
 
-			int croppedWidth = (int) canvasWidth;
-			int croppedHeight = (int) canvasHeight;
-
-			if (bitmapWidth > canvasWidth) {
-				float scaleFactor = Math.max(canvasWidth / bitmapWidth, canvasHeight / bitmapHeight);
-				croppedWidth = (int) (canvasWidth / scaleFactor);
-				croppedHeight = (int) (canvasHeight / scaleFactor);
+			double scale = Math.min(maxImgSize / bitmapWidth, maxImgSize / bitmapHeight);
+			if (scale > 1d) {
+				scale = 1d;
 			}
-			if (croppedWidth > maxImgSize || croppedHeight > maxImgSize) {
-				float scaleFactor = Math.max((float) croppedWidth / maxImgSize, (float) croppedHeight / maxImgSize);
-				croppedWidth = (int) (croppedWidth / scaleFactor);
-				croppedHeight = (int) (croppedHeight / scaleFactor);
-			}
-
-			Bitmap bmBackground = Bitmap.createBitmap(croppedWidth, croppedHeight, Bitmap.Config.ARGB_8888);
-			Canvas canvasBackground = new Canvas(bmBackground);
-			drawBackground(canvasBackground, bm);
-			return bmBackground;
+			return Bitmap.createScaledBitmap(bm, (int)Math.round(bitmapWidth * scale), (int)Math.round(bitmapHeight * scale), true);
 		}
 		return null;
-	}
-
-	public Bitmap getBgBitmap() {
-		return getCroppedBitmap(mBaseBitmap);
 	}
 
 	public Bitmap getPaintBitmap() {

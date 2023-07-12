@@ -108,6 +108,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (isFirstCall) {
             apiResultList = new ArrayList<>();
             currentResult = 0;
+            savedImageName = null;
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
                 mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
@@ -301,11 +302,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     @Override
-    public void onSdApiFailure(String requestType) {
+    public void onSdApiFailure(String requestType, String errMessage) {
         isCallingSD = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Request Type: " + requestType)
                 .setTitle("Call Stable Diffusion API failed")
+                .setMessage(errMessage)
                 .setPositiveButton("OK", (dialog, id) -> {
                     hideSpinner();
                     //ViewSdImageActivity.this.onBackPressed();
@@ -391,7 +393,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            onSdApiFailure(requestType);
+            onSdApiFailure(requestType, e.getMessage());
         }
     }
 
