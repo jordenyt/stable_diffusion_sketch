@@ -8,15 +8,29 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="What is it?"
+        android:text="Prompt:"
         android:textAppearance="?android:textAppearanceMedium" />
 
     <MultiAutoCompleteTextView
         android:id="@+id/sd_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Input here..."
+        android:hint="What you want to draw?"
         android:textColorHint="#FF666666" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Negative Prompt:"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/sd_negative_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="What you don't want to see?"
+        android:textColorHint="#FF666666" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

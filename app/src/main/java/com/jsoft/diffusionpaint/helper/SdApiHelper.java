@@ -199,10 +199,10 @@ public class SdApiHelper {
         return param;
     }
 
-    public JSONObject getControlnetTxt2imgJSON(String prompt, SdParam param, Sketch mCurrentSketch, String aspectRatio) {
+    public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch, String aspectRatio) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
+            jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + mCurrentSketch.getPrompt() + ", " + sharedPreferences.getString("promptPostfix", ""));
             jsonObject.put("seed", -1);
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
@@ -230,7 +230,7 @@ public class SdApiHelper {
             jsonObject.put("tiling", false);
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
-            jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", ""));
+            jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
             JSONObject alwayson_scripts = new JSONObject();
@@ -276,7 +276,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getControlnetImg2imgJSON(String prompt, SdParam param, Sketch mCurrentSketch, String aspectRatio) {
+    public JSONObject getControlnetImg2imgJSON(SdParam param, Sketch mCurrentSketch, String aspectRatio) {
         JSONObject jsonObject = new JSONObject();
         boolean isInpaint = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT);
         try {
@@ -327,7 +327,7 @@ public class SdApiHelper {
                 //jsonObject.put("inpainting_mask_invert", 0);
                 jsonObject.put("initial_noise_multiplier", 1);
             }
-            jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", ""));
+            jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + mCurrentSketch.getPrompt() + ", " + sharedPreferences.getString("promptPostfix", ""));
             jsonObject.put("seed", -1);
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
@@ -368,7 +368,7 @@ public class SdApiHelper {
             jsonObject.put("tiling", false);
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
-            jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", ""));
+            jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("steps", param.steps);
             jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);

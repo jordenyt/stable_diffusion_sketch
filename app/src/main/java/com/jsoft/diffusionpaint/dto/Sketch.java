@@ -23,6 +23,7 @@ public class Sketch implements Serializable {
     private int id;
     private int parentId;
     private String prompt;
+    private String negPrompt;
     private Bitmap imgPreview;
     private Bitmap imgBackground;
     private Bitmap imgPaint;
@@ -96,6 +97,7 @@ public class Sketch implements Serializable {
         this.createDate = new Date();
         this.lastUpdateDate = new Date();
         this.prompt = "";
+        this.negPrompt = "";
         this.imgPreview = null;
         this.cnMode = CN_MODE_SCRIBBLE;
     }
@@ -167,6 +169,10 @@ public class Sketch implements Serializable {
     public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
+
+    public String getNegPrompt() { return negPrompt; }
+
+    public void setNegPrompt(String negPrompt) { this.negPrompt = negPrompt; }
 
     public RectF getRectInpaint(int sdSize) {
         if (rectInpaint == null) {
