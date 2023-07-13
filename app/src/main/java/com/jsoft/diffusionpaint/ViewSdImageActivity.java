@@ -94,6 +94,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else if (sketchId == -3) {
                 mCurrentSketch = new Sketch();
                 mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
+                mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
                 mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
                 mCurrentSketch.setId(-3);
             }
