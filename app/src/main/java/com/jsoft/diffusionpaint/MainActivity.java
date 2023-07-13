@@ -438,34 +438,49 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private void showPromptDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_textbox, null);
+        View dialogView = inflater.inflate(R.layout.dialog_prompt_mode, null);
         builder.setView(dialogView);
 
-        TextView tvTitle = dialogView.findViewById(R.id.text_title);
-        tvTitle.setText("What do you want me to draw?");
-        MultiAutoCompleteTextView editText = dialogView.findViewById(R.id.edit_text);
-        editText.setText(sharedPreferences.getString("txt2imgPrompt", ""));
+        final MultiAutoCompleteTextView promptTV = dialogView.findViewById(R.id.sd_prompt);
+        final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
+        promptTV.setText(sharedPreferences.getString("txt2imgPrompt", ""));
+        negPromptTV.setText(sharedPreferences.getString("txt2imgNegPrompt", ""));
         if (DrawingActivity.loraList != null) {
             ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, DrawingActivity.loraList);
-            editText.setAdapter(loraAdapter);
-            editText.setThreshold(1);
-            editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+            promptTV.setAdapter(loraAdapter);
+            promptTV.setThreshold(1);
+            promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
 
+        Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
+
+        List<String> filteredModes = new ArrayList<>();
+        filteredModes.add("txt2img");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdMode.setAdapter(adapter);
+        sdMode.setSelection(0);
+
         builder.setPositiveButton("OK", (dialog, which) -> {
-            String prompt = editText.getText().toString();
+            String promptText = promptTV.getText().toString();
+            String negPromptText = negPromptTV.getText().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("txt2imgPrompt",prompt);
+            editor.putString("txt2imgPrompt",promptText);
+            editor.putString("txt2imgNegPrompt",negPromptText);
             editor.apply();
+
             ViewSdImageActivity.mBitmap = null;
             ViewSdImageActivity.inpaintBitmap = null;
             ViewSdImageActivity.isCallingAPI = false;
             Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", Sketch.CN_MODE_TXT);
-            intent.putExtra("prompt", prompt);
+            intent.putExtra("prompt", promptText);
+            intent.putExtra("negPrompt", negPromptText);
             drawingActivityResultLauncher.launch(intent);
         });
+
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
