@@ -174,6 +174,7 @@ public class SdApiHelper {
         }
 
         SdParam param = gson.fromJson(jsonMode, SdParam.class);
+        if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
         if (param.cfgScale == 0d) { param.cfgScale = 7.0; }
         if (param.steps == 0) { param.steps = 50; }
