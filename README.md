@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch v0.9.1
+#  Stable Diffusion Sketch v0.10.1
 Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion on your own server with the sketching you made on your Android device.  
 
 ## Supported Features
