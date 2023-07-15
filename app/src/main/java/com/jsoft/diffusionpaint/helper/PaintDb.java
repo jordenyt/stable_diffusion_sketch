@@ -27,7 +27,6 @@ public class PaintDb {
                 "SELECT " + SketchEntry._ID
                         + ", " + SketchEntry.PARENT_ID
                         + ", " + SketchEntry.CREATE_DATE
-                        + ", " + SketchEntry.PREVIEW
                         + ", " + SketchEntry.PROMPT
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " ORDER BY " + SketchEntry.LAST_UPDATE_DATE + " DESC";
@@ -39,11 +38,33 @@ public class PaintDb {
             sketch.setParentId(c.getInt(c.getColumnIndexOrThrow(SketchEntry.PARENT_ID)));
             sketch.setCreateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.CREATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
-            sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
+            //sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             sketches.add(sketch);
         }
         c.close();
         return sketches;
+    }
+
+    public Bitmap getSketchPreview(int sketchId) {
+        String queryString =
+                "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.PREVIEW
+                        + " FROM " + SketchEntry.TABLE_NAME
+                        + " WHERE " + SketchEntry._ID + " = " + sketchId;
+        Cursor c = db.rawQuery(queryString, new String[] {});
+        List<Sketch> sketches = new ArrayList<>();
+        while (c.moveToNext()) {
+            Sketch sketch = new Sketch();
+            sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
+            sketches.add(sketch);
+        }
+        c.close();
+        if (sketches.size() > 0) {
+            return sketches.get(0).getImgPreview();
+        } else {
+            return null;
+        }
     }
 
     public Bitmap getSketchRef(int sketchId) {
