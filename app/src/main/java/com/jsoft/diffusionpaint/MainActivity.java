@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -147,12 +148,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     if (members.size() > 1) {
                         Sketch sketchGroup = new Sketch();
                         sketchGroup.setId(rootId);
-                        sketchGroup.setImgPreview(members.get(0).getImgPreview());
+                        sketchGroup.setImgPreview(db.getSketchPreview(members.get(0).getId()));
                         sketchGroup.setChildren(members);
                         sketchGroup.setCreateDate(members.get(0).getCreateDate());
                         sketchGroup.setPrompt(members.get(0).getPrompt());
                         showSketches.add(sketchGroup);
                     } else if (members.size() == 1) {
+                        members.get(0).setImgPreview(db.getSketchPreview(members.get(0).getId()));
                         showSketches.add(members.get(0));
                     }
                     addedId.add(rootId);
@@ -165,6 +167,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             for (Sketch sketchGroup : sketches) {
                 if (sketchGroup.getId() == rootSketchId) {
                     currentRootId = rootSketchId;
+                    for (Sketch s: sketchGroup.getChildren()) {
+                        if (s.getImgPreview() == null) {
+                            s.setImgPreview(db.getSketchPreview(s.getId()));
+                        }
+                    }
                     GridViewImageAdapter adapter = new GridViewImageAdapter(this, sketchGroup.getChildren());
                     gridView.setAdapter(adapter);
                     break;
