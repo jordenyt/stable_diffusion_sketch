@@ -27,13 +27,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.dto.AppConstant;
 import com.jsoft.diffusionpaint.helper.PaintDb;
@@ -76,13 +77,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         gridView = initGridLayout();
 
-        FloatingActionButton addSketchButton = findViewById(R.id.fab_add);
+        MaterialButton addSketchButton = findViewById(R.id.fab_add);
         addSketchButton.setOnClickListener(view -> gotoDrawingActivity(-1));
 
-        FloatingActionButton addCameraButton = findViewById(R.id.fab_add_camera);
+        MaterialButton addCameraButton = findViewById(R.id.fab_add_camera);
         addCameraButton.setOnClickListener(view -> launchCamera());
 
-        FloatingActionButton addTxt2img = findViewById(R.id.fab_add_txt2img);
+        MaterialButton addTxt2img = findViewById(R.id.fab_add_txt2img);
         addTxt2img.setOnClickListener(v -> {
             if (DrawingActivity.loraList == null) {
                 sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
@@ -125,6 +126,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     public void showGrid(int rootSketchId) {
+
+        TextView noRecentImages = findViewById(R.id.no_recent_images);
+
+        noRecentImages.setVisibility(View.INVISIBLE);
+
         if (rootSketchId == -1) {
             currentRootId = -1;
             List<Sketch> dbSketchList = db.getSketchList();
@@ -162,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             sketches = showSketches;
             GridViewImageAdapter adapter = new GridViewImageAdapter(this, showSketches);
             gridView.setAdapter(adapter);
+
+            if (sketches.size() == 0)
+                noRecentImages.setVisibility(View.VISIBLE);
         } else {
             for (Sketch sketchGroup : sketches) {
                 if (sketchGroup.getId() == rootSketchId) {
@@ -219,20 +228,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private GridView initGridLayout() {
         Resources r = getResources();
         gridView = findViewById(R.id.gridview_sketch_list);
-        float padding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                AppConstant.GRID_PADDING, r.getDisplayMetrics());
-
-        int numColumns = 3;
-        int columnWidth = (int) ((utils.getScreenWidth() - ((numColumns + 1) * padding)) / numColumns);
-
-        gridView.setNumColumns(numColumns);
-        gridView.setColumnWidth(columnWidth);
-        gridView.setStretchMode(GridView.NO_STRETCH);
-        gridView.setPadding((int) padding, (int) padding, (int) padding,
-                (int) padding);
-        gridView.setHorizontalSpacing((int) padding);
-        gridView.setVerticalSpacing((int) padding);
-
         return gridView;
     }
 

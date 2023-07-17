@@ -17,7 +17,14 @@
     <string name="go_back">Go Back</string>
     <string name="ok">OK</string>
     <string name="next">Next</string>
-    <string name="previous">Previous</string>
+
+    <string name="draw">Start drawing</string>
+    <string name="add_from_camera">Add from camera</string>
+    <string name="generate_image">Generate image</string>
+    <string name="or">or</string>
+    <string name="previous">previous</string>
+    <string name="my_images">My images</string>
+    <string name="no_recent_immages">No recent images</string>
     <string-array name="sd_size_options">
         <item>512px</item>
         <item>768px</item>
