@@ -56,15 +56,13 @@ public class GridViewImageAdapter extends BaseAdapter {
         TextView textViewItem = convertView.findViewById(R.id.sketch_description);
         ImageView imageView = convertView.findViewById(R.id.sketch_preview);
 
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setImageBitmap(currentSketch.getImgPreview());
-        imageView.setAlpha(1f);
-
         textViewItem.setText(currentSketch.getPrompt());
+
         if (currentSketch.getPrompt()==null || currentSketch.getPrompt().isEmpty()) {
             textViewItem.setText(promptDateFormat.format(currentSketch.getCreateDate()));
         }
-        textViewItem.setTextColor(Color.WHITE);
+
         if (currentSketch.getChildren() == null) {
             imageView.setOnClickListener(view -> activity.gotoDrawingActivity(currentSketch.getId()));
         } else {
