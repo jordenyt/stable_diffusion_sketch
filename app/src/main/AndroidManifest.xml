@@ -21,7 +21,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_magic_pen_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication"
+        android:theme="@style/Theme.DiffusionPaint"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
@@ -37,7 +37,7 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.MyApplication"
+            android:theme="@style/Theme.DiffusionPaint"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
