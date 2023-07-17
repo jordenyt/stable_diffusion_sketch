@@ -6,4 +6,8 @@
     </style>
 
     <style name="Theme.DiffusionPaint" parent="Base.Theme.DiffusionPaint" />
+    <style name="Theme.DiffusionPaintFullScreen" parent="Theme.DiffusionPaint" >
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>
