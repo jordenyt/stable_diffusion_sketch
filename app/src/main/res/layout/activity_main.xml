@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/draw"
             android:text="@string/draw"
-            app:icon="@drawable/ic_input_camera"
+            app:icon="@drawable/ic_brush"
             app:iconGravity="textEnd" />
 
 
