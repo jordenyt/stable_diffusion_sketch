@@ -28,6 +28,7 @@
         app:srcCompat="@drawable/logo" />
 
     <LinearLayout
+        android:id="@+id/lo_create_drawing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 

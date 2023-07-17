@@ -30,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -131,7 +132,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         noRecentImages.setVisibility(View.INVISIBLE);
 
+        LinearLayout loCreateDawing = findViewById(R.id.lo_create_drawing);
+
         if (rootSketchId == -1) {
+            loCreateDawing.setVisibility(View.VISIBLE);
             currentRootId = -1;
             List<Sketch> dbSketchList = db.getSketchList();
             List<Sketch> showSketches = new ArrayList<>();
@@ -172,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             if (sketches.size() == 0)
                 noRecentImages.setVisibility(View.VISIBLE);
         } else {
+            loCreateDawing.setVisibility(View.GONE);
             for (Sketch sketchGroup : sketches) {
                 if (sketchGroup.getId() == rootSketchId) {
                     currentRootId = rootSketchId;
