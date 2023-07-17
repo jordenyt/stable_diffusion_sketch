@@ -189,46 +189,6 @@ public class Sketch implements Serializable {
         return Utils.getDilationMask(s.getImgPaint(), 0);
     }
 
-    public Bitmap getResizedImgBackground() {
-        if (imgBackground != null) {
-            return Bitmap.createScaledBitmap(imgBackground, imgPreview.getWidth(), imgPreview.getHeight(), true);
-        } else {
-            return null;
-        }
-    }
-
-    public Bitmap getResizedImgReference() {
-        if (imgReference != null) {
-            return Bitmap.createScaledBitmap(imgReference, imgPreview.getWidth(), imgPreview.getHeight(), true);
-        } else {
-            return null;
-        }
-    }
-
-    public Bitmap getResizedImgBgRef() {
-        if (imgReference != null) {
-            Bitmap imgBg = getResizedImgBackground();
-            Bitmap imgRef = getResizedImgReference();
-
-            int[] paintPixel = new int[imgPaint.getWidth() * imgPaint.getHeight()];
-            int[] resultPixel = new int[imgBg.getWidth() * imgBg.getHeight()];
-            int[] refPixel = new int[imgRef.getWidth() * imgRef.getHeight()];
-            imgBg.getPixels(resultPixel, 0, imgBg.getWidth(), 0, 0, imgBg.getWidth(), imgBg.getHeight());
-            imgPaint.getPixels(paintPixel, 0, imgPaint.getWidth(), 0, 0, imgPaint.getWidth(), imgPaint.getHeight());
-            imgRef.getPixels(refPixel, 0, imgRef.getWidth(), 0, 0, imgRef.getWidth(), imgRef.getHeight());
-
-            for (int i = 0; i < paintPixel.length; i++) {
-                if (Color.alpha(paintPixel[i]) != 0) {
-                    resultPixel[i] = refPixel[i];
-                }
-            }
-
-            return Bitmap.createBitmap(resultPixel, imgBg.getWidth(), imgBg.getHeight(), Bitmap.Config.ARGB_8888);
-        } else {
-            return getResizedImgBackground();
-        }
-    }
-
     public Bitmap getImgBgRefPreview() {
         Bitmap previewBitmap = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas cvPreview = new Canvas(previewBitmap);
@@ -352,9 +312,15 @@ public class Sketch implements Serializable {
         if (x2-x1 >= y2-y1) {
             inpaintWidth = (int)round(sdSize * scale);
             inpaintHeight = (int)round(blockWidth * ceil(inpaintHeight / blockWidth));
+            if (inpaintHeight > imgBackground.getHeight()) {
+                inpaintHeight -= blockWidth;
+            }
         } else {
             inpaintHeight = (int)round(sdSize * scale);
             inpaintWidth = (int)round(blockWidth * ceil(inpaintWidth / blockWidth));
+            if (inpaintWidth > imgBackground.getWidth()) {
+                inpaintWidth -= blockWidth;
+            }
         }
 
         double left = (x1 + (x2-x1)/2d) - (inpaintWidth-1)/2d;
