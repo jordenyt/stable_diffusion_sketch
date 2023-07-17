@@ -419,10 +419,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             Canvas canvasEdit = new Canvas(bmEdit);
             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
-            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, 10);
+            int boundary = (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 50d);
+            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, boundary);
         } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
-            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, 10);
+            int boundary = (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 50d);
+            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, boundary);
         }
     }
 }

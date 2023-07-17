@@ -254,8 +254,8 @@ public class SdApiHelper {
                         JSONObject cnArgObject = new JSONObject();
                         cnArgObject.put("input_image", Utils.jpg2Base64String(
                                 cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                                        cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getResizedImgReference() :
-                                                mCurrentSketch.getResizedImgBackground()));
+                                        cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getImgReference() :
+                                                mCurrentSketch.getImgBackground()));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
                         if (!"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
@@ -313,7 +313,7 @@ public class SdApiHelper {
 
             } else {
                 baseImage = param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getResizedImgBgRef() : mCurrentSketch.getResizedImgBackground();
+                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getImgBgRef() : mCurrentSketch.getImgBackground();
             }
 
             init_images.put(Utils.jpg2Base64String(baseImage));
@@ -355,6 +355,7 @@ public class SdApiHelper {
                     w = 64 * Math.round(w / 64);
                     jsonObject.put("width", w);
                 }
+                //Log.e("diffusionpaint", "SD Size=" + jsonObject.getDouble("width") + "X" + jsonObject.getDouble("height"));
             } else {
                 if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
                     if (mCurrentSketch.getImgBackground() != null) {
@@ -395,7 +396,7 @@ public class SdApiHelper {
 
                         Bitmap cnImage = null;
                         if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF)) {
-                            cnImage = mCurrentSketch.getResizedImgReference();
+                            cnImage = mCurrentSketch.getImgReference();
                         } else if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
                             Bitmap bg = mCurrentSketch.getImgBackground();
                             if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
@@ -407,7 +408,7 @@ public class SdApiHelper {
                             }
                             cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
                         } else {
-                            cnImage = cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() : mCurrentSketch.getResizedImgBackground();
+                            cnImage = cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() : mCurrentSketch.getImgBackground();
                         }
 
                         cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
