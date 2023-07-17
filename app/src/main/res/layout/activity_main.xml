@@ -114,18 +114,35 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <GridView
-            android:id="@+id/gridview_sketch_list"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:horizontalSpacing="20dip"
-            android:numColumns="auto_fit"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="20dip"
-            android:visibility="visible">
+            android:layout_height="match_parent">
 
-        </GridView>
+            <TextView
+                android:id="@+id/no_recent_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_recent_immages"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/gridview_sketch_list"
+                app:layout_constraintTop_toTopOf="@+id/gridview_sketch_list" />
+
+            <GridView
+                android:id="@+id/gridview_sketch_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:horizontalSpacing="20dip"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="20dip"
+                android:visibility="visible"
+                tools:layout_editor_absoluteY="319dp">
+
+            </GridView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
 </LinearLayout>

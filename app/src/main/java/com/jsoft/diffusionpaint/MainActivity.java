@@ -126,6 +126,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     public void showGrid(int rootSketchId) {
+
+        TextView noRecentImages = findViewById(R.id.no_recent_images);
+
+        noRecentImages.setVisibility(View.INVISIBLE);
+
         if (rootSketchId == -1) {
             currentRootId = -1;
             List<Sketch> dbSketchList = db.getSketchList();
@@ -163,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             sketches = showSketches;
             GridViewImageAdapter adapter = new GridViewImageAdapter(this, showSketches);
             gridView.setAdapter(adapter);
+
+            if (sketches.size() == 0)
+                noRecentImages.setVisibility(View.VISIBLE);
         } else {
             for (Sketch sketchGroup : sketches) {
                 if (sketchGroup.getId() == rootSketchId) {

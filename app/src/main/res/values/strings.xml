@@ -24,6 +24,7 @@
     <string name="or">or</string>
     <string name="previous">previous</string>
     <string name="my_images">My images</string>
+    <string name="no_recent_immages">No recent images</string>
     <string-array name="sd_size_options">
         <item>512px</item>
         <item>768px</item>
