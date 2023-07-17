@@ -34,7 +34,9 @@ import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.dto.AppConstant;
@@ -87,6 +89,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         MaterialButton addTxt2img = findViewById(R.id.fab_add_txt2img);
         addTxt2img.setOnClickListener(view -> addTxt2img());
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+                toolbar.inflateMenu(R.menu.sd_setting);
+                toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+
         isPermissionGranted();
 
         sdApiHelper = new SdApiHelper(this, this);
@@ -104,10 +110,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private boolean validateSettings() {
         if (!sdApiHelper.isValid()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("App not configured");
-            builder.setMessage("Before using the app you have to configure Automatic1111 server address.");
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-            builder.setPositiveButton("Configure", (dialog, which) -> {
+            builder.setTitle(R.string.app_not_configured_title);
+            builder.setMessage(R.string.app_not_configured_message);
+            builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+            builder.setPositiveButton(R.string.configure, (dialog, which) -> {
                 showServerAddressInput();
                 dialog.dismiss();
             });
@@ -257,15 +263,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.sd_setting, menu);
-        return true;
-    }
-
-    @SuppressLint("NonConstantResourceId")
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
