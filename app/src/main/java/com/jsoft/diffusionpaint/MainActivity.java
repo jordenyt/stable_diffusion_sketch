@@ -85,13 +85,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         addCameraButton.setOnClickListener(view -> launchCamera());
 
         MaterialButton addTxt2img = findViewById(R.id.fab_add_txt2img);
-        addTxt2img.setOnClickListener(v -> {
-            if (DrawingActivity.loraList == null) {
-                sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
-            } else {
-                showPromptDialog();
-            }
-        });
+        addTxt2img.setOnClickListener(view -> addTxt2img());
 
         isPermissionGranted();
 
@@ -107,7 +101,30 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             new ActivityResultContracts.StartActivityForResult(),
             result -> {});
 
+    private boolean validateSettings() {
+        if (!sdApiHelper.isValid()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("App not configured");
+            builder.setMessage("Before using the app you have to configure Automatic1111 server address.");
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+            builder.setPositiveButton("Configure", (dialog, which) -> {
+                showServerAddressInput();
+                dialog.dismiss();
+            });
+
+            AlertDialog dialog = builder.create();
+            if(!isFinishing()) dialog.show();
+
+            return false;
+        }
+
+        return true;
+    }
+
     public void gotoDrawingActivity(int sketchID) {
+        if (!this.validateSettings())
+            return;
+
         Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
         intent.putExtra("sketchId", sketchID);
         drawingActivityResultLauncher.launch(intent);
@@ -236,6 +253,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         return gridView;
     }
 
+    private void showServerAddressInput() {
+        showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -249,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.mi_sd_server_address:
-                showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
+                showServerAddressInput();
                 break;
             case R.id.mi_prompt_prefix:
                 showTextInputDialog("promptPrefix", "Prompt Prefix:", "Color drawing of ", "");
@@ -513,7 +534,21 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         dialog.show();
     }
 
+    private void addTxt2img() {
+        if (!this.validateSettings())
+            return;
+
+        if (DrawingActivity.loraList == null) {
+            sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
+        } else {
+            showPromptDialog();
+        }
+    }
+
     private void launchCamera() {
+        if (!this.validateSettings())
+            return;
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             Uri imageUri = FileProvider.getUriForFile(this, "com.jsoft.diffusionpaint.fileprovider", mImageFile);
