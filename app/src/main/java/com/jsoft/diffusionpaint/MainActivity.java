@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -195,7 +196,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             if (sketches.size() == 0)
                 noRecentImages.setVisibility(View.VISIBLE);
         } else {
-            loCreateDawing.setVisibility(View.GONE);
+            if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                loCreateDawing.setVisibility(View.GONE);
+            }
             for (Sketch sketchGroup : sketches) {
                 if (sketchGroup.getId() == rootSketchId) {
                     currentRootId = rootSketchId;

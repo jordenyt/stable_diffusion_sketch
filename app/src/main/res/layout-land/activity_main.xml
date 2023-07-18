@@ -23,108 +23,107 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent">
-    <LinearLayout
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="102dp"
-            android:padding="5dip"
-            app:srcCompat="@drawable/logo" />
-
-        <LinearLayout
-            android:id="@+id/lo_create_drawing"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:orientation="vertical"
-            android:paddingLeft="10pt"
-            android:paddingTop="5dip"
-            android:paddingRight="10pt"
-            android:paddingBottom="5dip">
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/fab_add"
-                android:layout_width="match_parent"
+        <ScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent">
+            <LinearLayout
+                android:layout_width="220dp"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/draw"
-                android:text="@string/draw"
-                app:icon="@drawable/ic_brush"
-                app:iconGravity="textEnd" />
+                android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/fab_add_txt2img"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dip"
-                android:contentDescription="@string/generate_image"
-                android:text="@string/generate_image"
-                app:icon="@drawable/ic_magic"
-                app:iconGravity="textEnd" />
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dip"
-                android:layout_marginBottom="5dip">
-
-                <View
-                    android:id="@+id/divider"
+                <LinearLayout
+                    android:id="@+id/lo_create_drawing"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="20pt"
                     android:layout_height="wrap_content"
-                    android:text="@string/or"
-                    android:textAlignment="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    android:orientation="vertical"
+                    android:paddingLeft="5pt"
+                    android:paddingTop="5dip"
+                    android:paddingRight="5pt"
+                    android:paddingBottom="5dip">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="102dp"
+                        android:padding="5dip"
+                        app:srcCompat="@drawable/logo" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/fab_add"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/draw"
+                        android:text="@string/draw"
+                        app:icon="@drawable/ic_brush"
+                        app:iconGravity="textEnd" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/fab_add_txt2img"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dip"
+                        android:contentDescription="@string/generate_image"
+                        android:text="@string/generate_image"
+                        app:icon="@drawable/ic_magic"
+                        app:iconGravity="textEnd" />
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dip"
+                        android:layout_marginBottom="5dip">
+
+                        <View
+                            android:id="@+id/divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="?android:attr/listDivider"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="20pt"
+                            android:layout_height="wrap_content"
+                            android:text="@string/or"
+                            android:textAlignment="center"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/fab_add_file"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/add_from_image"
-                android:text="@string/add_from_image"
-                app:colorPrimary="@color/white"
-                app:icon="@drawable/ic_folder"
-                app:iconGravity="textEnd" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/fab_add_file"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/add_from_image"
+                        android:text="@string/add_from_image"
+                        app:colorPrimary="@color/white"
+                        app:icon="@drawable/ic_folder"
+                        app:iconGravity="textEnd" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/fab_add_camera"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/add_from_camera"
-                android:text="@string/add_from_camera"
-                app:colorPrimary="@color/white"
-                app:icon="@drawable/ic_input_camera"
-                app:iconGravity="textEnd" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/fab_add_camera"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/add_from_camera"
+                        android:text="@string/add_from_camera"
+                        app:colorPrimary="@color/white"
+                        app:icon="@drawable/ic_input_camera"
+                        app:iconGravity="textEnd" />
 
-        </LinearLayout>
+                </LinearLayout>
 
-    </LinearLayout>
-    </ScrollView>
+            </LinearLayout>
+        </ScrollView>
 
     <LinearLayout
         android:id="@+id/sketch_list_container"
@@ -162,6 +161,7 @@
                 android:gravity="center"
                 android:horizontalSpacing="20dip"
                 android:numColumns="auto_fit"
+                android:columnWidth="150dip"
                 android:stretchMode="columnWidth"
                 android:verticalSpacing="20dip"
                 android:visibility="visible"

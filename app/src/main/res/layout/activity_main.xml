@@ -19,13 +19,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="102dp"
-        android:padding="10dip"
-        app:srcCompat="@drawable/logo" />
-
     <LinearLayout
         android:id="@+id/lo_create_drawing"
         android:layout_width="match_parent"
@@ -37,6 +30,12 @@
         android:paddingRight="10pt"
         android:paddingBottom="5dip">
 
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="102dp"
+            android:padding="10dip"
+            app:srcCompat="@drawable/logo" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add"

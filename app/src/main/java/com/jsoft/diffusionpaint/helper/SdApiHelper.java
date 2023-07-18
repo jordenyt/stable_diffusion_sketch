@@ -324,7 +324,7 @@ public class SdApiHelper {
                     imgInpaintMask = Utils.extractBitmap(resizedBm, mCurrentSketch.getRectInpaint(param.sdSize));
                 }
                 jsonObject.put("mask", Utils.png2Base64String(imgInpaintMask));
-                jsonObject.put("mask_blur", 10);
+                jsonObject.put("mask_blur", Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 50);
                 jsonObject.put("inpainting_fill", param.inpaintFill);
                 jsonObject.put("inpaint_full_res", false);
                 jsonObject.put("inpaint_full_res_padding", 32);
