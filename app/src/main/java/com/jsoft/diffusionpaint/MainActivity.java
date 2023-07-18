@@ -310,33 +310,43 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("modeCustom5", "Parameters for Custom Mode 5:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
                 break;
             case R.id.mi_cn_scribble:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_depth:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnDepth", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_pose:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnPose", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_canny:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnCanny", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_normal:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnNormal", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_mlsd:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnMlsd", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_lineart:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnLineart", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_softedge:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnSoftedge", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_seg:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnSeg", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_tile:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
                 break;
             case R.id.mi_sd_output_dim:
@@ -346,15 +356,19 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("canvasDim", "Canvas Dimension:", "", "2560");
                 break;
             case R.id.mi_sd_model:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_inpaint_model:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDInpaintModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_sampler:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
                 break;
             case R.id.mi_sd_upscaler:
+                if (!this.validateSettings()) break;
                 sdApiHelper.sendGetRequest("setUpscaler", "/sdapi/v1/upscalers");
                 break;
             default:
@@ -573,6 +587,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void pickImage() {
+        if (!this.validateSettings())
+            return;
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         pickImageLauncher.launch(intent);
