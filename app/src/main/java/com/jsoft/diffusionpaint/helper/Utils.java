@@ -234,20 +234,7 @@ public class Utils {
         }
         return null;
     }
-    public static void newPaintFromImage(Intent intent, Activity activity, ActivityResultLauncher<Intent> drawingActivityResultLauncher) {
-        Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        String mimeType = activity.getContentResolver().getType(uri);
-        if (mimeType != null && mimeType.startsWith("image/")) {
-            String filePath = getPathFromUri(uri, activity);
-            if (filePath != null) {
-                Intent drawIntent = new Intent(activity, DrawingActivity.class);
-                drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                drawIntent.putExtra("sketchId", -2);
-                drawIntent.putExtra("bitmapPath", filePath);
-                drawingActivityResultLauncher.launch(drawIntent);
-            }
-        }
-    }
+
 
     public static Bitmap getOutpaintBmp(Bitmap bm, String cnMode, int fillColor, boolean isPaint, int sdSize) {
         int originalWidth = bm.getWidth();

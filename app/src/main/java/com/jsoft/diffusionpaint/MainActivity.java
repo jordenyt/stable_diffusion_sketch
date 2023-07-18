@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -88,11 +87,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         ImageButton menuButton = findViewById(R.id.menu_button);
         menuButton.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(MainActivity.this, menuButton);
-            MenuInflater inflater = popupMenu.getMenuInflater();
-            inflater.inflate(R.menu.sd_setting, popupMenu.getMenu());
+            PopupMenu popupMenu = new PopupMenu(this, menuButton);
+            popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(this::menuItemClick);
             popupMenu.show();
-            popupMenu.setOnMenuItemClickListener(item -> menuItemClick(item));
         });
 
         isPermissionGranted();
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            Utils.newPaintFromImage(intent, this, drawingActivityResultLauncher);
+            newPaintFromImage(intent);
         }
     }
 
@@ -130,8 +128,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     public void gotoDrawingActivity(int sketchID) {
-        if (!this.validateSettings())
-            return;
+        if (!validateSettings()) return;
 
         Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
         intent.putExtra("sketchId", sketchID);
@@ -147,7 +144,22 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            Utils.newPaintFromImage(intent, this, drawingActivityResultLauncher);
+            newPaintFromImage(intent);
+        }
+    }
+
+    public void newPaintFromImage(Intent intent) {
+        Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        String mimeType = this.getContentResolver().getType(uri);
+        if (mimeType != null && mimeType.startsWith("image/")) {
+            String filePath = Utils.getPathFromUri(uri, this);
+            if (filePath != null) {
+                Intent drawIntent = new Intent(this, DrawingActivity.class);
+                drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                drawIntent.putExtra("sketchId", -2);
+                drawIntent.putExtra("bitmapPath", filePath);
+                drawingActivityResultLauncher.launch(drawIntent);
+            }
         }
     }
 
@@ -310,43 +322,43 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("modeCustom5", "Parameters for Custom Mode 5:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
                 break;
             case R.id.mi_cn_scribble:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_depth:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnDepth", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_pose:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnPose", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_canny:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnCanny", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_normal:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnNormal", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_mlsd:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnMlsd", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_lineart:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnLineart", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_softedge:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnSoftedge", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_seg:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnSeg", "/controlnet/model_list");
                 break;
             case R.id.mi_cn_tile:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
                 break;
             case R.id.mi_sd_output_dim:
@@ -356,19 +368,19 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("canvasDim", "Canvas Dimension:", "", "2560");
                 break;
             case R.id.mi_sd_model:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_inpaint_model:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDInpaintModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_sampler:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
                 break;
             case R.id.mi_sd_upscaler:
-                if (!this.validateSettings()) break;
+                if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setUpscaler", "/sdapi/v1/upscalers");
                 break;
             default:
@@ -559,8 +571,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void addTxt2img() {
-        if (!this.validateSettings())
-            return;
+        if (!validateSettings()) return;
 
         if (DrawingActivity.loraList == null) {
             sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
@@ -570,8 +581,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void launchCamera() {
-        if (!this.validateSettings())
-            return;
+        if (!validateSettings()) return;
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
@@ -587,8 +597,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void pickImage() {
-        if (!this.validateSettings())
-            return;
+        if (!validateSettings()) return;
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
