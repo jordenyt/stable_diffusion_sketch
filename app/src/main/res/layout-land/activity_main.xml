@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="com.jsoft.diffusionpaint.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <!--<com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
@@ -17,120 +17,129 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"/>
 
-    </com.google.android.material.appbar.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ScrollView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent">
+    <ImageButton
+        android:id="@+id/menu_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="0dp"
+        android:background="@null"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorPrimary" />
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/left_panel"
+        android:layout_width="220dp"
+        android:layout_height="fill_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
             <LinearLayout
-                android:layout_width="220dp"
+                android:id="@+id/lo_create_drawing"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/lo_create_drawing"
+                android:orientation="vertical"
+                android:paddingLeft="5pt"
+                android:paddingTop="5dip"
+                android:paddingRight="5pt"
+                android:paddingBottom="5dip">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="102dp"
+                    android:padding="5dip"
+                    app:srcCompat="@drawable/logo" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fab_add"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/draw"
+                    android:text="@string/draw"
+                    app:icon="@drawable/ic_brush"
+                    app:iconGravity="textEnd" />
 
-                    android:orientation="vertical"
-                    android:paddingLeft="5pt"
-                    android:paddingTop="5dip"
-                    android:paddingRight="5pt"
-                    android:paddingBottom="5dip">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fab_add_txt2img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dip"
+                    android:contentDescription="@string/generate_image"
+                    android:text="@string/generate_image"
+                    app:icon="@drawable/ic_magic"
+                    app:iconGravity="textEnd" />
 
-                    <ImageView
-                        android:id="@+id/imageView"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dip"
+                    android:layout_marginBottom="5dip">
+
+                    <View
+                        android:id="@+id/divider"
                         android:layout_width="match_parent"
-                        android:layout_height="102dp"
-                        android:padding="5dip"
-                        app:srcCompat="@drawable/logo" />
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/fab_add"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="20pt"
                         android:layout_height="wrap_content"
-                        android:contentDescription="@string/draw"
-                        android:text="@string/draw"
-                        app:icon="@drawable/ic_brush"
-                        app:iconGravity="textEnd" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/fab_add_txt2img"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="0dip"
-                        android:contentDescription="@string/generate_image"
-                        android:text="@string/generate_image"
-                        app:icon="@drawable/ic_magic"
-                        app:iconGravity="textEnd" />
-
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dip"
-                        android:layout_marginBottom="5dip">
-
-                        <View
-                            android:id="@+id/divider"
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="?android:attr/listDivider"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/textView"
-                            android:layout_width="20pt"
-                            android:layout_height="wrap_content"
-                            android:text="@string/or"
-                            android:textAlignment="center"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                        android:text="@string/or"
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/fab_add_file"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/add_from_image"
-                        android:text="@string/add_from_image"
-                        app:colorPrimary="@color/white"
-                        app:icon="@drawable/ic_folder"
-                        app:iconGravity="textEnd" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fab_add_file"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add_from_image"
+                    android:text="@string/add_from_image"
+                    app:colorPrimary="@color/white"
+                    app:icon="@drawable/ic_folder"
+                    app:iconGravity="textEnd" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/fab_add_camera"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/add_from_camera"
-                        android:text="@string/add_from_camera"
-                        app:colorPrimary="@color/white"
-                        app:icon="@drawable/ic_input_camera"
-                        app:iconGravity="textEnd" />
-
-                </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fab_add_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add_from_camera"
+                    android:text="@string/add_from_camera"
+                    app:colorPrimary="@color/white"
+                    app:icon="@drawable/ic_input_camera"
+                    app:iconGravity="textEnd" />
 
             </LinearLayout>
-        </ScrollView>
+
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/sketch_list_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="15dip">
+        android:padding="15dip"
+        app:layout_constraintStart_toEndOf="@id/left_panel"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
 
         <TextView
             android:id="@+id/textView2"
@@ -171,6 +180,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
-    </LinearLayout>
 
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
