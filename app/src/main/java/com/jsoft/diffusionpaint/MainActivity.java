@@ -21,17 +21,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.helper.PaintDb;
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     private PaintDb db;
     private GridView gridView;
-    private Utils utils;
     private List<Sketch> sketches;
     private SharedPreferences sharedPreferences;
     private static File mImageFile;
@@ -70,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         db = new PaintDb(this);
-        utils = new Utils(this);
 
         gridView = initGridLayout();
 
@@ -86,9 +86,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         MaterialButton addTxt2img = findViewById(R.id.fab_add_txt2img);
         addTxt2img.setOnClickListener(view -> addTxt2img());
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-                toolbar.inflateMenu(R.menu.sd_setting);
-                toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+        ImageButton menuButton = findViewById(R.id.menu_button);
+        menuButton.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(MainActivity.this, menuButton);
+            MenuInflater inflater = popupMenu.getMenuInflater();
+            inflater.inflate(R.menu.sd_setting, popupMenu.getMenu());
+            popupMenu.show();
+            popupMenu.setOnMenuItemClickListener(item -> menuItemClick(item));
+        });
 
         isPermissionGranted();
 
@@ -151,12 +156,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         TextView noRecentImages = findViewById(R.id.no_recent_images);
 
         noRecentImages.setVisibility(View.INVISIBLE);
-
-        LinearLayout loCreateDawing = findViewById(R.id.lo_create_drawing);
-
+        LinearLayout loCreateDrawing = findViewById(R.id.lo_create_drawing);
+        TextView projectTitle = findViewById(R.id.textView2);
         if (rootSketchId == -1) {
-            loCreateDawing.setVisibility(View.VISIBLE);
             currentRootId = -1;
+            loCreateDrawing.setVisibility(View.VISIBLE);
+            projectTitle.setText(R.string.my_images);
             List<Sketch> dbSketchList = db.getSketchList();
             List<Sketch> showSketches = new ArrayList<>();
             Map<Integer, List<Sketch>> mapSketch = new HashMap<>();
@@ -197,8 +202,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 noRecentImages.setVisibility(View.VISIBLE);
         } else {
             if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                loCreateDawing.setVisibility(View.GONE);
+                loCreateDrawing.setVisibility(View.GONE);
+            } else {
+                loCreateDrawing.setVisibility(View.VISIBLE);
             }
+            projectTitle.setText("[PROJECT " + rootSketchId + "]");
             for (Sketch sketchGroup : sketches) {
                 if (sketchGroup.getId() == rootSketchId) {
                     currentRootId = rootSketchId;
@@ -262,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean menuItemClick(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.mi_sd_server_address:
