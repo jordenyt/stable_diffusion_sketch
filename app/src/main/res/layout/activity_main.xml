@@ -35,12 +35,13 @@
         android:id="@+id/lo_create_drawing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:orientation="vertical"
         android:paddingLeft="10pt"
         android:paddingTop="5dip"
         android:paddingRight="10pt"
-        android:paddingBottom="5dip">
+        android:paddingBottom="5dip"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -157,6 +158,7 @@
                 android:gravity="center"
                 android:horizontalSpacing="20dip"
                 android:numColumns="auto_fit"
+                android:columnWidth="150dip"
                 android:stretchMode="columnWidth"
                 android:verticalSpacing="20dip"
                 android:visibility="visible"
