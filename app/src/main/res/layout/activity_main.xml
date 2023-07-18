@@ -39,7 +39,7 @@
         android:paddingBottom="5dip">
 
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add_camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
             app:iconGravity="textEnd" />
 
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add_txt2img"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

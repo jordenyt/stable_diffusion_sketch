@@ -20,7 +20,6 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,9 +34,9 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
-import com.jsoft.diffusionpaint.dto.AppConstant;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -92,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showPromptDialog();
             }
         });
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOnMenuItemClickListener(item -> onOptionsItemSelected(item));
 
         isPermissionGranted();
 
