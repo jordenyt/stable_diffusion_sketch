@@ -18,14 +18,21 @@
     <string name="deepfacelab">DeepFaceLab</string>
     <string name="ok">OK</string>
     <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+    <string name="configure">Configure</string>
 
     <string name="draw">Start drawing</string>
     <string name="add_from_camera">Add from camera</string>
+    <string name="add_from_image">Add from image</string>
     <string name="generate_image">Generate image</string>
     <string name="or">or</string>
     <string name="previous">previous</string>
     <string name="my_images">My images</string>
     <string name="no_recent_immages">No recent images</string>
+    <string name="app_not_configured_title">App not configured</string>
+    <string name="app_not_configured_message">Before using the app you have to configure Automatic1111 server address.</string>
+
+
     <string-array name="sd_size_options">
         <item>512px</item>
         <item>768px</item>

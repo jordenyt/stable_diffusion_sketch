@@ -51,6 +51,9 @@ public class SdApiHelper {
     public void setActivity(Activity activity) { this.activity  = activity;}
     public void setListener(SdApiResponseListener listener) { this.listener  = listener;}
 
+    public boolean isValid() {
+        return !sharedPreferences.getString("sdServerAddress", "").equals("");
+    }
 
     public void sendGetRequest(String requestType, String url) {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET");

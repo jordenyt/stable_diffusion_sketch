@@ -15,8 +15,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/sd_setting"/>
+            android:layout_height="?attr/actionBarSize"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -39,13 +38,23 @@
         android:paddingBottom="5dip">
 
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/draw"
             android:text="@string/draw"
             app:icon="@drawable/ic_brush"
+            app:iconGravity="textEnd" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fab_add_txt2img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dip"
+            android:contentDescription="@string/generate_image"
+            android:text="@string/generate_image"
+            app:icon="@drawable/ic_magic"
             app:iconGravity="textEnd" />
 
 
@@ -77,7 +86,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add_camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,16 +96,17 @@
             app:icon="@drawable/ic_input_camera"
             app:iconGravity="textEnd" />
 
-
-        <Button
-            android:id="@+id/fab_add_txt2img"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fab_add_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dip"
-            android:contentDescription="@string/generate_image"
-            android:text="@string/generate_image"
-            app:icon="@drawable/ic_magic"
+            android:contentDescription="@string/add_from_image"
+            android:text="@string/add_from_image"
+            app:colorPrimary="@color/white"
+            app:icon="@drawable/ic_folder"
             app:iconGravity="textEnd" />
+
+
 
     </LinearLayout>
 
