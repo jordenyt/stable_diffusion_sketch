@@ -22,6 +22,7 @@
 
     <string name="draw">Start drawing</string>
     <string name="add_from_camera">Add from camera</string>
+    <string name="add_from_image">Add from image</string>
     <string name="generate_image">Generate image</string>
     <string name="or">or</string>
     <string name="previous">previous</string>

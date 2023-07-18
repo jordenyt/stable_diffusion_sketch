@@ -8,7 +8,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -21,19 +20,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -83,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         MaterialButton addCameraButton = findViewById(R.id.fab_add_camera);
         addCameraButton.setOnClickListener(view -> launchCamera());
+
+        MaterialButton addFromFile = findViewById(R.id.fab_add_file);
+        addFromFile.setOnClickListener(view -> pickImage());
 
         MaterialButton addTxt2img = findViewById(R.id.fab_add_txt2img);
         addTxt2img.setOnClickListener(view -> addTxt2img());
@@ -556,6 +554,29 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             cameraResultLauncher.launch(intent);
         }
     }
+
+    private void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        pickImageLauncher.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData()!= null && result.getData().getData() != null) {
+                    Uri uri = result.getData().getData();
+                    String mimeType = this.getContentResolver().getType(uri);
+                    String filePath = null;
+                    if (mimeType != null && mimeType.startsWith("image/")) {
+                        filePath = Utils.getPathFromUri(uri, this);
+                    }
+                    Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
+                    intent.putExtra("sketchId", -2);
+                    intent.putExtra("bitmapPath", filePath);
+                    drawingActivityResultLauncher.launch(intent);
+                }
+            });
 
     ActivityResultLauncher<Intent> cameraResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
