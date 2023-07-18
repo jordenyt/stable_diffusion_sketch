@@ -91,9 +91,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 toolbar.inflateMenu(R.menu.sd_setting);
                 toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setOnMenuItemClickListener(item -> onOptionsItemSelected(item));
-
         isPermissionGranted();
 
         sdApiHelper = new SdApiHelper(this, this);
