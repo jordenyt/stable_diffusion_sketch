@@ -70,8 +70,11 @@ Below is an example which I use to enhance the details of inpainting area : <br/
 | `cnWeight`       | decimal from 0 to 1                                                                                                                                                                                                                                                                                                                                                                             |
 | `cnModuleParamA` | First Parameter for ControlNet Module                                                                                                                                                                                                                                                                                                                                                           |
 | `cnModuleParamB` | Second Parameter for ControlNet Module                                                                                                                                                                                                                                                                                                                                                          |
+## Screenshots
+<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/50681a65-53a9-4368-87ec-571fc773b674" height="460"> 
+<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/7cebca43-0745-4547-8b1c-70a95a65bce5" height="460"> 
 
-## Demo Video
+## Demo Video (on outdated version)
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
 
 ## Preset Modes Demo
