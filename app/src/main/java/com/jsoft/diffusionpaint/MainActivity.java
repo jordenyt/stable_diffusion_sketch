@@ -361,6 +361,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_canvas_dim:
                 showTextInputDialog("canvasDim", "Canvas Dimension:", "", "2560");
                 break;
+            case R.id.mi_steps:
+                showTextInputDialog("defaultSteps", "Steps:", "", "50");
+                break;
+            case R.id.mi_cfg_scale:
+                showTextInputDialog("defaultCfgScale", "CFG Scale:", "", "7.0");
+                break;
             case R.id.mi_sd_model:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");

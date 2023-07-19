@@ -17,7 +17,7 @@
         android:src="@drawable/ic_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorPrimary" />
+        app:tint="?android:attr/textColorPrimary" />
 
     <LinearLayout
         android:id="@+id/lo_create_drawing"

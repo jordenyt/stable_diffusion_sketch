@@ -5,6 +5,10 @@
             <item android:id="@+id/mi_sd_server_address" android:title="Stable Diffusion Server Address"/>
             <item android:id="@+id/mi_sd_output_dim" android:title="Stable Diffusion Output Dimension"/>
             <item android:id="@+id/mi_canvas_dim" android:title="Canvas Dimension"/>
+            <item android:id="@+id/mi_steps" android:title="Default Steps" />
+            <item android:id="@+id/mi_cfg_scale" android:title="Default CFG Scale" />
+            <item android:id="@+id/mi_sd_sampler" android:title="Sampling method"/>
+            <item android:id="@+id/mi_sd_upscaler" android:title="Upscaler"/>
         </menu>
     </item>
     <item android:title="Prompt Settings">
@@ -18,8 +22,6 @@
         <menu>
             <item android:id="@+id/mi_sd_model" android:title="Stable Diffusion model"/>
             <item android:id="@+id/mi_sd_inpaint_model" android:title="Stable Diffusion inpaint model"/>
-            <item android:id="@+id/mi_sd_sampler" android:title="Sampling method"/>
-            <item android:id="@+id/mi_sd_upscaler" android:title="Upscaler"/>
             <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
             <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
             <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
