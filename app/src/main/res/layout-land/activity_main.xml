@@ -7,18 +7,6 @@
     android:orientation="vertical"
     tools:context="com.jsoft.diffusionpaint.MainActivity">
 
-    <!--<com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
-
-    </com.google.android.material.appbar.AppBarLayout>-->
-
     <ImageButton
         android:id="@+id/menu_button"
         android:layout_width="50dp"
