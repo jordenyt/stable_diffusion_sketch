@@ -87,16 +87,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/fab_add_camera"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/add_from_camera"
-            android:text="@string/add_from_camera"
-            app:colorPrimary="@color/white"
-            app:icon="@drawable/ic_input_camera"
-            app:iconGravity="textEnd" />
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/fab_add_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -104,6 +94,16 @@
             android:text="@string/add_from_image"
             app:colorPrimary="@color/white"
             app:icon="@drawable/ic_folder"
+            app:iconGravity="textEnd" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fab_add_camera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/add_from_camera"
+            android:text="@string/add_from_camera"
+            app:colorPrimary="@color/white"
+            app:icon="@drawable/ic_input_camera"
             app:iconGravity="textEnd" />
 
     </LinearLayout>
