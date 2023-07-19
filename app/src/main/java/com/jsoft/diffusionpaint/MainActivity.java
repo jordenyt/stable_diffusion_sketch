@@ -389,6 +389,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setUpscaler", "/sdapi/v1/upscalers");
                 break;
+            case R.id.mi_about:
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch"));
+                startActivity(intent);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
