@@ -189,8 +189,16 @@ public class SdApiHelper {
         SdParam param = gson.fromJson(jsonMode, SdParam.class);
         if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
-        if (param.cfgScale == 0d) { param.cfgScale = 7.0; }
-        if (param.steps == 0) { param.steps = 50; }
+        if (param.cfgScale == 0d) {
+            try {
+                param.cfgScale = Double.parseDouble(sharedPreferences.getString("defaultCfgScale", "7.0"));
+            } catch (Exception e) { param.cfgScale = 7.0; }
+        }
+        if (param.steps == 0) {
+            try {
+                param.steps = Integer.parseInt(sharedPreferences.getString("defaultSteps", "50"));
+            } catch (Exception e) { param.steps = 50; }
+        }
         if (param.cn != null) {
             for (CnParam cnParam : param.cn) {
                 if (cnParam.cnModuleParamA == 0d) {
