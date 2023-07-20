@@ -1,8 +1,12 @@
-#  Stable Diffusion Sketch v0.11.1
-Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion on your own server with the sketching you made on your Android device.  
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.11.1-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111's Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) which is installed on **your own server**. <br/>
+
+**[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 
 ## Supported Features
 
+- Support ControlNet v1.1
+- Autocomplete LORA tag in prompt
 - Sketch with color
 - Create new paint from:
   - Blank Canvas
