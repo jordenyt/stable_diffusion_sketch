@@ -18,8 +18,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="?android:attr/textColorPrimary" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/versionName"
+        android:textSize="11sp"
+        app:tint="?android:attr/textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/left_panel"
         android:layout_width="220dp"
         android:layout_height="fill_parent"
