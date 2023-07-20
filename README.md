@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch v0.11.0
+#  Stable Diffusion Sketch v0.11.1
 Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion on your own server with the sketching you made on your Android device.  
 
 ## Supported Features
@@ -43,8 +43,21 @@ Stable Diffusion Sketch is an Android app that enable you run Stable Diffusion o
 
 ## Custom Modes
 Custom mode can be defined in JSON format.<br/>
-Below is an example which I use to enhance the details of inpainting area : <br/>
-`{"type":"inpaint", "denoise":0.35, "cfgScale":7.0, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, "cn":[{"cnInputImage":"background", "cnModelKey":"cnTileModel", "cnModule":"tile_colorfix+sharp", "cnModuleParamA":5, "cnModuleParamB":0.3, "cnWeight":1.0}]}`
+
+### Examples
+1. Partial inpaint with POSE <br/>
+`{"type":"inpaint","denoise":0.75, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, "cn":[{"cnInputImage":"background", "cnModelKey":"cnPoseModel", "cnModule":"openpose_full", "cnWeight":1.0, "cnControlMode":0}], "sdSize":768}`
+2. Color fix <br/>
+`{"type":"inpaint","denoise":0.5, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, "cn":[{"cnInputImage":"background", "cnModelKey":"cnSoftedgeModel", "cnModule":"softedge_pidinet", "cnWeight":1.0, "cnControlMode":0}], "sdSize":1024}`
+3. Mild Enhance <br/>
+`{"type":"inpaint","denoise":0.15, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, "cn":[{"cnInputImage":"background", "cnModelKey":"cnTileModel", "cnModule":"tile_resample", "cnModuleParamA":1, "cnWeight":1.0, "cnControlMode":0}], "sdSize":1024}`
+4. Heavy Enhance <br/>
+`{"type":"inpaint","denoise":0.4, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, “cn”:[{"cnInputImage":"background", "cnModelKey":"cnTileModel", "cnModule":"tile_colorfix+sharp", "cnModuleParamA":5, "cnModuleParamB":0.2, "cnWeight":1.0, "cnControlMode":0}], "sdSize":1024}`
+5. Partial Redraw <br/>
+`{"type":"inpaint", "denoise":0.7, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, "sdSize":1024}`
+6. Get similar image <br/>
+`{"type":"txt2img", "cn":[{"cnInputImage":"background", "cnModelKey":"cnNoneModel", "cnModule":"reference_only", "cnWeight":1.0, "cnControlMode":2}]}`
+
 
 ### Parameters for the mode definition JSON:
 | Variable         | txt2img | img2img | inpainting | Value                                                                                                            |
