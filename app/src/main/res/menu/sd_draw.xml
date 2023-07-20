@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mi_sd_server_address"
+        android:icon="@drawable/baseline_undo_24"
+        android:title="Stable Diffusion Server Address"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mi_sd_output_dim"
+        android:icon="@drawable/baseline_redo_24"
+        android:title="Stable Diffusion Output Dimension"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mi_canvas_dim"
+        android:icon="@drawable/baseline_delete_forever_24"
+        android:title="Canvas Dimension"
+        app:showAsAction="ifRoom" />
+
+</menu>

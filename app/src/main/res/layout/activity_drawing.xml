@@ -8,6 +8,18 @@
     android:foregroundTint="@color/white"
     tools:context=".DrawingActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_draw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/sd_draw"></androidx.appcompat.widget.Toolbar>
+
     <SeekBar
         android:id="@+id/seek_width"
         android:layout_width="141dp"
@@ -32,59 +44,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_undo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/undo"
-        app:layout_constraintEnd_toStartOf="@+id/fab_redo"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_undo_white_24dp"
-        app:backgroundTint="@color/light_blue_A400"
-        app:tint="@android:color/white" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_redo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/redo"
-        android:src="@drawable/ic_redo_white_24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:backgroundTint="@color/light_blue_A400"
-        app:tint="@android:color/white" />
-
-
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/save_sketch"
-        android:src="@drawable/ic_back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@android:color/white" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/delete_sketch"
-        android:src="@drawable/ic_delete_white_24dp"
-        app:layout_constraintStart_toEndOf="@+id/fab_save"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@android:color/white" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -160,20 +119,6 @@
         android:background="#222222"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fab_stable_diffusion" />
-
-
-    <ImageView
-        android:id="@+id/img_drawing_mode"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_brush"
-        app:tint="@android:color/white" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
