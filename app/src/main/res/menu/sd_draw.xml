@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
     <item
-        android:id="@+id/mi_sd_server_address"
+        android:id="@+id/mi_draw_undo"
         android:icon="@drawable/baseline_undo_24"
-        android:title="Stable Diffusion Server Address"
-        app:showAsAction="ifRoom" />
+        android:title="@string/undo"
+        app:showAsAction="always" />
     <item
-        android:id="@+id/mi_sd_output_dim"
+        android:id="@+id/mi_draw_redo"
         android:icon="@drawable/baseline_redo_24"
-        android:title="Stable Diffusion Output Dimension"
-        app:showAsAction="ifRoom" />
+        android:title="@string/redo"
+        app:showAsAction="always" />
     <item
-        android:id="@+id/mi_canvas_dim"
+        android:id="@+id/mi_draw_delete"
         android:icon="@drawable/baseline_delete_forever_24"
-        android:title="Canvas Dimension"
-        app:showAsAction="ifRoom" />
+        android:title="@string/delete_sketch"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/mi_draw_save"
+        android:icon="@drawable/baseline_save_24"
+        android:title="@string/save_sketch"
+        app:showAsAction="always" />
 
 </menu>

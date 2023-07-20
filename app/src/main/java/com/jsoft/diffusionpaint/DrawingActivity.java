@@ -27,6 +27,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
@@ -60,7 +61,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     FloatingActionButton sdButton;
     FloatingActionButton eraserButton;
     FloatingActionButton refButton;
-    ImageView modeIcon;
     ImageView imgRef;
     Bitmap bmRef;
     public static List<String> loraList;
@@ -104,7 +104,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         mDrawingView = findViewById(R.id.drawing_view);
         int canvasDim = 2560;
-        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
+        try {
+            canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560"));
+        } catch (Exception ignored) {
+        }
         mDrawingView.setCanvasSize(canvasDim);
         mCurrentColor = Color.BLUE;
         mDrawingView.setPaintColor(mCurrentColor);
@@ -115,7 +118,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         circleView = findViewById(R.id.circle_pen);
         circleView.setColor(mCurrentColor);
-        circleView.setRadius(mCurrentStroke/2f);
+        circleView.setRadius(mCurrentStroke / 2f);
 
 
         ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
@@ -135,7 +138,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
-                mDrawingView.setmBaseBitmap(mCurrentSketch.getImgBackground() == null? mCurrentSketch.getImgPreview(): mCurrentSketch.getImgBackground());
+                mDrawingView.setmBaseBitmap(mCurrentSketch.getImgBackground() == null ? mCurrentSketch.getImgPreview() : mCurrentSketch.getImgBackground());
                 mDrawingView.setmPaintBitmap(mCurrentSketch.getImgPaint());
             }
         }
@@ -155,8 +158,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     protected void initButtons() {
 
-        modeIcon = findViewById(R.id.img_drawing_mode);
-        modeIcon.setImageResource(R.drawable.ic_brush);
         paletteButton = findViewById(R.id.fab_color);
         paletteButton.setOnClickListener(view -> ColorPickerDialog.newBuilder()
                 .setDialogType(ColorPickerDialog.TYPE_PRESETS)
@@ -171,30 +172,43 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mCurrentStroke = i;
                 mDrawingView.setPaintStrokeWidth(mCurrentStroke);
-                circleView.setRadius(mCurrentStroke/2f);
+                circleView.setRadius(mCurrentStroke / 2f);
             }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
-        undoButton = findViewById(R.id.fab_undo);
-        undoButton.setOnClickListener(view -> mDrawingView.undo());
-
-        redoButton = findViewById(R.id.fab_redo);
-        redoButton.setOnClickListener(view -> mDrawingView.redo());
-
-        FloatingActionButton saveButton = findViewById(R.id.fab_save);
-        saveButton.setOnClickListener(view -> {
-            saveSketch();
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_draw);
+        toolbar.setNavigationOnClickListener(v -> {
             gotoMainActivity();
         });
-
-        FloatingActionButton deleteButton = findViewById(R.id.fab_delete);
-        deleteButton.setOnClickListener(view -> {
-            if (mCurrentSketch.getId() >= 0) {
-                db.deleteSketch(mCurrentSketch.getId());
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.mi_draw_undo:
+                    mDrawingView.undo();
+                    break;
+                case R.id.mi_draw_redo:
+                    mDrawingView.redo();
+                    break;
+                case R.id.mi_draw_delete:
+                    if (mCurrentSketch.getId() >= 0) {
+                        db.deleteSketch(mCurrentSketch.getId());
+                    }
+                    gotoMainActivity();
+                    break;
+                case R.id.mi_draw_save:
+                    saveSketch();
+                    gotoMainActivity();
+                    break;
             }
-            gotoMainActivity();
+
+            return true;
         });
 
         sdButton = findViewById(R.id.fab_stable_diffusion);
@@ -205,7 +219,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 hideTools();
                 mDrawingView.setEyedropper(true);
                 eraserButton.setVisibility(View.GONE);
-                modeIcon.setImageResource(R.drawable.ic_eyedropper);
             }
         });
 
@@ -216,13 +229,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 eraserButton.setImageResource(R.drawable.ic_brush);
                 paletteButton.setEnabled(false);
                 circleView.setColor(Color.BLACK);
-                modeIcon.setImageResource(R.drawable.ic_eraser);
             } else {
                 mDrawingView.setPenMode();
                 eraserButton.setImageResource(R.drawable.ic_eraser);
                 paletteButton.setEnabled(true);
                 circleView.setColor(mCurrentColor);
-                modeIcon.setImageResource(R.drawable.ic_brush);
             }
         });
 
@@ -311,7 +322,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
-        
+
         List<String> filteredModes = new ArrayList<>();
         for (String mode : cnModeMap.keySet()) {
             filteredModes.add(mode);
@@ -320,7 +331,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sdMode.setAdapter(adapter);
-        for (int i=0; i<cnModeMap.size(); i++) {
+        for (int i = 0; i < cnModeMap.size(); i++) {
             String modeDesc = sdMode.getItemAtPosition(i).toString();
             if (Objects.equals(cnModeMap.get(modeDesc), mCurrentSketch.getCnMode())) {
                 sdMode.setSelection(i);
@@ -346,12 +357,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
-        if(!isFinishing()) dialog.show();
+        if (!isFinishing()) dialog.show();
     }
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
+            result -> {
+            });
 
     public void gotoViewSdImageActivity(int sketchID, String cnMode) {
         ViewSdImageActivity.mBitmap = null;
@@ -363,10 +375,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdViewerActivityResultLauncher.launch(intent);
     }
 
-    public void saveSketch()  {
+    public void saveSketch() {
         mCurrentSketch = mDrawingView.prepareBitmap(mCurrentSketch, bmRef);
         if (mCurrentSketch.getId() < 0) {
-            long rowId  = db.insertSketch(mCurrentSketch);
+            long rowId = db.insertSketch(mCurrentSketch);
             int sketchID = db.getId4rowid(rowId);
             mCurrentSketch.setId(sketchID);
         } else {
@@ -374,7 +386,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
     }
 
-    @Override public void onColorSelected(int dialogId, int color) {
+    @Override
+    public void onColorSelected(int dialogId, int color) {
         if (dialogId == 0) {
             mCurrentColor = color;
             mDrawingView.setPaintColor(mCurrentColor);
@@ -385,7 +398,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     @Override
-    public void onDialogDismissed(int dialogId) {}
+    public void onDialogDismissed(int dialogId) {
+    }
 
     @Override
     public void onEyedropperResult(int color) {
@@ -395,7 +409,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         mDrawingView.setPaintColor(mCurrentColor);
         circleView.setColor(mCurrentColor);
         eraserButton.setVisibility(View.VISIBLE);
-        modeIcon.setImageResource(R.drawable.ic_brush);
     }
 
     private void pickImage() {
@@ -407,7 +420,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData()!= null && result.getData().getData() != null) {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
                     Uri uri = result.getData().getData();
                     String mimeType = this.getContentResolver().getType(uri);
                     String filePath = null;
@@ -428,9 +441,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setMessage("Request Type: " + requestType)
                 .setTitle("Call Stable Diffusion API failed")
                 .setMessage(errMessage)
-                .setPositiveButton("OK", (dialog, id) -> {});
+                .setPositiveButton("OK", (dialog, id) -> {
+                });
         AlertDialog alert = builder.create();
-        if(!isFinishing()) alert.show();
+        if (!isFinishing()) alert.show();
     }
 
     @Override

@@ -4,21 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#222222"
-    android:foregroundTint="@color/white"
     tools:context=".DrawingActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_draw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/sd_draw"></androidx.appcompat.widget.Toolbar>
+        app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:menu="@menu/sd_draw"/>
 
     <SeekBar
         android:id="@+id/seek_width"
@@ -35,10 +31,12 @@
         android:id="@+id/drawing_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="0dp"
         android:layout_marginTop="75dp"
-        android:layout_marginEnd="0dp"
         android:layout_marginBottom="95dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/white"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="3:4"
         app:layout_constraintEnd_toEndOf="parent"
@@ -116,7 +114,9 @@
         android:layout_height="75dp"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:background="#222222"
+        android:background="@drawable/sketch_preview_background"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fab_stable_diffusion" />
 
