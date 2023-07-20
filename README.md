@@ -67,14 +67,15 @@ Custom mode can be defined in JSON format.<br/>
 | Variable         | txt2img | img2img | inpainting | Value                                                                                                            |
 |------------------|---------|---------|------------|------------------------------------------------------------------------------------------------------------------|
 | `type`           | M       | M       | M          | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting                        |
-| `steps`          | M       | M       | M          | integer from 1 to 120, default value is 40                                                                       |
-| `cfgScale`       | M       | M       | M          | decimal from 0 to 30, default value is 7.0                                                                       |
+| `steps`          | O       | O       | O          | integer from 1 to 120, default value is 40                                                                       |
+| `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |
 | `denoise`        | -       | M       | M          | decimal from 0 to 1                                                                                              |
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
-| `inpaintFill`    | -       | -       | M          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
+| `inpaintFill`    | -       | -       | O          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
 | `inpaintPartial` | -       | -       | O          | `0` - Inpainting on whole image (DEFAULT) <br/> `1` - Inpainting on "painted" area and paste on original image   |
 | `sdSize`         | O       | O       | O          | Output resolution of SD.  Default value is configured  in setting. <br/>Suggested value: 512 / 768 / 1024 / 1280 |
 | `cn`             | O       | O       | O          | JSON Array for ControlNet Object                                                                                 |
+
 (M - Mandatory; O - Optional)
 
 ### Parameters for ControlNet Object:
