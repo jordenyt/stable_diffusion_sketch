@@ -28,20 +28,17 @@
             android:name=".ViewSdImageActivity"
             android:configChanges="keyboardHidden|screenSize"
             android:exported="false"
-            android:theme="@style/Theme.DiffusionPaint" />
-
+            android:theme="@style/Theme.DiffusionPaintFullScreen" />
         <activity
             android:name=".DrawingActivity"
             android:configChanges="keyboardHidden|screenSize"
             android:exported="false"
-            android:theme="@style/Theme.DiffusionPaint" />
-
+            android:theme="@style/Theme.DiffusionPaintFullScreen" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.DiffusionPaint"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
