@@ -11,32 +11,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/baseline_arrow_back_24"
-        app:menu="@menu/sd_draw"/>
-
-    <SeekBar
-        android:id="@+id/seek_width"
-        android:layout_width="141dp"
-        android:layout_height="23dp"
-        android:max="200"
-        android:min="10"
-        android:progress="50"
-        android:progressBackgroundTint="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/fab_color"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:menu="@menu/sd_draw"
+        app:navigationIcon="@drawable/baseline_arrow_back_24" />
 
     <com.jsoft.diffusionpaint.component.DrawingView
         android:id="@+id/drawing_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="75dp"
-        android:layout_marginBottom="95dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="75dp"
         android:layout_marginRight="10dp"
+        android:layout_marginBottom="95dp"
         android:background="@android:color/white"
-        android:elevation="10dp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="3:4"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,81 +34,83 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:contentDescription="@string/stroke_color"
-        android:src="@drawable/ic_palette_white_24dp"
-        app:backgroundTint="@color/purple_500"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@android:color/white" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/fab_eraser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:outlineProvider="none"
+        style="?attr/materialIconButtonStyle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:contentDescription="@string/eraser"
-        android:src="@drawable/ic_eraser"
-        app:backgroundTint="@color/purple_500"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fab_color"
-        app:tint="@android:color/white" />
+        android:elevation="5dp"
+        app:icon="@drawable/ic_eraser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_draw" />
 
-
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/fab_colorpicker"
+        style="?attr/materialIconButtonStyle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/eraser"
+        android:elevation="5dp"
+        android:outlineProvider="none"
+        app:icon="@drawable/baseline_colorize_24"
+        app:layout_constraintStart_toEndOf="@+id/fab_eraser"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_draw" />
 
     <com.jsoft.diffusionpaint.component.CircleView
         android:id="@+id/circle_pen"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="#00000000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fab_eraser" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:elevation="5dp"
+        android:outlineProvider="none"
+        app:layout_constraintStart_toEndOf="@+id/fab_colorpicker"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_draw" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_stable_diffusion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:contentDescription="@string/sdAction"
-        android:src="@drawable/ic_magic"
-        app:backgroundTint="@android:color/holo_orange_dark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="@android:color/white" />
+    <SeekBar
+        android:id="@+id/seek_width"
+        android:layout_width="141dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:elevation="5dp"
+        android:outlineProvider="none"
+        android:max="200"
+        android:min="10"
+        android:progress="50"
+        android:progressBackgroundTint="@color/gray"
+        app:layout_constraintStart_toEndOf="@+id/circle_pen"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_draw" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_img_reference"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
         android:contentDescription="@string/refImg"
         android:src="@drawable/ic_image"
         app:backgroundTint="@android:color/holo_orange_dark"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fab_stable_diffusion"
+        app:layout_constraintStart_toStartOf="parent"
         app:tint="@android:color/white" />
 
     <ImageView
         android:id="@+id/img_reference"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="16dp"
         android:background="@drawable/sketch_preview_background"
-        android:scaleType="centerCrop"
         android:clipToOutline="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fab_stable_diffusion" />
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_img_reference"
+        app:layout_constraintStart_toEndOf="@+id/fab_img_reference" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

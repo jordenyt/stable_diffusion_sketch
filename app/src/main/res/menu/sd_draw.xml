@@ -22,5 +22,10 @@
         android:icon="@drawable/baseline_save_24"
         android:title="@string/save_sketch"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/mi_draw_generate"
+        android:icon="@drawable/ic_magic"
+        android:title="@string/generate"
+        app:showAsAction="always" />
 
 </menu>

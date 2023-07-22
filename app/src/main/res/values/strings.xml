@@ -30,6 +30,7 @@
     <string name="no_recent_immages">No recent images</string>
     <string name="app_not_configured_title">App not configured</string>
     <string name="app_not_configured_message">Before using the app you have to configure Automatic1111 server address.</string>
+    <string name="generate">Generate</string>
 
 
     <string-array name="sd_size_options">

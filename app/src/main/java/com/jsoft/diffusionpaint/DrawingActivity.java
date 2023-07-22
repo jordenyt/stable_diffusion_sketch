@@ -28,6 +28,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
@@ -55,11 +56,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private SeekBar seekWidth;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
-    FloatingActionButton paletteButton;
-    FloatingActionButton undoButton;
-    FloatingActionButton redoButton;
-    FloatingActionButton sdButton;
-    FloatingActionButton eraserButton;
+    MaterialButton eraserButton;
+    MaterialButton colorPickerButton;
     FloatingActionButton refButton;
     ImageView imgRef;
     Bitmap bmRef;
@@ -158,15 +156,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     protected void initButtons() {
 
-        paletteButton = findViewById(R.id.fab_color);
-        paletteButton.setOnClickListener(view -> ColorPickerDialog.newBuilder()
-                .setDialogType(ColorPickerDialog.TYPE_PRESETS)
-                .setAllowPresets(true)
-                .setDialogId(0)
-                .setColor(mCurrentColor)
-                .setShowAlphaSlider(true)
-                .show(this));
-
         seekWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -206,15 +195,25 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     saveSketch();
                     gotoMainActivity();
                     break;
+                case R.id.mi_draw_generate:
+                    showInputDialog();
+                    break;
             }
 
             return true;
         });
 
-        sdButton = findViewById(R.id.fab_stable_diffusion);
-        sdButton.setOnClickListener(view -> showInputDialog());
+        circleView.setOnClickListener(view -> ColorPickerDialog.newBuilder()
+                .setDialogType(ColorPickerDialog.TYPE_PRESETS)
+                .setAllowPresets(true)
+                .setDialogId(0)
+                .setColor(mCurrentColor)
+                .setShowAlphaSlider(true)
+                .show(this));
 
-        circleView.setOnClickListener(view -> {
+        colorPickerButton = findViewById(R.id.fab_colorpicker);
+
+        colorPickerButton.setOnClickListener(view -> {
             if (!mDrawingView.getIsEraserMode()) {
                 hideTools();
                 mDrawingView.setEyedropper(true);
@@ -226,13 +225,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         eraserButton.setOnClickListener(view -> {
             if (!mDrawingView.getIsEraserMode()) {
                 mDrawingView.setEraserMode();
-                eraserButton.setImageResource(R.drawable.ic_brush);
-                paletteButton.setEnabled(false);
+                eraserButton.setIconResource(R.drawable.ic_brush);
                 circleView.setColor(Color.BLACK);
             } else {
                 mDrawingView.setPenMode();
-                eraserButton.setImageResource(R.drawable.ic_eraser);
-                paletteButton.setEnabled(true);
+                eraserButton.setIconResource(R.drawable.ic_eraser);
                 circleView.setColor(mCurrentColor);
             }
         });
@@ -257,10 +254,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void hideTools() {
-        sdButton.setVisibility(View.GONE);
-        undoButton.setVisibility(View.GONE);
-        redoButton.setVisibility(View.GONE);
-        paletteButton.setVisibility(View.GONE);
         seekWidth.setVisibility(View.GONE);
         circleView.setVisibility(View.GONE);
         imgRef.setVisibility(View.GONE);
@@ -268,10 +261,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void showTools() {
-        sdButton.setVisibility(View.VISIBLE);
-        undoButton.setVisibility(View.VISIBLE);
-        redoButton.setVisibility(View.VISIBLE);
-        paletteButton.setVisibility(View.VISIBLE);
         seekWidth.setVisibility(View.VISIBLE);
         circleView.setVisibility(View.VISIBLE);
         if (bmRef != null) {
