@@ -33,6 +33,7 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
     private float oldTouchX = 0;
     private float oldTouchY = 0;
     private boolean isScaling = false;
+    private boolean wasDragging = false;
 	private Handler handler = new Handler();
 
     private int canvasWidth = 1024;
@@ -115,7 +116,7 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
         if (mBaseBitmap == null) {
             mBackgroundPaint.setColor(mBackgroundColor);
             mBackgroundPaint.setStyle(Paint.Style.FILL);
-            canvas.drawRect(0, 0, this.getWidth(), this.getHeight(), mBackgroundPaint);
+            canvas.drawRect(0, 0, canvasWidth, canvasHeight, mBackgroundPaint);
         } else {
             Bitmap bitmap = bm;
             double bitmapWidth = bitmap.getWidth();
@@ -162,10 +163,20 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
         canvas.drawBitmap(pathBitmap, 0, 0, null);
     }
 
+    private void fitToZoom() {
+        translateX = (int)((this.getWidth() - canvasWidth) / 2);
+        translateY = (int)((this.getHeight() - canvasHeight) / 2);
+
+        // Scale to fit to zoom
+        scaleFactor = (float)this.getWidth() / (float)canvasWidth;
+        scaleFactor *= 0.9; // Add some margin
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.scale(scaleFactor, scaleFactor, canvasWidth / 2, canvasHeight / 2);
         canvas.translate(translateX, translateY);
+        canvas.scale(scaleFactor, scaleFactor, canvasWidth / 2, canvasHeight / 2);
         drawBackground(canvas, mBaseBitmap);
         drawPaths(canvas, mDrawPath, mDrawPaint);
         drawCanvasBorder(canvas);
@@ -174,17 +185,18 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+        mCanvasBitmap = Bitmap.createBitmap(canvasWidth, canvasHeight, Bitmap.Config.ARGB_8888);
         mDrawCanvas = new Canvas(mCanvasBitmap);
-        translateX = (int)((w - canvasWidth) / 2);
-        translateY = (int)((h - canvasHeight) / 2);
+
+        this.fitToZoom();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mScaleDetector.onTouchEvent(event);
 
-        if (!isScaling && event.getPointerCount() == 2) {
+        if (event.getPointerCount() == 2) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
                     if (oldTouchX == 0) {
@@ -203,6 +215,7 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
                     break;
             }
 
+            wasDragging = true;
             invalidate();
             return true;
         }
@@ -212,8 +225,8 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
             oldTouchY = event.getY();
 
             float offsetSize = (canvasWidth - (canvasWidth * scaleFactor)) / 2;
-            float offsetPositionX = translateX * scaleFactor;
-            float offsetPositionY = translateY * scaleFactor;
+            float offsetPositionX = translateX;
+            float offsetPositionY = translateY;
             float touchX = (event.getX() - offsetSize - offsetPositionX)/ scaleFactor;
             float touchY = (event.getY() - offsetSize - offsetPositionY)/ scaleFactor;
 
@@ -232,6 +245,11 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
                 case MotionEvent.ACTION_UP:
                     oldTouchX = 0;
                     oldTouchY = 0;
+
+                    if (wasDragging) {
+                        wasDragging = false;
+                        break;
+                    }
 
                     if (!isEyedropper) {
                         mDrawPath.lineTo(touchX, touchY);
@@ -352,8 +370,13 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
         return (mPaths.size() == 0);
     }
 
-    public void setCanvasSize(int canvasSize) {
+    public void setCanvasSize(int canvasSize, float ratio) {
         this.maxImgSize = canvasSize;
+
+        this.canvasWidth = canvasSize;
+        this.canvasHeight = (int)(canvasSize / ratio);
+
+        this.fitToZoom();
     }
 
     @Override

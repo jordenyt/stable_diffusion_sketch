@@ -29,6 +29,7 @@ import android.widget.Spinner;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
@@ -59,6 +60,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     MaterialButton eraserButton;
     MaterialButton colorPickerButton;
     FloatingActionButton refButton;
+    ExtendedFloatingActionButton generateButton;
     ImageView imgRef;
     Bitmap bmRef;
     public static List<String> loraList;
@@ -106,7 +108,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560"));
         } catch (Exception ignored) {
         }
-        mDrawingView.setCanvasSize(canvasDim);
         mCurrentColor = Color.BLUE;
         mDrawingView.setPaintColor(mCurrentColor);
         mDrawingView.setListener(this);
@@ -118,21 +119,23 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         circleView.setColor(mCurrentColor);
         circleView.setRadius(mCurrentStroke / 2f);
 
+        float ratio = 1;
 
-        ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
         if (sketchId == -2) {
-            loParam.dimensionRatio = rotatedBitmap.getWidth() + ":" + rotatedBitmap.getHeight();
+            ratio = rotatedBitmap.getWidth() / rotatedBitmap.getHeight();
         } else if (sketchId >= 0) {
-            loParam.dimensionRatio = mCurrentSketch.getImgPreview().getWidth() + ":" + mCurrentSketch.getImgPreview().getHeight();
+            ratio = mCurrentSketch.getImgPreview().getWidth() / mCurrentSketch.getImgPreview().getHeight();
         } else {
             if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
-                loParam.dimensionRatio = "4:3";
+                ratio = 4f / 3f;
             } else if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
-                loParam.dimensionRatio = "3:4";
+                ratio = 3f / 4f;
             } else {
-                loParam.dimensionRatio = "1:1";
+                ratio = 1;
             }
         }
+
+        mDrawingView.setCanvasSize(canvasDim, ratio);
 
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
@@ -195,13 +198,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     saveSketch();
                     gotoMainActivity();
                     break;
-                case R.id.mi_draw_generate:
-                    showInputDialog();
-                    break;
             }
 
             return true;
         });
+
+        generateButton = findViewById(R.id.fab_img_generate);
+        generateButton.setOnClickListener(v -> showInputDialog());
 
         circleView.setOnClickListener(view -> ColorPickerDialog.newBuilder()
                 .setDialogType(ColorPickerDialog.TYPE_PRESETS)

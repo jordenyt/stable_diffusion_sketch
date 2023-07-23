@@ -3,12 +3,15 @@
     <style name="Base.Theme.DiffusionPaint" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/light_blue_900</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
     </style>
 
     <style name="Theme.DiffusionPaint" parent="Base.Theme.DiffusionPaint" />
+
     <style name="Theme.DiffusionPaintFullScreen" parent="Theme.DiffusionPaint" >
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 </resources>
