@@ -373,8 +373,8 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
     public void setCanvasSize(int canvasSize, float ratio) {
         this.maxImgSize = canvasSize;
 
-        this.canvasWidth = canvasSize;
-        this.canvasHeight = (int)(canvasSize / ratio);
+        this.canvasWidth = 1024;
+        this.canvasHeight = (int)(this.canvasWidth / ratio);
 
         this.fitToZoom();
     }

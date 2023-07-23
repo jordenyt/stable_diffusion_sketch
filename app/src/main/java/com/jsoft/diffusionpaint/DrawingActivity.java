@@ -122,9 +122,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         float ratio = 1;
 
         if (sketchId == -2) {
-            ratio = rotatedBitmap.getWidth() / rotatedBitmap.getHeight();
+            ratio = (float)rotatedBitmap.getWidth() / (float)rotatedBitmap.getHeight();
         } else if (sketchId >= 0) {
-            ratio = mCurrentSketch.getImgPreview().getWidth() / mCurrentSketch.getImgPreview().getHeight();
+            ratio = (float)mCurrentSketch.getImgPreview().getWidth() / (float)mCurrentSketch.getImgPreview().getHeight();
         } else {
             if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
                 ratio = 4f / 3f;
