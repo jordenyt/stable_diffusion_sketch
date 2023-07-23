@@ -168,7 +168,7 @@ public class DrawingView extends View implements ScaleGestureDetector.OnScaleGes
         translateY = (int)((this.getHeight() - canvasHeight) / 2);
 
         // Scale to fit to zoom
-        scaleFactor = (float)this.getWidth() / (float)canvasWidth;
+        scaleFactor = (float)Math.min(this.getWidth(), this.getHeight()) / (float)canvasWidth;
         scaleFactor *= 0.9; // Add some margin
         invalidate();
     }
