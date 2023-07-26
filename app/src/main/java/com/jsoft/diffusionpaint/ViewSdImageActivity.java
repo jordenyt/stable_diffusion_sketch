@@ -37,8 +37,10 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
@@ -66,6 +68,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static boolean isCallingAPI = false;
     public static List<ApiResult> apiResultList;
     public static int currentResult;
+    public static Map<String, String> sdModelList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -130,7 +133,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
                 }
-                getSdConfig();
+                getSdModel();
             }
         } else {
             if (isCallingAPI) { showSpinner();}
@@ -158,7 +161,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
 
         sdButton.setOnClickListener(view -> {
-            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdConfig();
+            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdModel();
         });
 
         spinner_bg.setOnTouchListener((v, event) -> true);
@@ -272,9 +275,32 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         super.onBackPressed();
     }
 
-    private void getSdConfig() {
+    private void getSdModel() {
         showSpinner();
-        sdApiHelper.sendGetRequest("getConfig", "/sdapi/v1/options");
+        if (sdModelList == null) {
+            sdApiHelper.sendGetRequest("getSDModel", "/sdapi/v1/sd-models");
+        } else {
+            try {
+                setSdModel();
+            } catch (JSONException e) {
+                onSdApiFailure("setConfig", e.getMessage());
+            }
+        }
+    }
+
+    private void setSdModel() throws JSONException {
+        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        String preferredModel = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)?
+                sharedPreferences.getString("sdInpaintModel", ""):
+                sharedPreferences.getString("sdModelCheckpoint", "");
+        JSONObject setConfigRequest = new JSONObject();
+        if (sdModelList !=null && sdModelList.get(preferredModel) != null) {
+            setConfigRequest.put("sd_model_checkpoint", preferredModel);
+            setConfigRequest.put("sd_checkpoint_hash", sdModelList.get(preferredModel));
+            sdApiHelper.sendPostRequest("setSdModel", "/sdapi/v1/options", setConfigRequest);
+        } else {
+            callSD4Img();
+        }
     }
 
     private void showSpinner() {
@@ -308,7 +334,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         isCallingSD = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Request Type: " + requestType)
-                .setTitle("Call Stable Diffusion API failed")
+                .setTitle("Call Stable Diffusion API failed (" + requestType + ")")
                 .setMessage(errMessage)
                 .setPositiveButton("OK", (dialog, id) -> {
                     hideSpinner();
@@ -339,21 +365,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @Override
     public void onSdApiResponse(String requestType, String responseBody) {
         try {
-            if ("getConfig".equals(requestType)) {
-                JSONObject getConfigResponse = new JSONObject(responseBody);
-                String currentModel = getConfigResponse.getString("sd_model_checkpoint");
-                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-                String preferredModel = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)?
-                        sharedPreferences.getString("sdInpaintModel", ""):
-                        sharedPreferences.getString("sdModelCheckpoint", "");
-                if (!currentModel.equals(preferredModel)) {
-                    JSONObject setConfigRequest = new JSONObject();
-                    setConfigRequest.put("sd_model_checkpoint", preferredModel);
-                    sdApiHelper.sendPostRequest("setConfig", "/sdapi/v1/options", setConfigRequest);
-                } else {
-                    callSD4Img();
+            if ("getSDModel".equals(requestType)) {
+                JSONArray jsonArray = new JSONArray(responseBody);
+                sdModelList = new HashMap<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject joModel = jsonArray.getJSONObject(i);
+                    sdModelList.put(joModel.getString("title"), joModel.getString("sha256"));
                 }
-            } else if ("setConfig".equals(requestType)) {
+                setSdModel();
+            } else if ("setSdModel".equals(requestType)) {
                 callSD4Img();
             } else if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
                 isCallingSD = false;
