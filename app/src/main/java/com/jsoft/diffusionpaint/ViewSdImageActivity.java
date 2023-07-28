@@ -291,10 +291,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void setSdModel() throws JSONException {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        String preferredModel = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)?
-                sharedPreferences.getString("sdInpaintModel", ""):
-                Sketch.CN_MODE_TXT_BASE.equals(mCurrentSketch.getCnMode()) ? sharedPreferences.getString("sdxlBaseModel", ""):
-                Sketch.CN_MODE_REFINER.equals(mCurrentSketch.getCnMode()) ? sharedPreferences.getString("sdxlRefinerModel", ""):
+        String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SDXL_REFINER) ? sharedPreferences.getString("sdxlRefinerModel", ""):
                 sharedPreferences.getString("sdModelCheckpoint", "");
         JSONObject setConfigRequest = new JSONObject();
         if (sdModelList !=null && sdModelList.get(preferredModel) != null) {
