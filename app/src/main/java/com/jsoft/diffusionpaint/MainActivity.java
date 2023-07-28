@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint;
 
+import static com.jsoft.diffusionpaint.dto.Sketch.cnModeMap;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -304,7 +306,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
                 break;
             case R.id.mi_mode_txt2img:
-                showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", "{\"type\":\"txt2img\",\"steps\":40,\"cfgScale\":7.0}");
+                showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", "{\"type\":\"txt2img\"}");
+                break;
+            case R.id.mi_mode_sdxl:
+                showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1024}");
+                break;
+            case R.id.mi_mode_refiner:
+                showTextInputDialog("modeRefiner", "Parameters for SDXL Refiner:", "", "{\"type\":\"img2img\", \"baseImage\":\"background\", \"denoise\":0.2, \"sdSize\":1024}");
                 break;
             case R.id.mi_mode_custom1:
                 showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", "{\"type\":\"inpaint\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnDepthModel\",\"cnModule\":\"depth\",\"cnWeight\":1.0}");
@@ -380,6 +388,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sd_inpaint_model:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDInpaintModel", "/sdapi/v1/sd-models");
+                break;
+            case R.id.mi_sdxl_base_model:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setSDXLBaseModel", "/sdapi/v1/sd-models");
+                break;
+            case R.id.mi_sdxl_refine_model:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setSDXLRefineModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_sampler:
                 if (!validateSettings()) break;
@@ -523,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
 
         List<String> filteredModes = new ArrayList<>();
-        filteredModes.add("txt2img");
+        filteredModes.addAll(Sketch.txt2imgModeMap.keySet());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -538,12 +554,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             editor.putString("txt2imgNegPrompt",negPromptText);
             editor.apply();
 
+            String selectMode = sdMode.getSelectedItem().toString();
             ViewSdImageActivity.mBitmap = null;
             ViewSdImageActivity.inpaintBitmap = null;
             ViewSdImageActivity.isCallingAPI = false;
             Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
-            intent.putExtra("cnMode", Sketch.CN_MODE_TXT);
+            intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             drawingActivityResultLauncher.launch(intent);
@@ -675,6 +692,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog(new JSONArray(responseBody), "title", "Stable Diffusion Model", "sdModelCheckpoint", "", "");
             } else if ("setSDInpaintModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SD Inpaint Model", "sdInpaintModel", "", "inpainting.");
+            } else if ("setSDXLBaseModel".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Base Model", "sdxlBaseModel", "", "base");
+            } else if ("setSDXLRefineModel".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Refiner Model", "sdxlRefinerModel", "", "refiner");
             } else if ("setSampler".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "name", "SD Sampling Method", "sdSampler", "Euler a", "");
             } else if ("setUpscaler".equals(requestType)) {

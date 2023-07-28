@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -99,7 +100,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mCurrentSketch = new Sketch();
                 mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
                 mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
-                mCurrentSketch.setCnMode(Sketch.CN_MODE_TXT);
+                mCurrentSketch.setCnMode(i.getStringExtra("cnMode"));
                 mCurrentSketch.setId(-3);
             }
             if (mCurrentSketch == null) {
@@ -292,6 +293,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
         String preferredModel = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)?
                 sharedPreferences.getString("sdInpaintModel", ""):
+                Sketch.CN_MODE_TXT_BASE.equals(mCurrentSketch.getCnMode()) ? sharedPreferences.getString("sdxlBaseModel", ""):
+                Sketch.CN_MODE_REFINER.equals(mCurrentSketch.getCnMode()) ? sharedPreferences.getString("sdxlRefinerModel", ""):
                 sharedPreferences.getString("sdModelCheckpoint", "");
         JSONObject setConfigRequest = new JSONObject();
         if (sdModelList !=null && sdModelList.get(preferredModel) != null) {

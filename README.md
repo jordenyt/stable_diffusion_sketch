@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.11.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.12.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111's Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) which is installed on **your own server**. <br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
@@ -6,6 +6,7 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
 ## Supported Features
 
 - Support ControlNet v1.1
+- Support SDXL 1.0
 - Autocomplete LORA tag in prompt
 - Sketch with color
 - Create new paint from:
