@@ -33,6 +33,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
+import com.jsoft.diffusionpaint.component.DrawingMode;
 import com.jsoft.diffusionpaint.component.DrawingView;
 import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.component.CircleView;
@@ -59,6 +60,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private SdApiHelper sdApiHelper;
     MaterialButton eraserButton;
     MaterialButton colorPickerButton;
+    MaterialButton switchModeButton;
     FloatingActionButton refButton;
     ExtendedFloatingActionButton generateButton;
     ImageView imgRef;
@@ -254,6 +256,17 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else {
             imgRef.setVisibility(View.GONE);
         }
+
+        switchModeButton = findViewById(R.id.fab_switch_mode);
+        switchModeButton.setOnClickListener(v -> {
+            if (this.mDrawingView.getMode() == DrawingMode.Draw) {
+                this.mDrawingView.setMode(DrawingMode.MoveView);
+                switchModeButton.setIconResource(R.drawable.baseline_back_hand_24);
+            } else {
+                this.mDrawingView.setMode(DrawingMode.Draw);
+                switchModeButton.setIconResource(R.drawable.baseline_draw_24);
+            }
+        });
     }
 
     public void hideTools() {
