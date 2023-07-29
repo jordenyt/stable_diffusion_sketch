@@ -140,6 +140,8 @@ public class SdApiHelper {
 
         Gson gson = new Gson();
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", "{\"type\":\"txt2img\", \"sdSize\":1024}") :
+                        cnMode.equals(Sketch.CN_MODE_REFINER_SDXL) ? sharedPreferences.getString("modeRefiner", "{\"type\":\"img2img\",\"baseImage\":\"background\",\"denoise\":0.2, \"sdSize\":1024}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
@@ -177,6 +179,11 @@ public class SdApiHelper {
         }
 
         SdParam param = gson.fromJson(jsonMode, SdParam.class);
+        if (param.model == null) {
+            param.model = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) ? SdParam.SD_MODEL_INPAINT:
+                    Sketch.CN_MODE_TXT_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_BASE :
+                    Sketch.CN_MODE_REFINER_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_REFINER : SdParam.SD_MODEL_V1;
+        }
         if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
         if (param.cfgScale == 0d) {
