@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.12.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.12.1-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111's Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) which is installed on **your own server**. <br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
@@ -6,7 +6,7 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
 ## Supported Features
 
 - Support ControlNet v1.1
-- Support SDXL 1.0
+- Support SDXL
 - Autocomplete LORA tag in prompt
 - Sketch with color
 - Create new paint from:
@@ -22,6 +22,7 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
     - txt2img + Canny(sketch)
     - txt2img + Scribble(sketch)
     - txt2img + Depth(sketch)
+    - txt2img + Pose(sketch)
     - Inpainting (background) 
     - Inpainting (sketch)
     - Partial Inpainting (background)
@@ -29,6 +30,7 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
     - Outpainting
     - Fill with Reference
     - Merge with Reference
+    - SDXL Refiner
   - 5 Custom Modes
 - Painting Tools:
   - Palette
@@ -62,7 +64,10 @@ Custom mode can be defined in JSON format.<br/>
 `{"type":"inpaint", "denoise":0.7, "baseImage":"background", "inpaintFill":1, "inpaintPartial":1, "sdSize":1024}`
 6. Get similar image <br/>
 `{"type":"txt2img", "cn":[{"cnInputImage":"background", "cnModelKey":"cnNoneModel", "cnModule":"reference_only", "cnWeight":1.0, "cnControlMode":2}]}`
-
+7. Tiles Refiner <br/>
+`{"type":"img2img", "denoise":0.4, "baseImage":"background", "cn":[{ "cnInputImage":"background", "cnModelKey":"cnTileModel", "cnModule":"tile_colorfix+sharp", "cnModuleParamA":4, "cnModuleParamB":0.1, "cnWeight":1.0}], "sdSize":1024}`
+8. Partial Inpaint with LORA <br/>
+`{"type":"inpaint", "denoise":0.9, "cfgScale":7, "inpaintFill":1, "baseImage":"background", "sdSize":1024, "model":"v1Model"}`
 
 ### Parameters for the mode definition JSON:
 | Variable         | txt2img | img2img | inpainting | Value                                                                                                            |
@@ -70,6 +75,7 @@ Custom mode can be defined in JSON format.<br/>
 | `type`           | M       | M       | M          | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting                        |
 | `steps`          | O       | O       | O          | integer from 1 to 120, default value is 40                                                                       |
 | `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |
+| `model`          | O       | O       | O          | `v1Model` - Default for txt2img and img2img mode <br/> `v1Inpaint` - Default for Inpainting <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlRefiner` - Default for SDXL Refiner mode|
 | `denoise`        | -       | M       | M          | decimal from 0 to 1                                                                                              |
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
 | `inpaintFill`    | -       | -       | O          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
