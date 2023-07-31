@@ -59,15 +59,27 @@ public class SdApiHelper {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET");
     }
 
+    public void sendGetRequest(String requestType, String url, long connectTimeout, long readTimeout) {
+        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET", connectTimeout, readTimeout);
+    }
+
     public void sendPostRequest(String requestType, String url, JSONObject jsonObject) {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST");
     }
 
+    public void sendPostRequest(String requestType, String url, JSONObject jsonObject, long connectTimeout, long readTimeout) {
+        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST", connectTimeout, readTimeout);
+    }
+
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod) {
+        sendRequest(requestType, baseUrl, url, jsonObject, httpMethod, 10, 120);
+    }
+
+    public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod, long connectTimeout, long readTimeout) {
         //baseUrl = sharedPreferences.getString("sdServerAddress", "");
         client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
+                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
+                .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .build();
         Request.Builder requestBuilder = new Request.Builder()
                 .url(baseUrl + url);

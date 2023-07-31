@@ -341,17 +341,21 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     @Override
     public void onSdApiFailure(String requestType, String errMessage) {
-        isCallingSD = false;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Request Type: " + requestType)
-                .setTitle("Call Stable Diffusion API failed (" + requestType + ")")
-                .setMessage(errMessage)
-                .setPositiveButton("OK", (dialog, id) -> {
-                    hideSpinner();
-                    //ViewSdImageActivity.this.onBackPressed();
-                });
-        AlertDialog alert = builder.create();
-        if(!isFinishing()) alert.show();
+        if ("getProgress".equals(requestType)) {
+            handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+        } else {
+            isCallingSD = false;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Request Type: " + requestType)
+                    .setTitle("Call Stable Diffusion API failed (" + requestType + ")")
+                    .setMessage(errMessage)
+                    .setPositiveButton("OK", (dialog, id) -> {
+                        hideSpinner();
+                        //ViewSdImageActivity.this.onBackPressed();
+                    });
+            AlertDialog alert = builder.create();
+            if (!isFinishing()) alert.show();
+        }
     }
 
     public void callSD4Img() {
@@ -361,10 +365,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 Utils.getAspectRatio(mCurrentSketch.getImgBackground()) : sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch, aspectRatio);
-            sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject);
+            sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, 10, 900);
         } else {
             JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch, aspectRatio);
-            sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject);
+            sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject, 10, 900);
         }
         handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
     }
