@@ -15,9 +15,11 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -56,6 +58,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton prevButton;
     private FloatingActionButton nextButton;
     private FloatingActionButton backButton;
+    private TextView txtSdStatus;
     public static Bitmap mBitmap = null;
     public static Bitmap inpaintBitmap = null;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
@@ -69,6 +72,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static List<ApiResult> apiResultList;
     public static int currentResult;
     public static Map<String, String> sdModelList = null;
+    private static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -143,6 +147,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     @SuppressLint("ClickableViewAccessibility")
     private void initUI(String cnMode) {
+        handler = new Handler();
         setContentView(R.layout.activity_view_sd_image);
         sdImage = findViewById(R.id.sd_image);
         spinner_bg = findViewById(R.id.spinner_bg);
@@ -153,6 +158,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         nextButton = findViewById(R.id.fab_next);
         expandButton = findViewById(R.id.fab_expand);
         editButton = findViewById(R.id.fab_paint_again);
+        txtSdStatus = findViewById(R.id.txtSdStatus);
 
         if (mBitmap != null) {
             sdImage.setImageBitmap(mBitmap);
@@ -291,6 +297,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void showSpinner() {
         isCallingAPI = true;
+        txtSdStatus.setText("Working...");
         spinner_bg.setVisibility(View.VISIBLE);
         sdButton.setVisibility(View.GONE);
         saveButton.setVisibility(View.GONE);
@@ -303,6 +310,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void hideSpinner() {
         isCallingAPI = false;
+        handler.removeCallbacksAndMessages(null);
         spinner_bg.setVisibility(View.GONE);
         sdButton.setVisibility(View.VISIBLE);
         saveButton.setVisibility(View.VISIBLE);
@@ -340,6 +348,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch, aspectRatio);
             sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject);
         }
+        handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
@@ -359,6 +368,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 setSdModel();
             } else if ("setSdModel".equals(requestType)) {
                 callSD4Img();
+            } else if ("getProgress".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                double progress = jsonObject.getDouble("progress");
+                double etaRelative = jsonObject.getDouble("eta_relative");
+                if ((etaRelative > 0) && (progress > 0)) {
+                    txtSdStatus.setText(String.format("%d%% completed.", Math.round(progress * 100)));
+                }
+                handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
             } else if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
                 isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
@@ -374,6 +391,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 savedImageName = null;
                 addResult(requestType);
                 hideSpinner();
+                handler.removeCallbacksAndMessages(null);
             } else if ("extraSingleImage".equals(requestType)) {
                 isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
