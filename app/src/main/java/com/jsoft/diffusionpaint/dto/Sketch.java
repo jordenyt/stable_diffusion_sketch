@@ -84,7 +84,7 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting Vertically", CN_MODE_OUTPAINT_V);
         cnMode.put("Outpainting on Top", CN_MODE_OUTPAINT_V_TOP);
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
-        cnMode.put("Fill with Reference", CN_MODE_ORIGIN);
+        cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
         cnMode.put("Merge with Reference", CN_MODE_MERGE);
         cnMode.put("SDXL Refiner", CN_MODE_REFINER_SDXL);
         cnMode.put("Custom Mode 1", CN_MODE_CUSTOM_1);
