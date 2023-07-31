@@ -30,7 +30,8 @@
 
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/fab_eraser"
+        android:id="@+id/fab_switch_mode"
+        android:outlineProvider="none"
         style="?attr/materialIconButtonStyle"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -38,10 +39,23 @@
         android:layout_marginTop="16dp"
         android:contentDescription="@string/eraser"
         android:elevation="5dp"
-        android:outlineProvider="none"
-        app:icon="@drawable/ic_eraser"
+        app:icon="@drawable/baseline_draw_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_draw" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/fab_eraser"
+        android:outlineProvider="none"
+        style="?attr/materialIconButtonStyle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/eraser"
+        android:elevation="5dp"
+        app:icon="@drawable/ic_eraser"
+        app:layout_constraintStart_toEndOf="@+id/fab_switch_mode"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_draw"  />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/fab_colorpicker"
