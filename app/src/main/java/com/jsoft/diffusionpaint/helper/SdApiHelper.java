@@ -264,8 +264,9 @@ public class SdApiHelper {
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
-            JSONObject alwayson_scripts = new JSONObject();
+
             if (param.cn != null) {
+                JSONObject alwayson_scripts = new JSONObject();
                 for (CnParam cnparam : param.cn) {
                     if (cnparam.cnInputImage != null) {
                         // ControlNet Args
@@ -298,9 +299,8 @@ public class SdApiHelper {
                         alwayson_scripts.put("controlnet", controlnet);
                     }
                 }
+                jsonObject.put("alwayson_scripts", alwayson_scripts);
             }
-            jsonObject.put("alwayson_scripts", alwayson_scripts);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -404,10 +404,10 @@ public class SdApiHelper {
             jsonObject.put("steps", param.steps);
             jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
-            JSONObject alwayson_scripts = new JSONObject();
 
             // ControlNet Args
             if (param.cn != null) {
+                JSONObject alwayson_scripts = new JSONObject();
                 for (CnParam cnparam : param.cn) {
                     if (cnparam.cnInputImage != null) {
                         JSONObject controlnet = new JSONObject();
@@ -454,9 +454,8 @@ public class SdApiHelper {
                         alwayson_scripts.put("controlnet", controlnet);
                     }
                 }
+                jsonObject.put("alwayson_scripts", alwayson_scripts);
             }
-            jsonObject.put("alwayson_scripts", alwayson_scripts);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
