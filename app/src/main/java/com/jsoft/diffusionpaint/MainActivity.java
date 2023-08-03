@@ -687,7 +687,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("setSDInpaintModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SD Inpaint Model", "sdInpaintModel", "", "inpainting.");
             } else if ("setSDXLBaseModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Base Model", "sdxlBaseModel", "", "base");
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Base Model", "sdxlBaseModel", "", "");
             } else if ("setSDXLRefineModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Refiner Model", "sdxlRefinerModel", "", "refiner");
             } else if ("setSampler".equals(requestType)) {
