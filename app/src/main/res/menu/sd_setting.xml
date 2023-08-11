@@ -48,6 +48,9 @@
             <item android:id="@+id/mi_mode_custom3" android:title="Custom Mode 3"/>
             <item android:id="@+id/mi_mode_custom4" android:title="Custom Mode 4"/>
             <item android:id="@+id/mi_mode_custom5" android:title="Custom Mode 5"/>
+            <item android:id="@+id/mi_mode_custom6" android:title="Custom Mode 6"/>
+            <item android:id="@+id/mi_mode_custom7" android:title="Custom Mode 7"/>
+            <item android:id="@+id/mi_mode_custom8" android:title="Custom Mode 8"/>
         </menu>
     </item>
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
