@@ -60,6 +60,9 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_CUSTOM_3 = "custom3";
     public static final String CN_MODE_CUSTOM_4 = "custom4";
     public static final String CN_MODE_CUSTOM_5 = "custom5";
+    public static final String CN_MODE_CUSTOM_6 = "custom6";
+    public static final String CN_MODE_CUSTOM_7 = "custom7";
+    public static final String CN_MODE_CUSTOM_8 = "custom8";
     public static final String CN_MODE_ORIGIN = "original";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
@@ -92,6 +95,9 @@ public class Sketch implements Serializable {
         cnMode.put("Custom Mode 3", CN_MODE_CUSTOM_3);
         cnMode.put("Custom Mode 4", CN_MODE_CUSTOM_4);
         cnMode.put("Custom Mode 5", CN_MODE_CUSTOM_5);
+        cnMode.put("Custom Mode 6", CN_MODE_CUSTOM_6);
+        cnMode.put("Custom Mode 7", CN_MODE_CUSTOM_7);
+        cnMode.put("Custom Mode 8", CN_MODE_CUSTOM_8);
         cnModeMap = Collections.unmodifiableMap(cnMode);
     }
 

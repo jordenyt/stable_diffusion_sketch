@@ -323,6 +323,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_custom5:
                 showTextInputDialog("modeCustom5", "Parameters for Custom Mode 5:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
                 break;
+            case R.id.mi_mode_custom6:
+                showTextInputDialog("modeCustom6", "Parameters for Custom Mode 6", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                break;
+            case R.id.mi_mode_custom7:
+                showTextInputDialog("modeCustom7", "Parameters for Custom Mode 7:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                break;
+            case R.id.mi_mode_custom8:
+                showTextInputDialog("modeCustom8", "Parameters for Custom Mode 8:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                break;
             case R.id.mi_cn_scribble:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
