@@ -260,14 +260,16 @@ public class Sketch implements Serializable {
 
     public Bitmap getImgBgMerge(Bitmap bmMerge, int boundary) {
         if (bmMerge != null) {
-            Bitmap imgDilatedMask = Utils.getDilationMask(imgPaint, boundary);
+
 
             Bitmap imgMerge = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas cvMerge = new Canvas(imgMerge);
+            cvMerge.drawBitmap(imgBackground, 0, 0, null);
             double ratio = min((double)imgBackground.getWidth() / (double) bmMerge.getWidth(), (double)imgBackground.getHeight() / (double) bmMerge.getHeight());
             Bitmap bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int)round(bmMerge.getWidth() * ratio), (int)round(bmMerge.getHeight() * ratio), true);
             cvMerge.drawBitmap(bmMergeScaled, (imgBackground.getWidth() - bmMergeScaled.getWidth()) / 2f, (imgBackground.getHeight() - bmMergeScaled.getHeight()) / 2f, null);
 
+            Bitmap imgDilatedMask = Utils.getDilationMask(imgPaint, boundary);
             Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), true);
 
             int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];
