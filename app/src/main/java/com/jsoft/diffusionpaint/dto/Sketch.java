@@ -319,21 +319,35 @@ public class Sketch implements Serializable {
         double scale = 1d;
         int inpaintWidth = min(imgBackground.getWidth(), x2 - x1 + 1 + 2 * inpaintMargin);
         int inpaintHeight = min(imgBackground.getHeight(), y2 - y1 + 1 + 2 * inpaintMargin);
-        if ((inpaintWidth > sdSize) && (x2-x1 >= y2-y1)) {
-            scale = (inpaintWidth-1d) / (sdSize-1d);
-        } else if ((inpaintHeight > sdSize) && (y2-y1 >= x2-x1)) {
-            scale = (inpaintHeight-1d) / (sdSize-1d);
+        if (x2-x1 >= y2-y1) {
+            if (inpaintWidth > sdSize) {
+                scale = (inpaintWidth - 1d) / (sdSize - 1d);
+            } else if (imgBackground.getWidth() < sdSize) {
+                scale = (imgBackground.getWidth() - 1d) / (sdSize - 1d);
+            }
+        } else if (y2-y1 >= x2-x1) {
+            if (inpaintHeight > sdSize) {
+                scale = (inpaintHeight - 1d) / (sdSize - 1d);
+            } else if (imgBackground.getHeight() < sdSize) {
+                scale = (imgBackground.getHeight() - 1d) / (sdSize - 1d);
+            }
         }
 
         double blockWidth = sdBlockSize * scale;
         if (x2-x1 >= y2-y1) {
             inpaintWidth = (int)round(sdSize * scale);
+            if (inpaintHeight < (int)round(2d / 3d * inpaintWidth)) {
+                inpaintHeight = min(imgBackground.getHeight(), (int)round(2d / 3d * inpaintWidth));
+            }
             inpaintHeight = (int)round(blockWidth * ceil(inpaintHeight / blockWidth));
             if (inpaintHeight > imgBackground.getHeight()) {
                 inpaintHeight -= blockWidth;
             }
         } else {
             inpaintHeight = (int)round(sdSize * scale);
+            if (inpaintWidth < (int)round(2d / 3d * inpaintHeight)) {
+                inpaintWidth = min(imgBackground.getWidth(), (int)round(2d / 3d * inpaintHeight));
+            }
             inpaintWidth = (int)round(blockWidth * ceil(inpaintWidth / blockWidth));
             if (inpaintWidth > imgBackground.getWidth()) {
                 inpaintWidth -= blockWidth;
