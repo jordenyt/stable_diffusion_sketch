@@ -31,7 +31,7 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
     - Fill with Reference
     - Merge with Reference
     - SDXL Refiner
-  - 5 Custom Modes
+  - 8 Custom Modes
 - Painting Tools:
   - Palette
   - Paintbrush
