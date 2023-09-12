@@ -190,7 +190,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             JSONObject jsonObject;
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
             if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
-                jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
+                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
+                    double scale = (double) mCurrentSketch.getRectInpaint(param.sdSize).height() / inpaintBitmap.getHeight();
+                    jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap, scale);
+                } else {
+                    jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
+                }
             } else {
                 jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
             }

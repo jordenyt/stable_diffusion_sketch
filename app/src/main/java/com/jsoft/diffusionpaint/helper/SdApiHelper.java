@@ -124,6 +124,12 @@ public class SdApiHelper {
     }
 
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
+        int canvasDim = 2560;
+        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
+        return getExtraSingleImageJSON(bitmap, Math.min(4d, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
+    }
+
+    public JSONObject getExtraSingleImageJSON(Bitmap bitmap, double scale) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("resize_mode", 0);
@@ -131,9 +137,7 @@ public class SdApiHelper {
             jsonObject.put("gfpgan_visibility", 0.8);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
-            int canvasDim = 2560;
-            try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
-            jsonObject.put("upscaling_resize", Math.min(4d, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
+            jsonObject.put("upscaling_resize", scale);
             //jsonObject.put("upscaling_resize_w", 512);
             //jsonObject.put("upscaling_resize_h", 512);
             //jsonObject.put("upscaling_crop", true);
