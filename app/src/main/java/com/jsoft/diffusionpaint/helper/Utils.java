@@ -110,6 +110,7 @@ public class Utils {
     }
 
     public static void saveImageExif(String imagePath, String jsonString) {
+        if (jsonString == null || jsonString.length() < 2) { return; }
         try {
             JSONObject jsonExif = new JSONObject(jsonString);
             ExifInterface exif = new ExifInterface(imagePath);
