@@ -145,6 +145,7 @@ public class PaintDb {
                         + ", " + SketchEntry.PROMPT
                         + ", " + SketchEntry.NEG_PROMPT
                         + ", " + SketchEntry.CN_MODE
+                        + ", " + SketchEntry.EXIF
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " WHERE " + SketchEntry._ID + " = " + sketchId;
         Cursor c = db.rawQuery(queryString, new String[] {});
@@ -161,6 +162,7 @@ public class PaintDb {
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
             sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
+            sketch.setExif(c.getString(c.getColumnIndexOrThrow(SketchEntry.EXIF)));
             sketches.add(sketch);
         }
         c.close();
@@ -221,6 +223,7 @@ public class PaintDb {
         values.put(SketchEntry.PAINT, Utils.png2Base64String(sketch.getImgPaint()));
         values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaintMask()));
         values.put(SketchEntry.REF, Utils.jpg2Base64String(sketch.getImgReference()));
+        values.put(SketchEntry.EXIF, sketch.getExif());
         return db.insert(SketchEntry.TABLE_NAME,null,values);
     }
 
@@ -235,6 +238,7 @@ public class PaintDb {
         values.put(SketchEntry.PAINT, Utils.png2Base64String(sketch.getImgPaint()));
         values.put(SketchEntry.MASK, Utils.png2Base64String(sketch.getImgInpaintMask()));
         values.put(SketchEntry.REF, Utils.jpg2Base64String(sketch.getImgReference()));
+        values.put(SketchEntry.EXIF, sketch.getExif());
         // Which row to update, based on the ID
         String selection = SketchEntry._ID + " LIKE ?";
         String[] selectionArgs = { sketch.getId() + "" };

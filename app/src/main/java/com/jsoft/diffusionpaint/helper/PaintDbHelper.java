@@ -26,6 +26,7 @@ public class PaintDbHelper extends SQLiteOpenHelper {
         public static final String CN_MODE = "cn_mode";
         public static final String PROMPT = "prompt";
         public static final String NEG_PROMPT = "neg_prompt";
+        public static final String EXIF = "exif";
 
     }
 
@@ -33,7 +34,7 @@ public class PaintDbHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "DIFFUSION_PAINT.DB";
 
     // database version
-    static final int DB_VERSION = 6;
+    static final int DB_VERSION = 7;
 
     static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
@@ -49,6 +50,7 @@ public class PaintDbHelper extends SQLiteOpenHelper {
             + SketchEntry.MASK + " TEXT DEFAULT '', "
             + SketchEntry.REF + " TEXT DEFAULT '', "
             + SketchEntry.CN_MODE + " TEXT DEFAULT 'scribble', "
+            + SketchEntry.EXIF + " TEXT DEFAULT '{}', "
             + SketchEntry.NEG_PROMPT + " TEXT DEFAULT '', "
             + SketchEntry.PROMPT + " TEXT);";
 
@@ -80,6 +82,9 @@ public class PaintDbHelper extends SQLiteOpenHelper {
         }
         if (oldVersion <= 5) {
             db.execSQL("ALTER TABLE " + SketchEntry.TABLE_NAME + " ADD COLUMN " + SketchEntry.NEG_PROMPT + " TEXT DEFAULT ''");
+        }
+        if (oldVersion <= 6) {
+            db.execSQL("ALTER TABLE " + SketchEntry.TABLE_NAME + " ADD COLUMN " + SketchEntry.EXIF + " TEXT DEFAULT '{}'");
         }
         onCreate(db);
     }

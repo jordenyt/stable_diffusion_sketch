@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.jsoft.diffusionpaint.helper.Utils;
 
@@ -29,10 +30,10 @@ public class Sketch implements Serializable {
     private Bitmap imgPaint;
     private Bitmap imgInpaintMask;
     private Bitmap imgReference;
-
     private String cnMode;
     private RectF rectInpaint;
 
+    private String exif;
     private List<Sketch> children;
 
     public static final String CN_MODE_SCRIBBLE = "scribble";
@@ -190,6 +191,10 @@ public class Sketch implements Serializable {
     public String getNegPrompt() { return negPrompt; }
 
     public void setNegPrompt(String negPrompt) { this.negPrompt = negPrompt; }
+
+    public String getExif() { return exif; }
+
+    public void setExif(String exif) { this.exif = exif; }
 
     public RectF getRectInpaint(int sdSize) {
         if (rectInpaint == null) {

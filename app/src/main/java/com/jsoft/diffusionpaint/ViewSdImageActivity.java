@@ -16,7 +16,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -256,7 +255,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private void saveImage() {
         if (savedImageName==null) {
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
-            Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName);
+            Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName, mCurrentSketch.getExif());
             apiResultList.get(currentResult).savedImageName = savedImageName;
         }
     }

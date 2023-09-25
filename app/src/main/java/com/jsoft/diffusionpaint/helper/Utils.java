@@ -2,7 +2,6 @@ package com.jsoft.diffusionpaint.helper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,17 +20,20 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.exifinterface.media.ExifInterface;
 
-import com.jsoft.diffusionpaint.DrawingActivity;
 import com.jsoft.diffusionpaint.dto.Sketch;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.Iterator;
 
 public class Utils {
 
@@ -81,6 +83,49 @@ public class Utils {
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
+    public static String getImageExif(String imagePath) {
+        try {
+            ExifInterface exif = new ExifInterface(imagePath);
+
+            JSONObject jsonExif = new JSONObject();
+            Field[] fields = ExifInterface.class.getFields();
+            for (Field field : fields) {
+                if (field.getName().startsWith("TAG_")) {
+                    String attribute = field.get(null).toString();
+                    String value = exif.getAttribute(attribute);
+                    if (attribute.equals(ExifInterface.TAG_ORIENTATION)) {
+                        jsonExif.put(attribute, "1");
+                    } else if (value != null) {
+                        jsonExif.put(attribute, value);
+                    }
+                }
+            }
+
+            return jsonExif.toString();
+            // Use the jsonString as needed
+        } catch (IOException | JSONException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void saveImageExif(String imagePath, String jsonString) {
+        try {
+            JSONObject jsonExif = new JSONObject(jsonString);
+            ExifInterface exif = new ExifInterface(imagePath);
+            Iterator<String> keys = jsonExif.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                String value = jsonExif.getString(key);
+                exif.setAttribute(key, value);
+            }
+
+            exif.saveAttributes();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String getAspectRatio(Bitmap bm) {
         String aspectRatio = Sketch.ASPECT_RATIO_SQUARE;
         double ratio = (double) bm.getWidth() / (double) bm.getHeight();
@@ -93,7 +138,7 @@ public class Utils {
         }
         return aspectRatio;
     }
-    public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String filename) {
+    public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String filename, String exifJson) {
         // Get the directory for the user's public pictures directory.
         File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File sdSketchFolder = new File(picturesDirectory, "sdSketch");
@@ -111,6 +156,7 @@ public class Utils {
             // Flush and close the file output stream.
             fos.flush();
             fos.close();
+            saveImageExif(file.getAbsolutePath(), exifJson);
             // Notify the media scanner to add the new image to the gallery.
             MediaScannerConnection.scanFile(a, new String[]{file.toString()}, null, null);
         } catch (IOException e) {
