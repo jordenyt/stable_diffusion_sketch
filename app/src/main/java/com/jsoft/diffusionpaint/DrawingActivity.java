@@ -92,6 +92,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setParentId(parentId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
             mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
+            mCurrentSketch.setExif(Utils.getImageExif(bitmapPath));
             rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
             if (rotatedBitmap != null) {
                 aspectRatio = Utils.getAspectRatio(rotatedBitmap);
