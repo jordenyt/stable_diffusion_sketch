@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.12.4-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.12.5-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111's Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) which is installed on **your own server**. <br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
@@ -47,6 +47,7 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
 - Long press image on Main Screen to delete
 - Group related sketches
 - Support multiple ControlNet
+- Keep EXIF of shared content in your SD output
 
 ## Custom Modes
 Custom mode can be defined in JSON format.<br/>
@@ -89,7 +90,7 @@ Custom mode can be defined in JSON format.<br/>
 | Variable         | Value                                                                                                                                                                                                                                                                                                                                                                                           |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `cnInputImage`   | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image                                                                                                                                                                                                                                                   |
-| `cnModelKey`     | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model <br/> `cnNormalModel` - CN Normal Model <br/> `cnMlsdModel` - CN MLSD Model <br/> `cnLineartModel` - CN Line Art Model <br/> `cnSoftedgeModel` - CN Soft Edge Model <br/> `cnSegModel` - CN Seg Model |
+| `cnModelKey`     | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model <br/> `cnNormalModel` - CN Normal Model <br/> `cnMlsdModel` - CN MLSD Model <br/> `cnLineartModel` - CN Line Art Model <br/> `cnSoftedgeModel` - CN Soft Edge Model <br/> `cnSegModel` - CN Seg Model <br/> `cnOther1Model` - Other CN Model 1 <br/> `cnOther2Model` - Other CN Model 2 <br/> `cnOther3Model` - Other CN Model 3 |
 | `cnModule`       | CN Module that ControlNet provided.  Typical values are: `tile_resample` / `reference_only` / `openpose_full` / `canny` / `depth_midas` / `scribble_hed` <br/> For full list, please refer to the Automatic1111 web UI.                                                                                                                                                                         |
 | `cnControlMode`  | `0` - Balanced (DEFAULT) <br/> `1` - My prompt is more important <br/> `2` - ControlNet is more important                                                                                                                                                                                                                                                                                       |
 | `cnWeight`       | decimal from 0 to 1                                                                                                                                                                                                                                                                                                                                                                             |
