@@ -372,6 +372,18 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
                 break;
+            case R.id.mi_cn_other1:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setCnOther1", "/controlnet/model_list");
+                break;
+            case R.id.mi_cn_other2:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setCnOther2", "/controlnet/model_list");
+                break;
+            case R.id.mi_cn_other3:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setCnOther3", "/controlnet/model_list");
+                break;
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
                 break;
@@ -723,6 +735,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Soft Edge Model", "cnSoftedgeModel", "control_v11p_sd15_softedge [a8575a2a]", "softedge");
             } else if ("setCnSeg".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Seg Model", "cnSegModel", "control_v11p_sd15_seg [e1f51eb9]", "seg");
+            } else if ("setCnOther1".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 1", "cnOther1Model", "", "");
+            } else if ("setCnOther2".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 2", "cnOther2Model", "", "");
+            } else if ("setCnOther3".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 3", "cnOther3Model", "", "");
             } else if ("getLoras".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showPromptDialog();

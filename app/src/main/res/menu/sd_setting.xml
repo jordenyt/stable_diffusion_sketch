@@ -34,6 +34,9 @@
             <item android:id="@+id/mi_cn_softedge" android:title="ControlNet Softedge model"/>
             <item android:id="@+id/mi_cn_seg" android:title="ControlNet Seg model"/>
             <item android:id="@+id/mi_cn_tile" android:title="ControlNet Tile model"/>
+            <item android:id="@+id/mi_cn_other1" android:title="Other ControlNet Model 1"/>
+            <item android:id="@+id/mi_cn_other2" android:title="Other ControlNet Model 2"/>
+            <item android:id="@+id/mi_cn_other3" android:title="Other ControlNet Model 3"/>
         </menu>
     </item>
     <item android:title="Customized Mode">
