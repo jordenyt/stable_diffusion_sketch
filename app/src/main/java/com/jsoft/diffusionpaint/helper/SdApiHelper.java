@@ -274,11 +274,11 @@ public class SdApiHelper {
 
             if (param.cn != null) {
                 JSONObject alwayson_scripts = new JSONObject();
+                JSONObject controlnet = new JSONObject();
+                JSONArray args = new JSONArray();
                 for (CnParam cnparam : param.cn) {
                     if (cnparam.cnInputImage != null) {
                         // ControlNet Args
-                        JSONObject controlnet = new JSONObject();
-                        JSONArray args = new JSONArray();
                         JSONObject cnArgObject = new JSONObject();
                         cnArgObject.put("input_image", Utils.jpg2Base64String(
                                 cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
@@ -302,10 +302,10 @@ public class SdApiHelper {
                         cnArgObject.put("guidance_end", 1);
                         cnArgObject.put("control_mode", cnparam.cnControlMode);
                         args.put(cnArgObject);
-                        controlnet.put("args", args);
-                        alwayson_scripts.put("controlnet", controlnet);
                     }
                 }
+                controlnet.put("args", args);
+                alwayson_scripts.put("controlnet", controlnet);
                 jsonObject.put("alwayson_scripts", alwayson_scripts);
             }
         } catch (JSONException e) {
@@ -415,12 +415,11 @@ public class SdApiHelper {
             // ControlNet Args
             if (param.cn != null) {
                 JSONObject alwayson_scripts = new JSONObject();
+                JSONObject controlnet = new JSONObject();
+                JSONArray args = new JSONArray();
                 for (CnParam cnparam : param.cn) {
                     if (cnparam.cnInputImage != null) {
-                        JSONObject controlnet = new JSONObject();
-                        JSONArray args = new JSONArray();
                         JSONObject cnArgObject = new JSONObject();
-
                         Bitmap cnImage = null;
                         if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF)) {
                             cnImage = mCurrentSketch.getImgReference();
@@ -457,10 +456,10 @@ public class SdApiHelper {
                         cnArgObject.put("control_mode", cnparam.cnControlMode);
                         cnArgObject.put("processor_res", 512);
                         args.put(cnArgObject);
-                        controlnet.put("args", args);
-                        alwayson_scripts.put("controlnet", controlnet);
                     }
                 }
+                controlnet.put("args", args);
+                alwayson_scripts.put("controlnet", controlnet);
                 jsonObject.put("alwayson_scripts", alwayson_scripts);
             }
         } catch (JSONException e) {
