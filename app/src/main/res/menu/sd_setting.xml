@@ -3,6 +3,7 @@
     <item android:title="SD Settings">
         <menu>
             <item android:id="@+id/mi_sd_server_address" android:title="Stable Diffusion Server Address"/>
+            <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>
             <item android:id="@+id/mi_dfl_api_address" android:title="DFL API Address"/>
             <item android:id="@+id/mi_sd_output_dim" android:title="Stable Diffusion Output Dimension"/>
             <item android:id="@+id/mi_canvas_dim" android:title="Canvas Dimension"/>

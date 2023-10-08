@@ -290,6 +290,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sd_server_address:
                 showServerAddressInput();
                 break;
+            case R.id.mi_restart_a1111:
+                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/restart_a1111", null, "GET");
+                break;
             case R.id.mi_dfl_api_address:
                 showTextInputDialog("dflApiAddress", "DFL API Address:", "http://192.168.1.101:7860", "");
                 break;
@@ -750,6 +753,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("getLoras".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showPromptDialog();
+            } else if ("restart_Server".equals(requestType)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Restart Command sent.")
+                        .setMessage("Please wait for a minute.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
