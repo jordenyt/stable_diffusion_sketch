@@ -269,7 +269,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
-            jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
+            jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
 
             if (param.cn != null) {
@@ -408,7 +408,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("steps", param.steps);
-            jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
+            jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("cfg_scale", param.cfgScale);

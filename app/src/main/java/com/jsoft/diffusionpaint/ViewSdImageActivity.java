@@ -252,10 +252,26 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         sdImage.setImageBitmap(mBitmap);
     }
 
-    private void saveImage() {
+    private void saveImage()  {
         if (savedImageName==null) {
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
-            Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName, mCurrentSketch.getExif());
+            String exif = mCurrentSketch.getExif();
+            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+            if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
+                try {
+                    JSONObject jsonExif = new JSONObject();
+                    String userComment = String.format("%s\nNegative prompt: %s\nSteps: %d, Sampler: %s, CFG scale: %.1f, Size: %dx%d",
+                            mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt(), param.steps,
+                            sharedPreferences.getString("sdSampler", "Euler a"), param.cfgScale, mBitmap.getWidth(), mBitmap.getHeight());
+                    jsonExif.put("UserComment", userComment);
+                    Date date = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+                    jsonExif.put("DateTimeOriginal", sdf.format(date));
+                    jsonExif.put("CreateDate", sdf.format(date));
+                    exif = jsonExif.toString();
+                } catch (JSONException ignored) {}
+            }
+            Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName, exif);
             apiResultList.get(currentResult).savedImageName = savedImageName;
         }
     }
