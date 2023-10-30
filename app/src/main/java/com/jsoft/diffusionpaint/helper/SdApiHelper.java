@@ -279,7 +279,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
-            jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
+            jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
 
             if (param.cn != null) {
@@ -356,8 +356,7 @@ public class SdApiHelper {
             init_images.put(Utils.jpg2Base64String(baseImage));
             jsonObject.put("init_images", init_images);
             jsonObject.put("resize_mode", 1);
-            jsonObject.put("denoising_strength", param.denoise);
-            jsonObject.put("image_cfg_scale", param.cfgScale);
+
             if (isInpaint) {
                 if (mCurrentSketch.getImgInpaintMask() == null) {
                     mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch));
@@ -419,8 +418,10 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("steps", param.steps);
-            jsonObject.put("sampler_index", sharedPreferences.getString("sdSampler", "Euler a"));
+            jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
+            jsonObject.put("denoising_strength", param.denoise);
+            jsonObject.put("cfg_scale", param.cfgScale);
 
             // ControlNet Args
             if (param.cn != null) {
