@@ -101,9 +101,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             try {
                 JSONObject jsonExif = new JSONObject(mCurrentSketch.getExif());
                 if (jsonExif.has("UserComment")) {
-                    String pattern = "(.*)Negative prompt: (.*)Steps: (.*)";
+                    String userComment = jsonExif.getString("UserComment");
+                    String pattern = "(.*)[\\n\\?]Negative prompt: (.*)[\\n\\?]Steps: (.*)";
                     Pattern regex = Pattern.compile(pattern);
-                    Matcher matcher = regex.matcher(jsonExif.getString("UserComment"));
+                    Matcher matcher = regex.matcher(userComment);
                     if (matcher.find()) {
                         if (mCurrentSketch.getPrompt() == null) {
                             mCurrentSketch.setPrompt(matcher.group(1));
@@ -111,8 +112,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                         if (mCurrentSketch.getNegPrompt() == null) {
                             mCurrentSketch.setNegPrompt(matcher.group(2));
                         }
-                    } else if (mCurrentSketch.getPrompt() == null) {
-                        mCurrentSketch.setPrompt(jsonExif.getString("UserComment"));
                     }
                 }
             } catch (Exception ignored) {}
