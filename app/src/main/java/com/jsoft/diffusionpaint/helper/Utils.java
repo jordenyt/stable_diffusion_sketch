@@ -33,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 public class Utils {
@@ -95,6 +97,10 @@ public class Utils {
                     String value = exif.getAttribute(attribute);
                     if (attribute.equals(ExifInterface.TAG_ORIENTATION)) {
                         jsonExif.put(attribute, "1");
+                    } else if (attribute.equals(ExifInterface.TAG_USER_COMMENT) && value.equals("UNICODE")) {
+                        byte[] s = exif.getAttributeBytes(ExifInterface.TAG_USER_COMMENT);
+                        value = new String(s, StandardCharsets.UTF_8).substring(7);
+                        jsonExif.put(attribute, URLDecoder.decode(value, "UTF-8"));
                     } else if (value != null) {
                         jsonExif.put(attribute, value);
                     }

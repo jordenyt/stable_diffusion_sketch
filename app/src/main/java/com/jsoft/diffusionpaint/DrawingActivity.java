@@ -39,9 +39,13 @@ import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Utils;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DrawingActivity extends AppCompatActivity implements ColorPickerDialogListener, DrawingViewListener, SdApiResponseListener {
 
@@ -92,7 +96,26 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setParentId(parentId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
             mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
+
             mCurrentSketch.setExif(Utils.getImageExif(bitmapPath));
+            try {
+                JSONObject jsonExif = new JSONObject(mCurrentSketch.getExif());
+                if (jsonExif.has("UserComment")) {
+                    String pattern = "(.*)Negative prompt: (.*)Steps: (.*)";
+                    Pattern regex = Pattern.compile(pattern);
+                    Matcher matcher = regex.matcher(jsonExif.getString("UserComment"));
+                    if (matcher.find()) {
+                        if (mCurrentSketch.getPrompt() == null) {
+                            mCurrentSketch.setPrompt(matcher.group(1));
+                        }
+                        if (mCurrentSketch.getNegPrompt() == null) {
+                            mCurrentSketch.setNegPrompt(matcher.group(2));
+                        }
+                    } else if (mCurrentSketch.getPrompt() == null) {
+                        mCurrentSketch.setPrompt(jsonExif.getString("UserComment"));
+                    }
+                }
+            } catch (Exception ignored) {}
             rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
             if (rotatedBitmap != null) {
                 aspectRatio = Utils.getAspectRatio(rotatedBitmap);
