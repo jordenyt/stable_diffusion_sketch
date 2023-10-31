@@ -12,6 +12,7 @@ public class SdParam {
     public int inpaintPartial = 0;
     public int sdSize;
     public String model;
+    public String asapi = "{}";
 
     public List<CnParam> cn;
     public static final String SD_MODEL_V1 = "v1Model";
