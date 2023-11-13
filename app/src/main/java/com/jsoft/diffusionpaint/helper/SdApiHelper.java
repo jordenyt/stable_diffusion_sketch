@@ -271,8 +271,8 @@ public class SdApiHelper {
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
             jsonObject.put("save_images", false);
-            if (sdParam.asapi != null) {
-                jsonObject.put("alwayson_scripts", new JSONObject(sdParam.asapi));
+            if (param.asapi != null) {
+                jsonObject.put("alwayson_scripts", new JSONObject(param.asapi));
             }
 
             if (param.cn != null) {
@@ -308,7 +308,7 @@ public class SdApiHelper {
                     }
                 }
                 controlnet.put("args", args);
-                if (sdParam.asapi != null) {
+                if (param.asapi != null) {
                     alwayson_scripts = new JSONObject(jsonObject.getJSONObject("alwayson_scripts").toString());
                 }
                 alwayson_scripts.put("controlnet", controlnet);
@@ -418,8 +418,8 @@ public class SdApiHelper {
             jsonObject.put("save_images", false);
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("cfg_scale", param.cfgScale);
-            if (sdParam.asapi != null) {
-                jsonObject.put("alwayson_scripts", new JSONObject(sdParam.asapi));
+            if (param.asapi != null) {
+                jsonObject.put("alwayson_scripts", new JSONObject(param.asapi));
             }
 
             // ControlNet Args
@@ -469,7 +469,7 @@ public class SdApiHelper {
                     }
                 }
                 controlnet.put("args", args);
-                if (sdParam.asapi != null) {
+                if (param.asapi != null) {
                     alwayson_scripts = new JSONObject(jsonObject.getJSONObject("alwayson_scripts").toString());
                 }
                 alwayson_scripts.put("controlnet", controlnet);
