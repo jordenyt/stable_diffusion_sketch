@@ -10,8 +10,8 @@ android {
         applicationId "com.jsoft.diffusionpaint"
         minSdk 26
         targetSdk 33
-        versionCode 36
-        versionName "v0.12.7"
+        versionCode 37
+        versionName "v0.12.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

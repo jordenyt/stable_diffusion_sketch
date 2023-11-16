@@ -257,7 +257,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             String exif = mCurrentSketch.getExif();
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-            if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
+            if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
                     JSONObject jsonExif = new JSONObject();
                     String userComment = String.format("%s\nNegative prompt: %s\nSteps: %d, Sampler: %s, CFG scale: %.1f, Size: %dx%d",
