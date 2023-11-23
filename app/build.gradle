@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'com.jsoft.diffusionpaint'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.jsoft.diffusionpaint"
         minSdk 28
-        targetSdk 33
+        targetSdk 34
         versionCode 37
         versionName "v0.12.8"
 
