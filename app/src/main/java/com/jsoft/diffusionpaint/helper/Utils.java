@@ -250,7 +250,8 @@ public class Utils {
         if (uri.getScheme().equals("content")) {
             try {
                 InputStream inputStream = activity.getContentResolver().openInputStream(uri);
-                String fileName = "temp_file_" + System.currentTimeMillis();
+                String fileName=uri.toString().substring(uri.toString().lastIndexOf("/")+1);
+                //String fileName = "temp_file_" + System.currentTimeMillis();
                 File tempFile = new File(activity.getCacheDir(), fileName);
                 FileOutputStream outputStream = new FileOutputStream(tempFile);
                 byte[] buffer = new byte[4096];
