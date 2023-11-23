@@ -114,9 +114,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                         }
                     }
                 }
-                if (!jsonExif.has("OriginalFileName")) {
+                if (!jsonExif.has("ImageDescription")) {
                     String filename=bitmapPath.substring(bitmapPath.lastIndexOf("/")+1);
-                    jsonExif.put("OriginalFileName", filename);
+                    jsonExif.put("ImageDescription", filename);
                     mCurrentSketch.setExif(jsonExif.toString());
                 }
             } catch (Exception ignored) {}
