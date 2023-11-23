@@ -76,14 +76,18 @@ public class PaintDb {
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " WHERE " + SketchEntry._ID + " = " + sketchId;
         Cursor c = db.rawQuery(queryString, new String[] {});
+        CursorWindow cw = new CursorWindow("sketchBg", 5000000);
+        AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
+        ac.setWindow(cw);
+
         List<Sketch> sketches = new ArrayList<>();
-        while (c.moveToNext()) {
+        while (ac.moveToNext()) {
             Sketch sketch = new Sketch();
-            sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
-            sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
+            sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setImgBackground(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.REF))));
             sketches.add(sketch);
         }
-        c.close();
+        ac.close();
         if (sketches.size() > 0) {
             return sketches.get(0).getImgReference();
         } else {
