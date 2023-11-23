@@ -2,7 +2,9 @@ package com.jsoft.diffusionpaint.helper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.AbstractWindowedCursor;
 import android.database.Cursor;
+import android.database.CursorWindow;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 
@@ -96,14 +98,18 @@ public class PaintDb {
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " WHERE " + SketchEntry._ID + " = " + sketchId;
         Cursor c = db.rawQuery(queryString, new String[] {});
+        CursorWindow cw = new CursorWindow("sketchBg", 5000000);
+        AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
+        ac.setWindow(cw);
+
         List<Sketch> sketches = new ArrayList<>();
-        while (c.moveToNext()) {
+        while (ac.moveToNext()) {
             Sketch sketch = new Sketch();
-            sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
-            sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
+            sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
+            sketch.setImgBackground(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
             sketches.add(sketch);
         }
-        c.close();
+        ac.close();
         if (sketches.size() > 0) {
             return sketches.get(0).getImgBackground();
         } else {
