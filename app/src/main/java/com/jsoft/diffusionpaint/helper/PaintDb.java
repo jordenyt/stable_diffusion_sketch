@@ -84,7 +84,7 @@ public class PaintDb {
         while (ac.moveToNext()) {
             Sketch sketch = new Sketch();
             sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
-            sketch.setImgBackground(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.REF))));
+            sketch.setImgReference(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.REF))));
             sketches.add(sketch);
         }
         ac.close();
