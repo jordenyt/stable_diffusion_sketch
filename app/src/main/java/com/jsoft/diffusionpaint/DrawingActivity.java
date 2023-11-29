@@ -320,11 +320,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void gotoMainActivity() {
-        setResult(Activity.RESULT_CANCELED);
         finish();
-        /*Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);*/
+        startActivity(intent);
     }
 
     @Override
