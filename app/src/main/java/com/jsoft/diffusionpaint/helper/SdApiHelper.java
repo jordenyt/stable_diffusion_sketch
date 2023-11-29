@@ -166,8 +166,8 @@ public class SdApiHelper {
 
         Gson gson = new Gson();
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", "{\"type\":\"txt2img\", \"sdSize\":1024}") :
-                        cnMode.equals(Sketch.CN_MODE_REFINER_SDXL) ? sharedPreferences.getString("modeRefiner", "{\"type\":\"img2img\",\"baseImage\":\"background\",\"denoise\":0.2, \"sdSize\":1024}") :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", "{\"type\":\"txt2img\", \"sdSize\":1280}") :
+                        cnMode.equals(Sketch.CN_MODE_REFINER_SDXL) ? sharedPreferences.getString("modeRefiner", "{\"type\":\"img2img\",\"baseImage\":\"background\",\"denoise\":0.2, \"sdSize\":1280}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
@@ -176,9 +176,9 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_6) ? sharedPreferences.getString("modeCustom6", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_7) ? sharedPreferences.getString("modeCustom7", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_8) ? sharedPreferences.getString("modeCustom8", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.8, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.8, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0}], \"denoise\":0.8, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.75, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.75, \"type\":\"img2img\"}" :
+                        cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0}], \"denoise\":0.75, \"type\":\"img2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_DEPTH) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
@@ -187,8 +187,9 @@ public class SdApiHelper {
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
                         cnMode.equals(Sketch.CN_MODE_MERGE) ? "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.8, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL_SKETCH) ? "{\"baseImage\":\"sketch\", \"denoise\":0.75, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
                                 "{\"type\":\"txt2img\"}";
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
@@ -359,7 +360,7 @@ public class SdApiHelper {
 
             if (isInpaint) {
                 if (mCurrentSketch.getImgInpaintMask() == null) {
-                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch));
+                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 20 : 0));
                 }
                 Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {

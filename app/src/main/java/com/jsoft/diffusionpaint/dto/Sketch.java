@@ -49,6 +49,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_INPAINT = "inpaintNoise";
     public static final String CN_MODE_INPAINT_COLOR = "inpaintColor";
     public static final String CN_MODE_INPAINT_PARTIAL = "inpaintPartial";
+    public static final String CN_MODE_INPAINT_PARTIAL_SKETCH = "inpaintPartialSketch";
     public static final String CN_MODE_OUTPAINT_H = "outpaintH";
     public static final String CN_MODE_OUTPAINT_H_LEFT = "outpaintHL";
     public static final String CN_MODE_OUTPAINT_H_RIGHT = "outpaintHR";
@@ -72,6 +73,8 @@ public class Sketch implements Serializable {
     public static final Map<String, String> cnModeMap;
     static {
         Map<String, String> cnMode = new LinkedHashMap<>();
+        cnMode.put("txt2img", CN_MODE_TXT);
+        cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
         cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_SCRIBBLE);
         cnMode.put("img2img(sketch) + Depth(sketch)", CN_MODE_DEPTH);
         cnMode.put("img2img(sketch) + Pose(sketch)", CN_MODE_POSE);
@@ -82,6 +85,7 @@ public class Sketch implements Serializable {
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_COLOR);
         cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);
+        cnMode.put("Partial Inpainting (sketch)", CN_MODE_INPAINT_PARTIAL_SKETCH);
         cnMode.put("Outpainting Horizontally", CN_MODE_OUTPAINT_H);
         cnMode.put("Outpainting on Left", CN_MODE_OUTPAINT_H_LEFT);
         cnMode.put("Outpainting on Right", CN_MODE_OUTPAINT_H_RIGHT);
@@ -207,8 +211,8 @@ public class Sketch implements Serializable {
 
     public void setChildren(List<Sketch> children) { this.children = children; }
 
-    public static Bitmap getInpaintMaskFromPaint(Sketch s) {
-        return Utils.getDilationMask(s.getImgPaint(), 0);
+    public static Bitmap getInpaintMaskFromPaint(Sketch s, int expandPixel) {
+        return Utils.getDilationMask(s.getImgPaint(), expandPixel);
     }
 
     public Bitmap getImgBgRefPreview() {
