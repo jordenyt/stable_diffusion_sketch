@@ -188,8 +188,8 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_MERGE) ? "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}" :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL_SKETCH) ? "{\"baseImage\":\"sketch\", \"denoise\":0.75, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":1024}" :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL_SKETCH) ? "{\"baseImage\":\"sketch\", \"denoise\":0.8, \"cfgScale\":7, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":1024}" :
                                 "{\"type\":\"txt2img\"}";
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
