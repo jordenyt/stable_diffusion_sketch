@@ -570,10 +570,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             editor.apply();
 
             String selectMode = sdMode.getSelectedItem().toString();
-            ViewSdImageActivity.mBitmap = null;
-            ViewSdImageActivity.inpaintBitmap = null;
-            ViewSdImageActivity.isCallingAPI = false;
-            Intent intent = new Intent(MainActivity.this, ViewSdImageActivity.class);
+            Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);

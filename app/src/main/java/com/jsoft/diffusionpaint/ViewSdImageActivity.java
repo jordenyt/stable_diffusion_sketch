@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -222,7 +223,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     if (mCurrentSketch.getId() >= 0) {
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }
-                    drawingActivityResultLauncher.launch(intent);
+                    //drawingActivityResultLauncher.launch(intent);
+                    setResult(Activity.RESULT_OK, intent);
+                    finish();
                 });
             });
         });
@@ -282,6 +285,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
         } else {
             isCallingAPI = false;
+            setResult(Activity.RESULT_CANCELED);
             super.onBackPressed();
         }
     }
