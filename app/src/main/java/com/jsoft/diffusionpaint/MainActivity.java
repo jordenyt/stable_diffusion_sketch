@@ -105,9 +105,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
     }
 
-    ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
+    private void gotoDrawActivity(Intent intent) {
+        finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
     private boolean validateSettings() {
         if (!sdApiHelper.isValid()) {
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
         intent.putExtra("sketchId", sketchID);
-        drawingActivityResultLauncher.launch(intent);
+        gotoDrawActivity(intent);
     }
 
     @Override
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 drawIntent.putExtra("sketchId", -2);
                 drawIntent.putExtra("bitmapPath", filePath);
-                drawingActivityResultLauncher.launch(drawIntent);
+                gotoDrawActivity(drawIntent);
             }
         }
     }
@@ -584,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
-            drawingActivityResultLauncher.launch(intent);
+            gotoDrawActivity(intent);
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -666,7 +668,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
                     intent.putExtra("sketchId", -2);
                     intent.putExtra("bitmapPath", filePath);
-                    drawingActivityResultLauncher.launch(intent);
+                    gotoDrawActivity(intent);
                 }
             });
 
@@ -678,7 +680,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
                     intent.putExtra("sketchId", -2);
                     intent.putExtra("bitmapPath", mImageFile.getAbsolutePath());
-                    drawingActivityResultLauncher.launch(intent);
+                    gotoDrawActivity(intent);
                 }
             });
 
