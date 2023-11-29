@@ -2,12 +2,14 @@ package com.jsoft.diffusionpaint;
 
 import static com.jsoft.diffusionpaint.dto.Sketch.*;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -67,24 +69,31 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     ImageView modeIcon;
     ImageView imgRef;
     Bitmap bmRef;
+    private int intentSketchId;
     public static List<String> loraList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        mCurrentSketch = new Sketch();
+
         db = new PaintDb(this);
         sdApiHelper = new SdApiHelper(this, this);
         if (loraList == null) {
             sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
         }
         Intent i = getIntent();
+        loadSketch(i);
+    }
+
+    private void loadSketch(Intent i) {
+        mCurrentSketch = new Sketch();
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         int sketchId = i.getIntExtra("sketchId", -1);
         int parentId = i.getIntExtra("parentId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
         aspectRatio = sharedPreferences.getString("sdImageAspect", ASPECT_RATIO_SQUARE);
         Bitmap rotatedBitmap = null;
+        intentSketchId = sketchId;
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
@@ -124,6 +133,19 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             if (rotatedBitmap != null) {
                 aspectRatio = Utils.getAspectRatio(rotatedBitmap);
             }
+        } else if (sketchId == -3) {
+            ViewSdImageActivity.mBitmap = null;
+            ViewSdImageActivity.inpaintBitmap = null;
+            ViewSdImageActivity.isCallingAPI = false;
+            String cnMode = i.getStringExtra("cnMode");
+            String promptText = i.getStringExtra("prompt");
+            String negPromptText = i.getStringExtra("negPrompt");
+            Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
+            intent.putExtra("sketchId", -3);
+            intent.putExtra("cnMode", cnMode);
+            intent.putExtra("prompt", promptText);
+            intent.putExtra("negPrompt", negPromptText);
+            sdViewerActivityResultLauncher.launch(intent);
         }
 
         setScreenRotation();
@@ -173,7 +195,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         if (sketchId == -2) {
             mDrawingView.setmBaseBitmap(rotatedBitmap);
         }
-
     }
 
     @Override
@@ -299,10 +320,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void gotoMainActivity() {
+        setResult(Activity.RESULT_CANCELED);
         finish();
-        Intent intent = new Intent(this, MainActivity.class);
+        /*Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     @Override
@@ -379,7 +401,25 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_CANCELED) {
+                    if (intentSketchId == -3) {
+                        gotoMainActivity();
+                    }
+                } else if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent i = result.getData();
+                    if (i != null) {
+                        int sketchId = i.getIntExtra("sketchId", -1);
+                        if (sketchId == -2) {
+                            loadSketch(i);
+                        } else {
+                            gotoMainActivity();
+                        }
+                    } else {
+                        gotoMainActivity();
+                    }
+                }
+            });
 
     public void gotoViewSdImageActivity(int sketchID, String cnMode) {
         ViewSdImageActivity.mBitmap = null;
