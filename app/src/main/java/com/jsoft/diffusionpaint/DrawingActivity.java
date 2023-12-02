@@ -156,6 +156,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         int canvasDim = 2560;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
         mDrawingView.setCanvasSize(canvasDim);
+        mDrawingView.setAspectRatio(aspectRatio);
         mCurrentColor = Color.BLUE;
         mDrawingView.setPaintColor(mCurrentColor);
         mDrawingView.setListener(this);
@@ -169,7 +170,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
 
         ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
-        if (sketchId == -2) {
+        /*if (sketchId == -2) {
             loParam.dimensionRatio = rotatedBitmap.getWidth() + ":" + rotatedBitmap.getHeight();
         } else if (sketchId >= 0) {
             loParam.dimensionRatio = mCurrentSketch.getImgPreview().getWidth() + ":" + mCurrentSketch.getImgPreview().getHeight();
@@ -181,7 +182,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             } else {
                 loParam.dimensionRatio = "1:1";
             }
-        }
+        }*/
 
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
