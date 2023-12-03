@@ -282,8 +282,8 @@ public class DrawingView extends View
 				curScale = minScale;
 			}
 
-			curTop = curTop - (curScale / originalScale - 1) * realY;
-			curLeft = curLeft - (curScale / originalScale - 1) * realX;
+			curTop = curTop - (curScale / originalScale - 1) * realY * curScale;
+			curLeft = curLeft - (curScale / originalScale - 1) * realX * curScale;
 			fixTrans();
 
 			return true;
