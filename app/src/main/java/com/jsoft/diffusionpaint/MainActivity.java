@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     private void gotoDrawActivity(Intent intent) {
         finish();
+        DrawingActivity.clearPath();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
