@@ -27,6 +27,7 @@ public class DrawingView extends View
 	private Bitmap mViewBitmap; //member of mDrawCanvas
 	private Bitmap mBaseBitmap; //Input Background
 	private Bitmap mPaintBitmap; //Input Paint from save data
+	private Bitmap mTranslateBitmap;
 	private ArrayList<Path> mPaths = new ArrayList<>();
 	private ArrayList<Paint> mPaints = new ArrayList<>();
 	private ArrayList<Path> mUndonePaths = new ArrayList<>();
@@ -78,6 +79,14 @@ public class DrawingView extends View
 	}
 	public void setIsTranslate(boolean isTranslate) {
 		this.isTranslate = isTranslate;
+		if (isTranslate) {
+			mTranslateBitmap = Bitmap.createBitmap(mBaseBitmap.getWidth(), mBaseBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+			Canvas translateCanvas = new Canvas(mTranslateBitmap);
+			drawBackground(translateCanvas, 0, 0, 1.0);
+			drawPaths(translateCanvas, 0, 0, 1.0);
+		} else {
+			mTranslateBitmap = null;
+		}
 	}
 	private void init() {
 		mDrawPath = new Path();
@@ -170,8 +179,13 @@ public class DrawingView extends View
 	@Override
 	protected void onDraw(Canvas canvas) {
 		mViewCanvas = canvas;
-		drawBackground(canvas);
-		drawPaths(canvas, mDrawPath, mDrawPaint);
+		if (!isTranslate) {
+			drawBackground(canvas);
+			drawPaths(canvas, mDrawPath, mDrawPaint);
+		} else {
+			Bitmap resizedBitmap = Bitmap.createScaledBitmap(mTranslateBitmap, (int)Math.round(mBaseBitmap.getWidth() * curScale),  (int)Math.round(mBaseBitmap.getHeight() * curScale), true);
+			canvas.drawBitmap(resizedBitmap, (int)Math.round(curLeft), (int)Math.round(curTop), null);
+		}
 	}
 
 	@Override
