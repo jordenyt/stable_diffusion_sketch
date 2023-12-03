@@ -245,9 +245,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 mDrawingView.setIsTranslate(true);
                 eraserButton.setVisibility(View.GONE);
                 modeIcon.setImageResource(R.drawable.magnifying_glass_icon);
+                moveButton.setImageResource(R.drawable.ic_edit);
             } else {
                 showTools();
                 eraserButton.setVisibility(View.VISIBLE);
+                moveButton.setImageResource(R.drawable.magnifying_glass_icon);
                 if (!mDrawingView.getIsEraserMode()) {
                     modeIcon.setImageResource(R.drawable.ic_brush);
                 } else {
@@ -404,7 +406,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     } else {
                         Intent i = result.getData();
                         if (i != null) {
-                            int sketchId = i.getIntExtra("sketchId", -1);
                             clearPath();
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
