@@ -127,7 +127,6 @@ public class DrawingView extends View
 
 			defaultScale = 1.0;
 			curScale = 1.0;
-			mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 			drawBackground(viewCanvas, curLeft, curTop, curScale);
 		} else {
 			Bitmap resizedBitmap = Bitmap.createScaledBitmap(mBaseBitmap, (int)Math.round(mBaseBitmap.getWidth() * viewScale),  (int)Math.round(mBaseBitmap.getHeight() * viewScale), true);
@@ -193,7 +192,6 @@ public class DrawingView extends View
 			curScale = defaultScale;
 			curLeft = (w - mBaseBitmap.getWidth() * curScale) / 2d;
 			curTop = (h - mBaseBitmap.getHeight() * curScale) / 2d;
-			mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 		}
 	}
 
@@ -210,6 +208,7 @@ public class DrawingView extends View
 				case MotionEvent.ACTION_DOWN:
 					if (!isEyedropper) {
 						mDrawPath.moveTo(realX, realY);
+						mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 					}
 					//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
 					break;
@@ -269,8 +268,6 @@ public class DrawingView extends View
 			curLeft = curLeft - (curScale / originalScale - 1) * realX;
 			fixTrans();
 
-			mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
-
 			return true;
 		}
 	}
@@ -282,7 +279,6 @@ public class DrawingView extends View
 				resetView();
 			} else {
 				curScale = 1.5 * curScale;
-				mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 			}
 
 			return true;
@@ -344,7 +340,6 @@ public class DrawingView extends View
 
 	public void setPaintStrokeWidth(int strokeWidth) {
 		mStrokeWidth = strokeWidth;
-		mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 	}
 
 	public void setEraserMode() {
