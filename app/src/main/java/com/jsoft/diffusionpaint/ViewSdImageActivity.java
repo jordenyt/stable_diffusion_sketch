@@ -285,7 +285,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
         } else {
             isCallingAPI = false;
-            setResult(Activity.RESULT_CANCELED);
+            Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
+            intent.putExtra("sketchId", mCurrentSketch.getId());
+            setResult(Activity.RESULT_CANCELED, intent);
             super.onBackPressed();
         }
     }

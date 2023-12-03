@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.jsoft.diffusionpaint.DrawingActivity;
 import com.jsoft.diffusionpaint.dto.Sketch;
 
 import java.util.ArrayList;
@@ -28,10 +29,6 @@ public class DrawingView extends View
 	private Bitmap mBaseBitmap; //Input Background
 	private Bitmap mPaintBitmap; //Input Paint from save data
 	private Bitmap mTranslateBitmap;
-	private ArrayList<Path> mPaths = new ArrayList<>();
-	private ArrayList<Paint> mPaints = new ArrayList<>();
-	private ArrayList<Path> mUndonePaths = new ArrayList<>();
-	private ArrayList<Paint> mUndonePaints = new ArrayList<>();
 
 	// Set default values
 	private int mBackgroundColor = 0xFFFFFFFF;
@@ -166,8 +163,8 @@ public class DrawingView extends View
 		Canvas pathCanvas = new Canvas(pathBitmap);
 		if (mPaintBitmap != null) { pathCanvas.drawBitmap(mPaintBitmap, null, new RectF(0,0,width, height), null); }
 		int i = 0;
-		for (Path p : mPaths) {
-			pathCanvas.drawPath(p, mPaints.get(i));
+		for (Path p : DrawingActivity.mPaths) {
+			pathCanvas.drawPath(p, DrawingActivity.mPaints.get(i));
 			i++;
 		}
 		if (path != null && paint != null) {
@@ -238,8 +235,8 @@ public class DrawingView extends View
 				case MotionEvent.ACTION_UP:
 					if (!isEyedropper) {
 						mDrawPath.lineTo(realX, realY);
-						mPaths.add(mDrawPath);
-						mPaints.add(mDrawPaint);
+						DrawingActivity.mPaths.add(mDrawPath);
+						DrawingActivity.mPaints.add(mDrawPaint);
 						mDrawPath = new Path();
 						initPaint();
 					} else {
@@ -334,15 +331,6 @@ public class DrawingView extends View
 		}
 	}
 
-	public void clearCanvas() {
-		mPaths.clear();
-		mPaints.clear();
-		mUndonePaths.clear();
-		mUndonePaints.clear();
-		mViewCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		invalidate();
-	}
-
 	public void setPaintColor(int color) {
 		mPaintColor = color;
 		mDrawPaint.setColor(mPaintColor);
@@ -371,18 +359,18 @@ public class DrawingView extends View
 
 
 	public void undo() {
-		if (mPaths.size() > 0) {
-			mUndonePaths.add(mPaths.remove(mPaths.size() - 1));
-			mUndonePaints.add(mPaints.remove(mPaints.size() - 1));
+		if (DrawingActivity.mPaths.size() > 0) {
+			DrawingActivity.mUndonePaths.add(DrawingActivity.mPaths.remove(DrawingActivity.mPaths.size() - 1));
+			DrawingActivity.mUndonePaints.add(DrawingActivity.mPaints.remove(DrawingActivity.mPaints.size() - 1));
 			invalidate();
 		}
 	}
 
 	public void redo() {
-		if (mUndonePaths.size() > 0)
+		if (DrawingActivity.mUndonePaths.size() > 0)
 		{
-			mPaths.add(mUndonePaths.remove(mUndonePaths.size() - 1));
-			mPaints.add(mUndonePaints.remove(mUndonePaints.size() - 1));
+			DrawingActivity.mPaths.add(DrawingActivity.mUndonePaths.remove(DrawingActivity.mUndonePaths.size() - 1));
+			DrawingActivity.mPaints.add(DrawingActivity.mUndonePaints.remove(DrawingActivity.mUndonePaints.size() - 1));
 			invalidate();
 		}
 	}
@@ -441,7 +429,7 @@ public class DrawingView extends View
 	}
 
 	public boolean isEmpty() {
-		return (mPaths.size() == 0);
+		return (DrawingActivity.mPaths.size() == 0);
 	}
 
 	public void setCanvasSize(int canvasSize) { this.maxImgSize = canvasSize; }

@@ -19,6 +19,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -72,6 +74,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     Bitmap bmRef;
     private int intentSketchId;
     public static List<String> loraList;
+    public static ArrayList<Path> mPaths = new ArrayList<>();
+    public static ArrayList<Paint> mPaints = new ArrayList<>();
+    public static ArrayList<Path> mUndonePaths = new ArrayList<>();
+    public static ArrayList<Paint> mUndonePaints = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +90,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
         Intent i = getIntent();
         loadSketch(i);
+    }
+
+    public static void clearPath() {
+        mPaths = new ArrayList<>();
+        mPaints = new ArrayList<>();
+        mUndonePaths = new ArrayList<>();
+        mUndonePaints = new ArrayList<>();
     }
 
     private void loadSketch(Intent i) {
@@ -108,28 +121,31 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
 
             mCurrentSketch.setExif(Utils.getImageExif(bitmapPath));
-            try {
-                JSONObject jsonExif = new JSONObject(mCurrentSketch.getExif());
-                if (jsonExif.has("UserComment")) {
-                    String userComment = jsonExif.getString("UserComment");
-                    String pattern = "(.*)[\\n\\?]Negative prompt: (.*)[\\n\\?]Steps: (.*)";
-                    Pattern regex = Pattern.compile(pattern);
-                    Matcher matcher = regex.matcher(userComment);
-                    if (matcher.find()) {
-                        if (mCurrentSketch.getPrompt() == null) {
-                            mCurrentSketch.setPrompt(matcher.group(1));
-                        }
-                        if (mCurrentSketch.getNegPrompt() == null) {
-                            mCurrentSketch.setNegPrompt(matcher.group(2));
+            if (!i.hasExtra("prompt")) {
+                try {
+                    JSONObject jsonExif = new JSONObject(mCurrentSketch.getExif());
+                    if (jsonExif.has("UserComment")) {
+                        String userComment = jsonExif.getString("UserComment");
+                        String pattern = "(.*)[\\n\\?]Negative prompt: (.*)[\\n\\?]Steps: (.*)";
+                        Pattern regex = Pattern.compile(pattern);
+                        Matcher matcher = regex.matcher(userComment);
+                        if (matcher.find()) {
+                            if (mCurrentSketch.getPrompt() == null) {
+                                mCurrentSketch.setPrompt(matcher.group(1));
+                            }
+                            if (mCurrentSketch.getNegPrompt() == null) {
+                                mCurrentSketch.setNegPrompt(matcher.group(2));
+                            }
                         }
                     }
+                    if (!jsonExif.has("ImageDescription")) {
+                        String filename = bitmapPath.substring(bitmapPath.lastIndexOf("/") + 1);
+                        jsonExif.put("ImageDescription", filename);
+                        mCurrentSketch.setExif(jsonExif.toString());
+                    }
+                } catch (Exception ignored) {
                 }
-                if (!jsonExif.has("ImageDescription")) {
-                    String filename=bitmapPath.substring(bitmapPath.lastIndexOf("/")+1);
-                    jsonExif.put("ImageDescription", filename);
-                    mCurrentSketch.setExif(jsonExif.toString());
-                }
-            } catch (Exception ignored) {}
+            }
             rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
             if (rotatedBitmap != null) {
                 aspectRatio = Utils.getAspectRatio(rotatedBitmap);
@@ -149,8 +165,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             sdViewerActivityResultLauncher.launch(intent);
         }
 
-        setScreenRotation();
-
         setContentView(R.layout.activity_drawing);
 
         mDrawingView = findViewById(R.id.drawing_view);
@@ -168,22 +182,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         circleView = findViewById(R.id.circle_pen);
         circleView.setColor(mCurrentColor);
         circleView.setRadius(mCurrentStroke/2f);
-
-
-        /*ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
-        if (sketchId == -2) {
-            loParam.dimensionRatio = rotatedBitmap.getWidth() + ":" + rotatedBitmap.getHeight();
-        } else if (sketchId >= 0) {
-            loParam.dimensionRatio = mCurrentSketch.getImgPreview().getWidth() + ":" + mCurrentSketch.getImgPreview().getHeight();
-        } else {
-            if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
-                loParam.dimensionRatio = "4:3";
-            } else if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
-                loParam.dimensionRatio = "3:4";
-            } else {
-                loParam.dimensionRatio = "1:1";
-            }
-        }*/
 
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
@@ -334,26 +332,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     public void gotoMainActivity() {
+        clearPath();
         finish();
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Lock the orientation to portrait
-        setScreenRotation();
-    }
-
-    public void setScreenRotation() {
-
-        if (aspectRatio.equals(ASPECT_RATIO_PORTRAIT)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        } else if (aspectRatio.equals(ASPECT_RATIO_LANDSCAPE)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
     }
 
     private void showInputDialog() {
@@ -418,13 +401,25 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 if (result.getResultCode() == Activity.RESULT_CANCELED) {
                     if (intentSketchId == -3) {
                         gotoMainActivity();
+                    } else {
+                        Intent i = result.getData();
+                        if (i != null) {
+                            int sketchId = i.getIntExtra("sketchId", -1);
+                            clearPath();
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(i);
+                        }
                     }
                 } else if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent i = result.getData();
                     if (i != null) {
                         int sketchId = i.getIntExtra("sketchId", -1);
                         if (sketchId == -2) {
-                            loadSketch(i);
+                            clearPath();
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(i);
                         } else {
                             gotoMainActivity();
                         }
