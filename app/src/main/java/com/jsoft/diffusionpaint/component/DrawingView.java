@@ -43,10 +43,12 @@ public class DrawingView extends View
 	private int maxImgSize = 2560;
 	private String aspectRatio;
 
-	private double defaultScale = 1.0;
+	private double minScale = 1.0;
 	private double curScale = 1.0;
 	private double curTop = 0;
 	private double curLeft = 0;
+	private double maxScale = 1.0;
+	private final int maxResolution = 5000;
 	private boolean isTranslate = false;
 	ScaleGestureDetector mScaleDetector;
 	GestureDetector mGestureDetector;
@@ -125,7 +127,8 @@ public class DrawingView extends View
 			curLeft = (viewCanvas.getWidth() - baseCanvas.getWidth()) / 2d;
 			curTop = (viewCanvas.getHeight() - baseCanvas.getHeight()) / 2d;
 
-			defaultScale = 1.0;
+			minScale = 1.0;
+			maxScale = (double)maxResolution / Math.max(baseWidth, baseHeight);
 			curScale = 1.0;
 			drawBackground(viewCanvas, curLeft, curTop, curScale);
 		} else {
@@ -188,8 +191,9 @@ public class DrawingView extends View
 		double w = mViewCanvas.getWidth();
 		double h = mViewCanvas.getHeight();
 		if (mBaseBitmap != null) {
-			defaultScale = Math.min(w / (double)mBaseBitmap.getWidth(), h / (double)mBaseBitmap.getHeight());
-			curScale = defaultScale;
+			minScale = Math.min(w / (double)mBaseBitmap.getWidth(), h / (double)mBaseBitmap.getHeight());
+			maxScale = (double)maxResolution / (double)Math.max(mBaseBitmap.getWidth(), mBaseBitmap.getHeight());
+			curScale = minScale;
 			curLeft = (w - mBaseBitmap.getWidth() * curScale) / 2d;
 			curTop = (h - mBaseBitmap.getHeight() * curScale) / 2d;
 		}
@@ -258,10 +262,10 @@ public class DrawingView extends View
 			double originalScale = curScale;
 			Log.e("diffusionpaint", "onScale(" + detector.getScaleFactor() + ", " + detector.getFocusX()+ ", " +detector.getFocusY()+")");
 			curScale = curScale * detector.getScaleFactor();
-			if (curScale > 1.0) {
-				curScale = 1.0;
-			} else if (curScale < defaultScale) {
-				curScale = defaultScale;
+			if (curScale > maxScale) {
+				curScale = maxScale;
+			} else if (curScale < minScale) {
+				curScale = minScale;
 			}
 
 			curTop = curTop - (curScale / originalScale - 1) * realY;
@@ -275,12 +279,12 @@ public class DrawingView extends View
 	private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			if (curScale >= 1.0) {
-				resetView();
+			if (curScale >= maxScale) {
+				curScale=minScale;
 			} else {
-				curScale = 1.5 * curScale;
+				curScale = Math.min(maxScale, 1.5 * curScale);
 			}
-
+			fixTrans();
 			return true;
 		}
 
@@ -296,11 +300,7 @@ public class DrawingView extends View
 
 	public void fixTrans() {
 		if (mViewCanvas.getHeight() > mBaseBitmap.getHeight() * curScale) {
-			if (curTop < 0) {
-				curTop = 0;
-			} else if (curTop + mBaseBitmap.getHeight() * curScale > mViewCanvas.getHeight()) {
-				curTop = mViewCanvas.getHeight() - mBaseBitmap.getHeight() * curScale;
-			}
+			curTop = (mViewCanvas.getHeight() - mBaseBitmap.getHeight() * curScale) / 2d;
 		}  else {
 			if (curTop + mBaseBitmap.getHeight() * curScale < mViewCanvas.getHeight()) {
 				curTop = mViewCanvas.getHeight() - mBaseBitmap.getHeight() * curScale;
@@ -310,11 +310,7 @@ public class DrawingView extends View
 		}
 
 		if (mViewCanvas.getWidth() > mBaseBitmap.getWidth() * curScale) {
-			if (curLeft < 0) {
-				curLeft = 0;
-			} else if (curLeft + mBaseBitmap.getWidth() * curScale > mViewCanvas.getWidth()) {
-				curLeft = mViewCanvas.getWidth() - mBaseBitmap.getWidth() * curScale;
-			}
+			curLeft = (mViewCanvas.getWidth() - mBaseBitmap.getWidth() * curScale) / 2d;
 		}  else {
 			if (curLeft + mBaseBitmap.getWidth() * curScale < mViewCanvas.getWidth()) {
 				curLeft = mViewCanvas.getWidth() - mBaseBitmap.getWidth() * curScale;
@@ -386,10 +382,10 @@ public class DrawingView extends View
 	}
 
 	public Bitmap getPreview() {
-		Bitmap previewBitmap = Bitmap.createBitmap((int)Math.round(mBaseBitmap.getWidth()*defaultScale), (int)Math.round(mBaseBitmap.getHeight()*defaultScale), Bitmap.Config.ARGB_8888);
+		Bitmap previewBitmap = Bitmap.createBitmap((int)Math.round(mBaseBitmap.getWidth()* minScale), (int)Math.round(mBaseBitmap.getHeight()* minScale), Bitmap.Config.ARGB_8888);
 		Canvas previewCanvas = new Canvas(previewBitmap);
-		drawBackground(previewCanvas,0,0, defaultScale);
-		drawPaths(previewCanvas,0,0, defaultScale);
+		drawBackground(previewCanvas,0,0, minScale);
+		drawPaths(previewCanvas,0,0, minScale);
 		return previewBitmap;
 	}
 
