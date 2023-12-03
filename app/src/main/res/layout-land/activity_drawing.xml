@@ -82,7 +82,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/delete_sketch"
-        android:src="@drawable/move_svgrepo_com"
+        android:src="@drawable/magnifying_glass_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_save"
         app:backgroundTint="@color/teal_700"

@@ -246,7 +246,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 hideTools();
                 mDrawingView.setIsTranslate(true);
                 eraserButton.setVisibility(View.GONE);
-                modeIcon.setImageResource(R.drawable.move_svgrepo_com);
+                modeIcon.setImageResource(R.drawable.magnifying_glass_icon);
             } else {
                 showTools();
                 eraserButton.setVisibility(View.VISIBLE);
