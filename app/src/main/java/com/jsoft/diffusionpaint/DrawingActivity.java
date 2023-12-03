@@ -66,6 +66,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     FloatingActionButton sdButton;
     FloatingActionButton eraserButton;
     FloatingActionButton refButton;
+    FloatingActionButton moveButton;
     ImageView modeIcon;
     ImageView imgRef;
     Bitmap bmRef;
@@ -169,8 +170,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         circleView.setRadius(mCurrentStroke/2f);
 
 
-        ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
-        /*if (sketchId == -2) {
+        /*ConstraintLayout.LayoutParams loParam = (ConstraintLayout.LayoutParams) mDrawingView.getLayoutParams();
+        if (sketchId == -2) {
             loParam.dimensionRatio = rotatedBitmap.getWidth() + ":" + rotatedBitmap.getHeight();
         } else if (sketchId >= 0) {
             loParam.dimensionRatio = mCurrentSketch.getImgPreview().getWidth() + ":" + mCurrentSketch.getImgPreview().getHeight();
@@ -239,12 +240,23 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             gotoMainActivity();
         });
 
-        FloatingActionButton deleteButton = findViewById(R.id.fab_delete);
-        deleteButton.setOnClickListener(view -> {
-            if (mCurrentSketch.getId() >= 0) {
-                db.deleteSketch(mCurrentSketch.getId());
+        moveButton = findViewById(R.id.fab_move);
+        moveButton.setOnClickListener(view -> {
+            if (!mDrawingView.getIsTranslate()) {
+                hideTools();
+                mDrawingView.setIsTranslate(true);
+                eraserButton.setVisibility(View.GONE);
+                modeIcon.setImageResource(R.drawable.move_svgrepo_com);
+            } else {
+                showTools();
+                eraserButton.setVisibility(View.VISIBLE);
+                if (!mDrawingView.getIsEraserMode()) {
+                    modeIcon.setImageResource(R.drawable.ic_brush);
+                } else {
+                    modeIcon.setImageResource(R.drawable.ic_eraser);
+                }
+                mDrawingView.setIsTranslate(false);
             }
-            gotoMainActivity();
         });
 
         sdButton = findViewById(R.id.fab_stable_diffusion);
@@ -255,6 +267,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 hideTools();
                 mDrawingView.setEyedropper(true);
                 eraserButton.setVisibility(View.GONE);
+                moveButton.setVisibility(View.GONE);
                 modeIcon.setImageResource(R.drawable.ic_eyedropper);
             }
         });
@@ -463,6 +476,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         mDrawingView.setPaintColor(mCurrentColor);
         circleView.setColor(mCurrentColor);
         eraserButton.setVisibility(View.VISIBLE);
+        moveButton.setVisibility(View.VISIBLE);
         modeIcon.setImageResource(R.drawable.ic_brush);
     }
 

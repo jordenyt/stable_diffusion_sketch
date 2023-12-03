@@ -10,7 +10,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.jsoft.diffusionpaint.dto.Sketch;
@@ -46,10 +48,15 @@ public class DrawingView extends View
 	private double curTop = 0;
 	private double curLeft = 0;
 	private boolean isTranslate = false;
+	ScaleGestureDetector mScaleDetector;
+	GestureDetector mGestureDetector;
 
 	public DrawingView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
+		super.setClickable(true);
+		mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+		mGestureDetector = new GestureDetector(context, new DrawingView.GestureListener());
 		init();
 	}
 
@@ -63,6 +70,12 @@ public class DrawingView extends View
 
 	public boolean getIsEraserMode() {
 		return this.isEraser;
+	}
+	public boolean getIsTranslate() {
+		return this.isTranslate;
+	}
+	public void setIsTranslate(boolean isTranslate) {
+		this.isTranslate = isTranslate;
 	}
 	private void init() {
 		mDrawPath = new Path();
@@ -114,8 +127,7 @@ public class DrawingView extends View
 
 			defaultScale = 1.0;
 			curScale = 1.0;
-			mStrokeWidth = (int)Math.round((double)mStrokeWidth / curScale);
-			mDrawPaint.setStrokeWidth(mStrokeWidth);
+			mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 			drawBackground(viewCanvas, curLeft, curTop, curScale);
 		} else {
 			Bitmap resizedBitmap = Bitmap.createScaledBitmap(mBaseBitmap, (int)Math.round(mBaseBitmap.getWidth() * viewScale),  (int)Math.round(mBaseBitmap.getHeight() * viewScale), true);
@@ -181,49 +193,139 @@ public class DrawingView extends View
 			curScale = defaultScale;
 			curLeft = (w - mBaseBitmap.getWidth() * curScale) / 2d;
 			curTop = (h - mBaseBitmap.getHeight() * curScale) / 2d;
-			mStrokeWidth = (int)Math.round((double)mStrokeWidth / curScale);
-			mDrawPaint.setStrokeWidth(mStrokeWidth);
+			mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 		}
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		float touchX = event.getX();
-		float touchY = event.getY();
-		float realX = (float)((touchX-curLeft) / curScale);
-		float realY = (float)((touchY-curTop) / curScale);
+		if (!isTranslate) {
+			float touchX = event.getX();
+			float touchY = event.getY();
+			float realX = (float) ((touchX - curLeft) / curScale);
+			float realY = (float) ((touchY - curTop) / curScale);
 
-		switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				if (!isEyedropper) {
-					mDrawPath.moveTo(realX, realY);
-				}
-				//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
-				break;
-			case MotionEvent.ACTION_MOVE:
-				if (!isEyedropper) {
-					mDrawPath.lineTo(realX, realY);
-				}
-				break;
-			case MotionEvent.ACTION_UP:
-				if (!isEyedropper) {
-					mDrawPath.lineTo(realX, realY);
-					mPaths.add(mDrawPath);
-					mPaints.add(mDrawPaint);
-					mDrawPath = new Path();
-					initPaint();
-				} else {
-					int eyedropperColor = getViewBitmap().getPixel((int)touchX, (int)touchY);
-					listener.onEyedropperResult(eyedropperColor);
-				}
-				break;
-			default:
-				return false;
+			switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					if (!isEyedropper) {
+						mDrawPath.moveTo(realX, realY);
+					}
+					//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
+					break;
+				case MotionEvent.ACTION_MOVE:
+					if (!isEyedropper) {
+						mDrawPath.lineTo(realX, realY);
+					}
+					break;
+				case MotionEvent.ACTION_UP:
+					if (!isEyedropper) {
+						mDrawPath.lineTo(realX, realY);
+						mPaths.add(mDrawPath);
+						mPaints.add(mDrawPaint);
+						mDrawPath = new Path();
+						initPaint();
+					} else {
+						Log.e("diffusionpaint", "isEyedropper 1");
+						Bitmap viewBM = getViewBitmap();
+						Log.e("diffusionpaint", "isEyedropper 2");
+						int eyedropperColor = viewBM.getPixel((int) touchX, (int) touchY);
+						listener.onEyedropperResult(eyedropperColor);
+					}
+					break;
+				default:
+					return false;
+			}
+		} else {
+			mScaleDetector.onTouchEvent(event);
+			mGestureDetector.onTouchEvent(event);
 		}
 
 		invalidate();
 		return true;
+	}
+	private class ScaleListener extends
+			ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScaleBegin(ScaleGestureDetector detector) {
+			return true;
+		}
+
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			//scaleImage(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
+			double realX =  ((detector.getFocusX() - curLeft) / curScale);
+			double realY = ((detector.getFocusY() - curTop) / curScale);
+			double originalScale = curScale;
+			Log.e("diffusionpaint", "onScale(" + detector.getScaleFactor() + ", " + detector.getFocusX()+ ", " +detector.getFocusY()+")");
+			curScale = curScale * detector.getScaleFactor();
+			if (curScale > 1.0) {
+				curScale = 1.0;
+			} else if (curScale < defaultScale) {
+				curScale = defaultScale;
+			}
+
+			curTop = curTop - (curScale / originalScale - 1) * realY;
+			curLeft = curLeft - (curScale / originalScale - 1) * realX;
+			fixTrans();
+
+			mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
+
+			return true;
+		}
+	}
+
+	private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+		@Override
+		public boolean onDoubleTap(MotionEvent e) {
+			if (curScale >= 1.0) {
+				resetView();
+			} else {
+				curScale = 1.5 * curScale;
+				mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
+			}
+
+			return true;
+		}
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			//Log.e("diffusionpaint", "onScroll(" + distanceX + ", " + distanceY+")");
+			curTop -= distanceY;
+			curLeft -= distanceX;
+			fixTrans();
+			return true;
+		}
+	}
+
+	public void fixTrans() {
+		if (mViewCanvas.getHeight() > mBaseBitmap.getHeight() * curScale) {
+			if (curTop < 0) {
+				curTop = 0;
+			} else if (curTop + mBaseBitmap.getHeight() * curScale > mViewCanvas.getHeight()) {
+				curTop = mViewCanvas.getHeight() - mBaseBitmap.getHeight() * curScale;
+			}
+		}  else {
+			if (curTop + mBaseBitmap.getHeight() * curScale < mViewCanvas.getHeight()) {
+				curTop = mViewCanvas.getHeight() - mBaseBitmap.getHeight() * curScale;
+			} else if (curTop > 0) {
+				curTop = 0;
+			}
+		}
+
+		if (mViewCanvas.getWidth() > mBaseBitmap.getWidth() * curScale) {
+			if (curLeft < 0) {
+				curLeft = 0;
+			} else if (curLeft + mBaseBitmap.getWidth() * curScale > mViewCanvas.getWidth()) {
+				curLeft = mViewCanvas.getWidth() - mBaseBitmap.getWidth() * curScale;
+			}
+		}  else {
+			if (curLeft + mBaseBitmap.getWidth() * curScale < mViewCanvas.getWidth()) {
+				curLeft = mViewCanvas.getWidth() - mBaseBitmap.getWidth() * curScale;
+			} else if (curLeft > 0) {
+				curLeft = 0;
+			}
+		}
 	}
 
 	public void clearCanvas() {
@@ -241,8 +343,8 @@ public class DrawingView extends View
 	}
 
 	public void setPaintStrokeWidth(int strokeWidth) {
-		mStrokeWidth = (int)Math.round((double)strokeWidth / curScale);
-		mDrawPaint.setStrokeWidth(mStrokeWidth);
+		mStrokeWidth = strokeWidth;
+		mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
 	}
 
 	public void setEraserMode() {
@@ -297,6 +399,8 @@ public class DrawingView extends View
 	}
 
 	public Bitmap getViewBitmap() {
+		mViewBitmap = Bitmap.createBitmap(mViewCanvas.getWidth(), mViewCanvas.getHeight(), Bitmap.Config.ARGB_8888);
+		mViewCanvas = new Canvas(mViewBitmap);
 		drawBackground(mViewCanvas);
 		drawPaths(mViewCanvas);
 		return mViewBitmap;

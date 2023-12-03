@@ -75,13 +75,13 @@
         app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_delete"
+        android:id="@+id/fab_move"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/delete_sketch"
-        android:src="@drawable/ic_delete_white_24dp"
+        android:src="@drawable/move_svgrepo_com"
         app:layout_constraintStart_toEndOf="@+id/fab_save"
         app:layout_constraintTop_toTopOf="parent"
         app:backgroundTint="@color/teal_700"
