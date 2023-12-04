@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -177,8 +178,17 @@ public class DrawingView extends View
 			drawBackground(canvas);
 			drawPaths(canvas, mDrawPath, mDrawPaint);
 		} else {
-			Bitmap resizedBitmap = Bitmap.createScaledBitmap(mTranslateBitmap, (int)Math.round(mBaseBitmap.getWidth() * curScale),  (int)Math.round(mBaseBitmap.getHeight() * curScale), true);
-			canvas.drawBitmap(resizedBitmap, (int)Math.round(curLeft), (int)Math.round(curTop), null);
+			double srcTop = Math.max(0d, -curTop/curScale);
+			double srcLeft = Math.max(0d, -curLeft/curScale);
+			double srcHeight = (curScale * mTranslateBitmap.getHeight() <= mViewCanvas.getHeight()) ? mTranslateBitmap.getHeight() : (double)mViewCanvas.getHeight() / curScale;
+			double srcWidth = (curScale * mTranslateBitmap.getWidth() <= mViewCanvas.getWidth()) ? mTranslateBitmap.getWidth() : (double)mViewCanvas.getWidth() / curScale;
+			Rect srcRect = new Rect((int)Math.round(srcLeft), (int)Math.round(srcTop), (int)Math.round(srcLeft + srcWidth), (int)Math.round(srcTop+srcHeight));
+			double dstTop = (curTop > 0d) ? curTop : 0;
+			double dstLeft = (curLeft > 0d) ? curLeft : 0;
+			double dstHeight = (curScale * mTranslateBitmap.getHeight() <= mViewCanvas.getHeight()) ? mTranslateBitmap.getHeight() * curScale: (double)mViewCanvas.getHeight();
+			double dstWidth = (curScale * mTranslateBitmap.getWidth() <= mViewCanvas.getWidth()) ? mTranslateBitmap.getWidth() * curScale: (double)mViewCanvas.getWidth();
+			Rect dstRect = new Rect((int)Math.round(dstLeft), (int)Math.round(dstTop), (int)Math.round(dstLeft + dstWidth), (int)Math.round(dstTop+dstHeight));
+			canvas.drawBitmap(mTranslateBitmap, srcRect, dstRect, null);
 		}
 	}
 
