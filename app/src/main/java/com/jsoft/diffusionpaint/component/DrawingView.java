@@ -136,9 +136,22 @@ public class DrawingView extends View
 			curScale = 1.0;
 			drawBackground(viewCanvas, curLeft, curTop, curScale);
 		} else {
-			Bitmap resizedBitmap = Bitmap.createScaledBitmap(mBaseBitmap, (int)Math.round(mBaseBitmap.getWidth() * viewScale),  (int)Math.round(mBaseBitmap.getHeight() * viewScale), true);
-			viewCanvas.drawBitmap(resizedBitmap, (int)Math.round(offsetX), (int)Math.round(offsetY), null);
+			drawBitmapOnCanvas(mBaseBitmap, viewCanvas, offsetX, offsetY, viewScale);
 		}
+	}
+
+	private void drawBitmapOnCanvas(Bitmap bm, Canvas viewCanvas, double offsetX, double offsetY, double viewScale) {
+		double srcTop = Math.max(0d, -offsetY/viewScale);
+		double srcLeft = Math.max(0d, -offsetX/viewScale);
+		double srcHeight = (viewScale * bm.getHeight() <= viewCanvas.getHeight()) ? bm.getHeight() : (double)viewCanvas.getHeight() / viewScale;
+		double srcWidth = (viewScale * bm.getWidth() <= viewCanvas.getWidth()) ? bm.getWidth() : (double)viewCanvas.getWidth() / viewScale;
+		Rect srcRect = new Rect((int)Math.round(srcLeft), (int)Math.round(srcTop), (int)Math.round(srcLeft + srcWidth), (int)Math.round(srcTop+srcHeight));
+		double dstTop = (offsetY > 0d) ? offsetY : 0;
+		double dstLeft = (offsetX > 0d) ? offsetX : 0;
+		double dstHeight = (viewScale * bm.getHeight() <= viewCanvas.getHeight()) ? bm.getHeight() * viewScale: (double)viewCanvas.getHeight();
+		double dstWidth = (viewScale * bm.getWidth() <= viewCanvas.getWidth()) ? bm.getWidth() * viewScale: (double)viewCanvas.getWidth();
+		Rect dstRect = new Rect((int)Math.round(dstLeft), (int)Math.round(dstTop), (int)Math.round(dstLeft + dstWidth), (int)Math.round(dstTop+dstHeight));
+		viewCanvas.drawBitmap(bm, srcRect, dstRect, null);
 	}
 
 	private void drawPaths(Canvas canvas) {
@@ -178,17 +191,7 @@ public class DrawingView extends View
 			drawBackground(canvas);
 			drawPaths(canvas, mDrawPath, mDrawPaint);
 		} else {
-			double srcTop = Math.max(0d, -curTop/curScale);
-			double srcLeft = Math.max(0d, -curLeft/curScale);
-			double srcHeight = (curScale * mTranslateBitmap.getHeight() <= mViewCanvas.getHeight()) ? mTranslateBitmap.getHeight() : (double)mViewCanvas.getHeight() / curScale;
-			double srcWidth = (curScale * mTranslateBitmap.getWidth() <= mViewCanvas.getWidth()) ? mTranslateBitmap.getWidth() : (double)mViewCanvas.getWidth() / curScale;
-			Rect srcRect = new Rect((int)Math.round(srcLeft), (int)Math.round(srcTop), (int)Math.round(srcLeft + srcWidth), (int)Math.round(srcTop+srcHeight));
-			double dstTop = (curTop > 0d) ? curTop : 0;
-			double dstLeft = (curLeft > 0d) ? curLeft : 0;
-			double dstHeight = (curScale * mTranslateBitmap.getHeight() <= mViewCanvas.getHeight()) ? mTranslateBitmap.getHeight() * curScale: (double)mViewCanvas.getHeight();
-			double dstWidth = (curScale * mTranslateBitmap.getWidth() <= mViewCanvas.getWidth()) ? mTranslateBitmap.getWidth() * curScale: (double)mViewCanvas.getWidth();
-			Rect dstRect = new Rect((int)Math.round(dstLeft), (int)Math.round(dstTop), (int)Math.round(dstLeft + dstWidth), (int)Math.round(dstTop+dstHeight));
-			canvas.drawBitmap(mTranslateBitmap, srcRect, dstRect, null);
+			drawBitmapOnCanvas(mTranslateBitmap,canvas,curLeft,curTop,curScale);
 		}
 	}
 
