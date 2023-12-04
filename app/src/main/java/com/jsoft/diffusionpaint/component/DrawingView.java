@@ -9,7 +9,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -17,8 +16,6 @@ import android.view.View;
 
 import com.jsoft.diffusionpaint.DrawingActivity;
 import com.jsoft.diffusionpaint.dto.Sketch;
-
-import java.util.ArrayList;
 
 public class DrawingView extends View
 {
@@ -240,9 +237,7 @@ public class DrawingView extends View
 						mDrawPath = new Path();
 						initPaint();
 					} else {
-						Log.e("diffusionpaint", "isEyedropper 1");
 						Bitmap viewBM = getViewBitmap();
-						Log.e("diffusionpaint", "isEyedropper 2");
 						int eyedropperColor = viewBM.getPixel((int) touchX, (int) touchY);
 						listener.onEyedropperResult(eyedropperColor);
 					}
@@ -267,24 +262,26 @@ public class DrawingView extends View
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			//scaleImage(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
-			double realX =  ((detector.getFocusX() - curLeft) / curScale);
-			double realY = ((detector.getFocusY() - curTop) / curScale);
-			double originalScale = curScale;
-			Log.e("diffusionpaint", "onScale(" + detector.getScaleFactor() + ", " + detector.getFocusX()+ ", " +detector.getFocusY()+")");
-			curScale = curScale * detector.getScaleFactor();
-			if (curScale > maxScale) {
-				curScale = maxScale;
-			} else if (curScale < minScale) {
-				curScale = minScale;
-			}
-
-			curTop = curTop - (curScale / originalScale - 1) * realY * curScale;
-			curLeft = curLeft - (curScale / originalScale - 1) * realX * curScale;
-			fixTrans();
-
+			scaleView(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
 			return true;
 		}
+	}
+
+	private void scaleView(float factor, float focusX, float focusY) {
+		double realX =  ((focusX - curLeft) / curScale);
+		double realY = ((focusY - curTop) / curScale);
+		double originalScale = curScale;
+
+		curScale = curScale * factor;
+		if (curScale > maxScale) {
+			curScale = maxScale;
+		} else if (curScale < minScale) {
+			curScale = minScale;
+		}
+
+		curTop = curTop - (curScale / originalScale - 1) * realY * originalScale;
+		curLeft = curLeft - (curScale / originalScale - 1) * realX * originalScale;
+		fixTrans();
 	}
 
 	private class GestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -292,16 +289,15 @@ public class DrawingView extends View
 		public boolean onDoubleTap(MotionEvent e) {
 			if (curScale >= maxScale) {
 				curScale=minScale;
+				fixTrans();
 			} else {
-				curScale = Math.min(maxScale, 1.5 * curScale);
+				scaleView(1.5f, e.getX(), e.getY());
 			}
-			fixTrans();
 			return true;
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			//Log.e("diffusionpaint", "onScroll(" + distanceX + ", " + distanceY+")");
 			curTop -= distanceY;
 			curLeft -= distanceX;
 			fixTrans();
