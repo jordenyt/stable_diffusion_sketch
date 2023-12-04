@@ -387,8 +387,8 @@ public class DrawingView extends View
 	public Sketch prepareBitmap(Sketch s, Bitmap bmRef) {
 		s.setImgPreview(getPreview());
 		s.setImgReference(getCroppedBitmap(bmRef));
-		s.setImgBackground(getCroppedBitmap(mBaseBitmap));
-		s.setImgPaint(getCroppedBitmap(getPaintBitmap()));
+		s.setImgBackground(mBaseBitmap);
+		s.setImgPaint(getPaintBitmap());
 		return s;
 	}
 
@@ -430,11 +430,11 @@ public class DrawingView extends View
 	}
 
 	public void setmBaseBitmap(Bitmap bitmap) {
-		this.mBaseBitmap = bitmap;
+		this.mBaseBitmap = getCroppedBitmap(bitmap);
 	}
 
 	public void setmPaintBitmap(Bitmap mPaintBitmap) {
-		this.mPaintBitmap = mPaintBitmap;
+		this.mPaintBitmap = getCroppedBitmap(mPaintBitmap);
 	}
 
 	public boolean isEmpty() {
