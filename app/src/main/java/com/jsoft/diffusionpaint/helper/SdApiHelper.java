@@ -176,6 +176,7 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_6) ? sharedPreferences.getString("modeCustom6", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_7) ? sharedPreferences.getString("modeCustom7", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_8) ? sharedPreferences.getString("modeCustom8", "{\"type\":\"txt2img\"}") :
+                        cnMode.equals(Sketch.CN_MODE_IMG_SDXL) ? "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}" :
                         cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.75, \"type\":\"img2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.75, \"type\":\"img2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0}], \"denoise\":0.75, \"type\":\"img2img\"}" :
@@ -248,7 +249,7 @@ public class SdApiHelper {
         return param;
     }
 
-    public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch, String aspectRatio) {
+    public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("prompt", sharedPreferences.getString("promptPrefix", "") + " " + mCurrentSketch.getPrompt() + ", " + sharedPreferences.getString("promptPostfix", ""));
@@ -257,24 +258,18 @@ public class SdApiHelper {
             jsonObject.put("n_iter", 1);
             jsonObject.put("steps", param.steps);
             jsonObject.put("cfg_scale", param.cfgScale);
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                if (mCurrentSketch.getImgBackground() != null) {
-                    jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
-                } else {
-                    jsonObject.put("width", param.sdSize * 3 / 4);
-                }
+
+            if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
+                jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
             } else {
                 jsonObject.put("width", param.sdSize);
             }
-            if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                if (mCurrentSketch.getImgBackground() != null) {
-                    jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
-                } else {
-                    jsonObject.put("height", param.sdSize * 3 / 4);
-                }
+            if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
+                jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
             } else {
                 jsonObject.put("height", param.sdSize);
             }
+
             jsonObject.put("restore_faces", false);
             jsonObject.put("tiling", false);
             jsonObject.put("do_not_save_samples", true);
@@ -325,7 +320,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getControlnetImg2imgJSON(SdParam param, Sketch mCurrentSketch, String aspectRatio) {
+    public JSONObject getControlnetImg2imgJSON(SdParam param, Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         boolean isInpaint = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT);
         try {
@@ -394,21 +389,13 @@ public class SdApiHelper {
                 }
                 //Log.e("diffusionpaint", "SD Size=" + jsonObject.getDouble("width") + "X" + jsonObject.getDouble("height"));
             } else {
-                if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-                    if (mCurrentSketch.getImgBackground() != null) {
-                        jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
-                    } else {
-                        jsonObject.put("width", param.sdSize * 3 / 4);
-                    }
+                if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
+                    jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
                 } else {
                     jsonObject.put("width", param.sdSize);
                 }
-                if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
-                    if (mCurrentSketch.getImgBackground() != null) {
-                        jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
-                    } else {
-                        jsonObject.put("height", param.sdSize * 3 / 4);
-                    }
+                if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
+                    jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), param.sdSize));
                 } else {
                     jsonObject.put("height", param.sdSize);
                 }

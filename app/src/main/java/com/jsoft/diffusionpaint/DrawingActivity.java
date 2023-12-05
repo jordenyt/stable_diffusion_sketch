@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
@@ -157,11 +158,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             String cnMode = i.getStringExtra("cnMode");
             String promptText = i.getStringExtra("prompt");
             String negPromptText = i.getStringExtra("negPrompt");
+            String aspectRatioText = i.getStringExtra("aspectRatio");
             Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", cnMode);
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
+            intent.putExtra("aspectRatio", aspectRatioText);
             sdViewerActivityResultLauncher.launch(intent);
         }
 
@@ -376,6 +379,16 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 break;
             }
         }
+
+        TextView sdAspectRatioTxt = dialogView.findViewById(R.id.sd_aspect_ratio_txt);
+        Spinner sdAspectRatio = dialogView.findViewById(R.id.sd_aspect_ratio);
+        sdAspectRatioTxt.setVisibility(View.GONE);
+        sdAspectRatio.setVisibility(View.GONE);
+
+        TextView sdNumGenTxt = dialogView.findViewById(R.id.sd_num_generation_txt);
+        Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
+        sdNumGenTxt.setVisibility(View.GONE);
+        sdNumGen.setVisibility(View.GONE);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();

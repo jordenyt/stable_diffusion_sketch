@@ -40,4 +40,24 @@
         android:id="@+id/sd_mode_selection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/sd_aspect_ratio_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text= "Aspect Ratio:"
+        android:textAppearance="?android:textAppearanceMedium" />
+    <Spinner
+        android:id="@+id/sd_aspect_ratio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/sd_num_generation_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text= "Number of generation:"
+        android:textAppearance="?android:textAppearanceMedium" />
+    <Spinner
+        android:id="@+id/sd_num_generation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.jsoft.diffusionpaint;
 
+import static com.jsoft.diffusionpaint.dto.Sketch.ASPECT_RATIO_SQUARE;
 import static com.jsoft.diffusionpaint.dto.Sketch.cnModeMap;
 
 import androidx.activity.result.ActivityResult;
@@ -50,6 +51,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -573,6 +575,31 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         sdMode.setAdapter(adapter);
         sdMode.setSelection(0);
 
+        //TextView sdAspectRatioTxt = dialogView.findViewById(R.id.sd_aspect_ratio_txt);
+        Spinner sdAspectRatio = dialogView.findViewById(R.id.sd_aspect_ratio);
+        List<String> aspectRatioList = new ArrayList<>();
+        Map<String, String> aspectRatioMap = new LinkedHashMap<>();
+        aspectRatioMap.put("Landscape",Sketch.ASPECT_RATIO_LANDSCAPE);
+        aspectRatioMap.put("Portrait",Sketch.ASPECT_RATIO_PORTRAIT);
+        aspectRatioMap.put("Square",Sketch.ASPECT_RATIO_SQUARE);
+        aspectRatioList.addAll(aspectRatioMap.keySet());
+        ArrayAdapter<String> aspectRatioAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, aspectRatioList);
+        aspectRatioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdAspectRatio.setAdapter(aspectRatioAdapter);
+        String defaultAspectRatio = sharedPreferences.getString("sdImageAspect", ASPECT_RATIO_SQUARE);
+        for (int i=0; i<aspectRatioMap.size(); i++) {
+            String aspectRatioDesc = sdAspectRatio.getItemAtPosition(i).toString();
+            if (Objects.equals(aspectRatioMap.get(aspectRatioDesc), defaultAspectRatio)) {
+                sdAspectRatio.setSelection(i);
+                break;
+            }
+        }
+
+        TextView sdNumGenTxt = dialogView.findViewById(R.id.sd_num_generation_txt);
+        Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
+        sdNumGenTxt.setVisibility(View.GONE);
+        sdNumGen.setVisibility(View.GONE);
+
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             String negPromptText = negPromptTV.getText().toString();
@@ -582,11 +609,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             editor.apply();
 
             String selectMode = sdMode.getSelectedItem().toString();
+            String selectAspectRatio = sdAspectRatio.getSelectedItem().toString();
             Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
+            intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));
             gotoDrawActivity(intent);
         });
 

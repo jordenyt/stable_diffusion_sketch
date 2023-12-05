@@ -106,6 +106,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
                 mCurrentSketch.setCnMode(i.getStringExtra("cnMode"));
                 mCurrentSketch.setId(-3);
+                String aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
+                if (i.hasExtra("aspectRatio")) aspectRatio = i.getStringExtra("aspectRatio");
+                if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
+                    mCurrentSketch.setImgBackground(Bitmap.createBitmap(30, 40, Bitmap.Config.ARGB_8888));
+                } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
+                    mCurrentSketch.setImgBackground(Bitmap.createBitmap(40, 30, Bitmap.Config.ARGB_8888));
+                } else {
+                    mCurrentSketch.setImgBackground(Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888));
+                }
             }
             if (mCurrentSketch == null) {
                 mCurrentSketch = new Sketch();
@@ -387,13 +396,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void callSD4Img() {
         isCallingSD = true;
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        String aspectRatio = (mCurrentSketch.getImgBackground() != null) ?
-                Utils.getAspectRatio(mCurrentSketch.getImgBackground()) : sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
         if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch, aspectRatio);
+            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
             sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, 10, 900);
         } else {
-            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch, aspectRatio);
+            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
             sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject, 10, 900);
         }
         handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
