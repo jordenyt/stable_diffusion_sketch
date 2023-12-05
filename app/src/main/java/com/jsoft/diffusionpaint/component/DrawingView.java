@@ -44,7 +44,7 @@ public class DrawingView extends View
 	private double curTop = 0;
 	private double curLeft = 0;
 	private double maxScale = 1.0;
-	private final int maxResolution = 5000;
+	private final int maxResolution = 8000;
 	private boolean isTranslate = false;
 	ScaleGestureDetector mScaleDetector;
 	GestureDetector mGestureDetector;
@@ -304,7 +304,7 @@ public class DrawingView extends View
 				curScale=minScale;
 				fixTrans();
 			} else {
-				scaleView(1.5f, e.getX(), e.getY());
+				scaleView(2f, e.getX(), e.getY());
 			}
 			return true;
 		}

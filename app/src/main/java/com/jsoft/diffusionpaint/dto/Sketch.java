@@ -41,6 +41,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_POSE = "pose";
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
+    public static final String CN_MODE_IMG_SDXL = "imgSDXL";
     public static final String CN_MODE_REFINER_SDXL = "refinerSDXL";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_DEPTH = "txtDepth";
@@ -73,15 +74,17 @@ public class Sketch implements Serializable {
     public static final Map<String, String> cnModeMap;
     static {
         Map<String, String> cnMode = new LinkedHashMap<>();
-        cnMode.put("txt2img", CN_MODE_TXT);
-        cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
         cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_SCRIBBLE);
-        cnMode.put("img2img(sketch) + Depth(sketch)", CN_MODE_DEPTH);
-        cnMode.put("img2img(sketch) + Pose(sketch)", CN_MODE_POSE);
+        //cnMode.put("img2img(sketch) + Depth(sketch)", CN_MODE_DEPTH);
+        //cnMode.put("img2img(sketch) + Pose(sketch)", CN_MODE_POSE);
         cnMode.put("txt2img + Canny(sketch)", CN_MODE_TXT_CANNY);
         cnMode.put("txt2img + Scribble(sketch)", CN_MODE_TXT_SCRIBBLE);
-        cnMode.put("txt2img + Depth(sketch)", CN_MODE_TXT_DEPTH);
+        //cnMode.put("txt2img + Depth(sketch)", CN_MODE_TXT_DEPTH);
         cnMode.put("txt2img + Pose(sketch)", CN_MODE_TXT_POSE);
+        cnMode.put("txt2img", CN_MODE_TXT);
+        cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
+        cnMode.put("SDXL img2img", CN_MODE_IMG_SDXL);
+        cnMode.put("SDXL Refiner", CN_MODE_REFINER_SDXL);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_COLOR);
         cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);
@@ -94,7 +97,6 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
         cnMode.put("Merge with Reference", CN_MODE_MERGE);
-        cnMode.put("SDXL Refiner", CN_MODE_REFINER_SDXL);
         cnMode.put("Custom Mode 1", CN_MODE_CUSTOM_1);
         cnMode.put("Custom Mode 2", CN_MODE_CUSTOM_2);
         cnMode.put("Custom Mode 3", CN_MODE_CUSTOM_3);
@@ -109,8 +111,8 @@ public class Sketch implements Serializable {
     public static final Map<String, String> txt2imgModeMap;
     static {
         Map<String, String> mode = new LinkedHashMap<>();
-        mode.put("txt2img", CN_MODE_TXT);
         mode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
+        mode.put("txt2img", CN_MODE_TXT);
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }
 
