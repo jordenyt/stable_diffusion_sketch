@@ -568,13 +568,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         sdMode.setSelection(0);
 
         Spinner sdAspectRatio = dialogView.findViewById(R.id.sd_aspect_ratio);
-        List<String> aspectRatioList = new ArrayList<>();
         Map<String, String> aspectRatioMap = new LinkedHashMap<>();
         aspectRatioMap.put("Square (1:1)",Sketch.ASPECT_RATIO_SQUARE);
         aspectRatioMap.put("Portrait (3:4)",Sketch.ASPECT_RATIO_PORTRAIT);
         aspectRatioMap.put("Landscape (4:3)",Sketch.ASPECT_RATIO_LANDSCAPE);
         aspectRatioMap.put("Wide Landscape (16:9)",Sketch.ASPECT_RATIO_WIDE);
-        aspectRatioList.addAll(aspectRatioMap.keySet());
+        List<String> aspectRatioList = new ArrayList<>(aspectRatioMap.keySet());
         ArrayAdapter<String> aspectRatioAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, aspectRatioList);
         aspectRatioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sdAspectRatio.setAdapter(aspectRatioAdapter);
@@ -587,10 +586,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             }
         }
 
-        TextView sdNumGenTxt = dialogView.findViewById(R.id.sd_num_generation_txt);
         Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
-        sdNumGenTxt.setVisibility(View.GONE);
-        sdNumGen.setVisibility(View.GONE);
+        List<String> sdNumGenList = new ArrayList<>();
+        for (int i=1;i<=10;i++) {
+            sdNumGenList.add(String.valueOf(i));
+        }
+        ArrayAdapter<String> sdNumGenAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdNumGenList);
+        sdNumGenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdNumGen.setAdapter(sdNumGenAdapter);
+        sdNumGen.setSelection(0);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
@@ -608,6 +612,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));
+            int numGen = sdNumGen.getSelectedItemPosition() + 1;
+            intent.putExtra("numGen", numGen);
             gotoDrawActivity(intent);
         });
 

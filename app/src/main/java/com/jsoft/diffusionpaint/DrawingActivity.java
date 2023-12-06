@@ -155,12 +155,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             String promptText = i.getStringExtra("prompt");
             String negPromptText = i.getStringExtra("negPrompt");
             String aspectRatioText = i.getStringExtra("aspectRatio");
+            int numGen = i.getIntExtra("numGen", 1);
             Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", cnMode);
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioText);
+            intent.putExtra("numGen", numGen);
             sdViewerActivityResultLauncher.launch(intent);
         }
 
@@ -381,10 +383,15 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdAspectRatioTxt.setVisibility(View.GONE);
         sdAspectRatio.setVisibility(View.GONE);
 
-        TextView sdNumGenTxt = dialogView.findViewById(R.id.sd_num_generation_txt);
         Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
-        sdNumGenTxt.setVisibility(View.GONE);
-        sdNumGen.setVisibility(View.GONE);
+        List<String> sdNumGenList = new ArrayList<>();
+        for (int i=1;i<=10;i++) {
+            sdNumGenList.add(String.valueOf(i));
+        }
+        ArrayAdapter<String> sdNumGenAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdNumGenList);
+        sdNumGenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdNumGen.setAdapter(sdNumGenAdapter);
+        sdNumGen.setSelection(0);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
@@ -394,10 +401,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             String negPromptText = negPromptTV.getText().toString();
             mCurrentSketch.setNegPrompt(negPromptText);
             saveSketch();
+            int numGen = sdNumGen.getSelectedItemPosition() + 1;
             if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
-                gotoViewSdImageActivity(mCurrentSketch.getId(), CN_MODE_ORIGIN);
+                gotoViewSdImageActivity(mCurrentSketch.getId(), CN_MODE_ORIGIN, numGen);
             } else {
-                gotoViewSdImageActivity(mCurrentSketch.getId(), mCurrentSketch.getCnMode());
+                gotoViewSdImageActivity(mCurrentSketch.getId(), mCurrentSketch.getCnMode(), numGen);
             }
         });
 
@@ -440,13 +448,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 }
             });
 
-    public void gotoViewSdImageActivity(int sketchID, String cnMode) {
+    public void gotoViewSdImageActivity(int sketchID, String cnMode, int numGen) {
         ViewSdImageActivity.mBitmap = null;
         ViewSdImageActivity.inpaintBitmap = null;
         ViewSdImageActivity.isCallingAPI = false;
         Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
         intent.putExtra("sketchId", sketchID);
         intent.putExtra("cnMode", cnMode);
+        intent.putExtra("numGen", numGen);
         sdViewerActivityResultLauncher.launch(intent);
     }
 

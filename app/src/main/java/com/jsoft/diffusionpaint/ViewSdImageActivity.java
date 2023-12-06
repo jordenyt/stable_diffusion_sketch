@@ -58,6 +58,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private FloatingActionButton prevButton;
     private FloatingActionButton nextButton;
     private FloatingActionButton backButton;
+    private TextView txtCount;
     private TextView txtSdStatus;
     public static Bitmap mBitmap = null;
     public static Bitmap inpaintBitmap = null;
@@ -73,16 +74,18 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static int currentResult;
     public static Map<String, String> sdModelList = null;
     private static Handler handler;
+    private static int remainGen = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        boolean isFirstCall = (mBitmap == null && !isCallingAPI);
+        boolean isFirstCall = (mBitmap == null && !isCallingAPI && remainGen == 0);
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
         String cnMode = i.getStringExtra("cnMode");
+
         if (sdApiHelper == null) {
             sdApiHelper = new SdApiHelper(this, this);
         } else {
@@ -92,6 +95,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         PaintDb db = new PaintDb(this);
 
         if (isFirstCall) {
+            remainGen = i.getIntExtra("numGen",1);
             if (sketchId >= 0) {
                 Sketch dbSketch = db.getSketch(sketchId);
                 if (dbSketch != null) {
@@ -132,6 +136,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
                 addResult("original");
+                remainGen = 0;
                 hideSpinner();
             } else {
                 if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
@@ -161,6 +166,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         handler = new Handler();
         setContentView(R.layout.activity_view_sd_image);
         sdImage = findViewById(R.id.sd_image);
+        txtCount = findViewById(R.id.txtCount);
         spinner_bg = findViewById(R.id.spinner_bg);
         sdButton = findViewById(R.id.fab_stable_diffusion2);
         saveButton = findViewById(R.id.fab_save2);
@@ -174,7 +180,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (mBitmap != null) {
             sdImage.setImageBitmap(mBitmap);
         }
-
+        txtCount.setText("");
         sdButton.setOnClickListener(view -> {
             if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdModel();
         });
@@ -264,6 +270,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         saveButton.setVisibility((savedImageName != null)?View.GONE:View.VISIBLE);
         sdImage.resetView();
         sdImage.setImageBitmap(mBitmap);
+        txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
     }
 
     private void saveImage()  {
@@ -432,8 +439,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
                 savedImageName = null;
                 addResult(requestType);
-                hideSpinner();
+
                 handler.removeCallbacksAndMessages(null);
+                remainGen--;
+                if (remainGen > 0) {
+                    callSD4Img();
+                } else {
+                    hideSpinner();
+                }
             } else if ("extraSingleImage".equals(requestType)) {
                 isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
@@ -462,6 +475,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         //r.savedImageName = savedImageName;
         apiResultList.add(r);
         currentResult = apiResultList.size() - 1;
+        txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
     }
 
     private void updateMBitmap() {
