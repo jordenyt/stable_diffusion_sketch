@@ -132,18 +132,6 @@ public class Utils {
         }
     }
 
-    public static String getAspectRatio(Bitmap bm) {
-        String aspectRatio = Sketch.ASPECT_RATIO_SQUARE;
-        double ratio = (double) bm.getWidth() / (double) bm.getHeight();
-        if (bm != null) {
-            if (ratio > 1d) {
-                aspectRatio = Sketch.ASPECT_RATIO_LANDSCAPE;
-            } else if (ratio <1d) {
-                aspectRatio = Sketch.ASPECT_RATIO_PORTRAIT;
-            }
-        }
-        return aspectRatio;
-    }
     public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String filename, String exifJson) {
         // Get the directory for the user's public pictures directory.
         File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
