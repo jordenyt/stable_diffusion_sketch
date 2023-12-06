@@ -40,12 +40,13 @@ public class SdApiHelper {
     private final SharedPreferences sharedPreferences;
     private Activity activity;
     private SdApiResponseListener listener;
-    OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
 
     public SdApiHelper(Activity activity, SdApiResponseListener listener) {
         this.activity  = activity;
         this.listener = listener;
         sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        client = getClient(10, 120);
     }
 
     public void setActivity(Activity activity) { this.activity  = activity;}
@@ -59,28 +60,31 @@ public class SdApiHelper {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET");
     }
 
-    public void sendGetRequest(String requestType, String url, long connectTimeout, long readTimeout) {
-        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET", connectTimeout, readTimeout);
+    public void sendGetRequest(String requestType, String url, OkHttpClient client) {
+        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET", client);
     }
 
     public void sendPostRequest(String requestType, String url, JSONObject jsonObject) {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST");
     }
 
-    public void sendPostRequest(String requestType, String url, JSONObject jsonObject, long connectTimeout, long readTimeout) {
-        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST", connectTimeout, readTimeout);
+    public void sendPostRequest(String requestType, String url, JSONObject jsonObject, OkHttpClient client) {
+        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST", client);
     }
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod) {
-        sendRequest(requestType, baseUrl, url, jsonObject, httpMethod, 10, 120);
+        sendRequest(requestType, baseUrl, url, jsonObject, httpMethod, this.client);
     }
 
-    public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod, long connectTimeout, long readTimeout) {
-        //baseUrl = sharedPreferences.getString("sdServerAddress", "");
-        client = new OkHttpClient.Builder()
+    public static OkHttpClient getClient(long connectTimeout, long readTimeout) {
+        OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .build();
+        return client;
+    }
+
+    public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod, OkHttpClient client) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(baseUrl + url);
         if ("GET".equals(httpMethod)) {
