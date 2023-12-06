@@ -119,10 +119,14 @@ public class DrawingView extends View
 				double ratio = (double) viewCanvas.getHeight() / (double) viewCanvas.getWidth();
 				baseWidth = (ratio >= 4d / 3d) ? viewCanvas.getWidth() : viewCanvas.getHeight() * 3d / 4d;
 				baseHeight = (ratio >= 4d / 3d) ? viewCanvas.getWidth() * 4d / 3d : viewCanvas.getHeight();
-			} else {
+			} else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)){
 				double ratio = (double) viewCanvas.getWidth() / (double) viewCanvas.getHeight();
 				baseWidth = (ratio >= 4d / 3d) ? viewCanvas.getHeight() * 4d / 3d : viewCanvas.getWidth();
 				baseHeight = (ratio >= 4d / 3d) ? viewCanvas.getHeight() : viewCanvas.getWidth() * 3d / 4d;
+			} else {
+				double ratio = (double) viewCanvas.getWidth() / (double) viewCanvas.getHeight();
+				baseWidth = (ratio >= 16d / 9d) ? viewCanvas.getHeight() * 16d / 9d : viewCanvas.getWidth();
+				baseHeight = (ratio >= 16d / 9d) ? viewCanvas.getHeight() : viewCanvas.getWidth() * 10d / 9d;
 			}
 			mBaseBitmap = Bitmap.createBitmap((int)Math.round(baseWidth), (int)Math.round(baseHeight), Bitmap.Config.ARGB_8888);
 			Canvas baseCanvas = new Canvas(mBaseBitmap);

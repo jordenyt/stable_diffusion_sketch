@@ -70,6 +70,7 @@ public class Sketch implements Serializable {
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
     public static final String ASPECT_RATIO_SQUARE = "square";
+    public static final String ASPECT_RATIO_WIDE = "wide";
 
     public static final Map<String, String> cnModeMap;
     static {

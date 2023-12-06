@@ -42,5 +42,6 @@
         <item>1:1 (square)</item>
         <item>3:4 (portrait)</item>
         <item>4:3 (landscape)</item>
+        <item>16:9 (wide landscape)</item>
     </string-array>
 </resources>

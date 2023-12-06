@@ -113,7 +113,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
                 mCurrentSketch = dbSketch;
-                aspectRatio = Utils.getAspectRatio(mCurrentSketch.getImgPreview());
             }
         } else if (sketchId == -2) {
             mCurrentSketch.setId(sketchId);
@@ -148,9 +147,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 }
             }
             rotatedBitmap = Utils.getBitmapFromPath(bitmapPath);
-            if (rotatedBitmap != null) {
-                aspectRatio = Utils.getAspectRatio(rotatedBitmap);
-            }
         } else if (sketchId == -3) {
             ViewSdImageActivity.mBitmap = null;
             ViewSdImageActivity.inpaintBitmap = null;

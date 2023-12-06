@@ -111,6 +111,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch.setImgBackground(Bitmap.createBitmap(30, 40, Bitmap.Config.ARGB_8888));
                 } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)) {
                     mCurrentSketch.setImgBackground(Bitmap.createBitmap(40, 30, Bitmap.Config.ARGB_8888));
+                } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_WIDE)) {
+                    mCurrentSketch.setImgBackground(Bitmap.createBitmap(80, 45, Bitmap.Config.ARGB_8888));
                 } else {
                     mCurrentSketch.setImgBackground(Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888));
                 }
