@@ -181,6 +181,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             sdImage.setImageBitmap(mBitmap);
         }
         txtCount.setText("");
+        if (apiResultList != null && apiResultList.size() > 0) {
+            txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
+        }
         sdButton.setOnClickListener(view -> {
             if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdModel();
         });
