@@ -46,6 +46,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import okhttp3.OkHttpClient;
+
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
     private static Sketch mCurrentSketch;
@@ -76,12 +78,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static Map<String, String> sdModelList = null;
     private static Handler handler;
     private static int remainGen = 0;
+    private static OkHttpClient postRequestClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        boolean isFirstCall = (mBitmap == null && !isCallingAPI && remainGen == 0);
+        boolean isFirstCall = (mBitmap == null && !isCallingAPI);
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
@@ -96,7 +99,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         PaintDb db = new PaintDb(this);
 
         if (isFirstCall) {
+            apiResultList = null;
+            currentResult = 0;
             remainGen = i.getIntExtra("numGen",1);
+            postRequestClient = SdApiHelper.getClient(10, 900);
             if (sketchId >= 0) {
                 Sketch dbSketch = db.getSketch(sketchId);
                 if (dbSketch != null) {
@@ -393,12 +399,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         } else {
             isCallingSD = false;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Request Type: " + requestType)
-                    .setTitle("Call Stable Diffusion API failed (" + requestType + ")")
+            builder.setTitle("Call Stable Diffusion API failed (" + requestType + ")")
                     .setMessage(errMessage)
                     .setPositiveButton("OK", (dialog, id) -> {
                         hideSpinner();
-                        //ViewSdImageActivity.this.onBackPressed();
                     });
             AlertDialog alert = builder.create();
             if (!isFinishing()) alert.show();
@@ -410,10 +414,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
         if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
             JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
-            sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, 10, 900);
+            sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, postRequestClient);
         } else {
             JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
-            sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject, 10, 900);
+            sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject, postRequestClient);
         }
         handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
     }
