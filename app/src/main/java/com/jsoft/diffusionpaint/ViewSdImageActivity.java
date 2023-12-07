@@ -234,7 +234,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             showSpinner();
             isCallingSD = true;
             if (mBound) {
-                mService.setObject(sdApiHelper, mCurrentSketch, postRequestClient, sharedPreferences.getString("sdServerAddress", ""), this);
+                mService.setObject(sharedPreferences.getString("sdServerAddress", ""), this);
                 mService.sendRequest("extraSingleImage", sharedPreferences.getString("sdServerAddress", ""), "/sdapi/v1/extra-single-image", jsonObject);
             }
         });
@@ -441,8 +441,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void callSD4Img() {
         if (mBound) {
             showSpinner();
-            mService.setObject(sdApiHelper, mCurrentSketch, postRequestClient, sharedPreferences.getString("sdServerAddress", ""), this);
-            mService.callSD4Img();
+            String sdBaseUrl = sharedPreferences.getString("sdServerAddress", "");
+            mService.setObject(sdBaseUrl, this);
+            isCallingSD = true;
+            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+            if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
+                JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
+                mService.callSD4Img("txt2img", jsonObject);
+            } else {
+                JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
+                mService.callSD4Img("img2img", jsonObject);
+            }
         }
         if (!isPaused)
             handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);

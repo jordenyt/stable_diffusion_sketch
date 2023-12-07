@@ -1,19 +1,14 @@
 package com.jsoft.diffusionpaint;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
+
 
 import androidx.annotation.NonNull;
 
 import com.jsoft.diffusionpaint.dto.SdParam;
-import com.jsoft.diffusionpaint.dto.Sketch;
-import com.jsoft.diffusionpaint.helper.SdApiHelper;
-import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import org.json.JSONArray;
@@ -21,10 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,11 +31,15 @@ public class ViewSdImageService extends Service {
 
     private final IBinder binder = new ViewSdImageBinder();
     private ViewSdImageActivity activity;
-    private OkHttpClient client;
-    private SdApiHelper sdApiHelper;
-    private Sketch mCurrentSketch;
+    private static OkHttpClient client;
+    //private SdApiHelper sdApiHelper;
+    //private Sketch mCurrentSketch;
     private String sdBaseUrl;
     public ViewSdImageService() {
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(900, TimeUnit.SECONDS)
+                .build();
     }
 
     public class ViewSdImageBinder extends Binder {
@@ -53,22 +52,15 @@ public class ViewSdImageService extends Service {
         return binder;
     }
 
-    public void setObject(SdApiHelper sdApiHelper, Sketch mCurrentSketch, OkHttpClient postRequestClient, String baseUrl, ViewSdImageActivity activity) {
+    public void setObject(String baseUrl, ViewSdImageActivity activity) {
         this.activity = activity;
-        this.client = postRequestClient;
-        this.sdApiHelper = sdApiHelper;
-        this.mCurrentSketch = mCurrentSketch;
         this.sdBaseUrl = baseUrl;
     }
 
-    public void callSD4Img() {
-        ViewSdImageActivity.isCallingSD = true;
-        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
+    public void callSD4Img(String requestType, JSONObject jsonObject) {
+        if (requestType.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
             sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", jsonObject);
         } else {
-            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", jsonObject);
         }
     }
@@ -99,7 +91,7 @@ public class ViewSdImageService extends Service {
 
                     assert responseBody != null;
                     String responseString = responseBody.string();
-                    onSdApiResponse(requestType, responseString);
+                    onSdApiResponse(requestType, responseString, jsonObject);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -109,12 +101,10 @@ public class ViewSdImageService extends Service {
         });
     }
 
-    private void onSdApiResponse(String requestType, String responseBody) {
-        //activity.runOnUiThread(() -> activity.onSdApiResponse(requestType, responseString));
+    private void onSdApiResponse(String requestType, String responseBody, JSONObject requestJsonObject) {
         try {
             if (requestType.equals("txt2img") || requestType.equals("img2img")) {
 
-                ViewSdImageActivity.isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);
                 JSONArray images = jsonObject.getJSONArray("images");
                 if (images.length() > 0) {
@@ -128,7 +118,9 @@ public class ViewSdImageService extends Service {
 
                 ViewSdImageActivity.remainGen--;
                 if (ViewSdImageActivity.remainGen > 0) {
-                    callSD4Img();
+                    callSD4Img(requestType, requestJsonObject);
+                } else {
+                    ViewSdImageActivity.isCallingSD = false;
                 }
                 activity.runOnUiThread(() -> activity.updateScreen());
 
