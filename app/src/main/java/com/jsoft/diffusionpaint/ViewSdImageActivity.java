@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -53,6 +56,7 @@ import okhttp3.OkHttpClient;
 
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
+    public static final String CHANNEL_ID = "foreground_service_channel";
     public static Sketch mCurrentSketch;
     private TouchImageView sdImage;
     private LinearLayout spinner_bg;
@@ -104,6 +108,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         PaintDb db = new PaintDb(this);
 
         if (isFirstCall) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(
+                        CHANNEL_ID,
+                        "Foreground Service Channel",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setDescription("Channel for foreground service notifications");
+
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
             apiResultList = null;
             currentResult = 0;
             remainGen = i.getIntExtra("numGen",1);
@@ -235,7 +249,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             isCallingSD = true;
             if (mBound) {
                 mService.setObject(sharedPreferences.getString("sdServerAddress", ""), this);
-                mService.sendRequest("extraSingleImage", sharedPreferences.getString("sdServerAddress", ""), "/sdapi/v1/extra-single-image", jsonObject);
+                //mService.sendRequest("extraSingleImage", sharedPreferences.getString("sdServerAddress", ""), "/sdapi/v1/extra-single-image", jsonObject);
+                Intent intent = new Intent(this, ViewSdImageService.class);
+                intent.putExtra("requestType", "extraSingleImage");
+                intent.putExtra("json", jsonObject.toString());
+                startService(intent);
             }
         });
 
@@ -445,13 +463,20 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             mService.setObject(sdBaseUrl, this);
             isCallingSD = true;
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+
+            Intent intent = new Intent(this, ViewSdImageService.class);
+            String requestType = param.type;
+            JSONObject jsonObject;
             if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-                JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
-                mService.callSD4Img("txt2img", jsonObject);
+                jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
+                //mService.callSD4Img("txt2img", jsonObject);
             } else {
-                JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
-                mService.callSD4Img("img2img", jsonObject);
+                jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
+                //mService.callSD4Img("img2img", jsonObject);
             }
+            intent.putExtra("requestType", requestType);
+            intent.putExtra("json", jsonObject.toString());
+            startService(intent);
         }
         if (!isPaused)
             handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);

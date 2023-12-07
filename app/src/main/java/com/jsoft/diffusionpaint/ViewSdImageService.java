@@ -1,5 +1,6 @@
 package com.jsoft.diffusionpaint;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -7,6 +8,7 @@ import android.os.IBinder;
 
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.helper.Utils;
@@ -35,6 +37,10 @@ public class ViewSdImageService extends Service {
     //private SdApiHelper sdApiHelper;
     //private Sketch mCurrentSketch;
     private String sdBaseUrl;
+
+    private static final int FOREGROUND_ID = 1;
+    private Notification notification;
+    private boolean isRunning;
     public ViewSdImageService() {
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -52,6 +58,47 @@ public class ViewSdImageService extends Service {
         return binder;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        isRunning = true;
+        showForegroundNotification();
+
+        // Start long-running API call in a separate thread
+        new Thread(() -> {
+            try {
+                String requestType = intent.getStringExtra("requestType");
+                JSONObject jsonObject = new JSONObject(intent.getStringExtra("json"));
+                callSD4Img(requestType, jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                isRunning = false;
+                stopForeground(true);
+                stopSelf();
+            }
+        }).start();
+
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isRunning) {
+            stopForeground(true);
+        }
+    }
+
+    private void showForegroundNotification() {
+        notification = new NotificationCompat.Builder(this, ViewSdImageActivity.CHANNEL_ID)
+                .setContentTitle("API Call Running")
+                .setContentText("Calling API in background...")
+                .setOngoing(true)
+                .build();
+
+        startForeground(FOREGROUND_ID, notification);
+    }
+
     public void setObject(String baseUrl, ViewSdImageActivity activity) {
         this.activity = activity;
         this.sdBaseUrl = baseUrl;
@@ -60,8 +107,10 @@ public class ViewSdImageService extends Service {
     public void callSD4Img(String requestType, JSONObject jsonObject) {
         if (requestType.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
             sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", jsonObject);
-        } else {
+        } else if (requestType.equals(SdParam.SD_MODE_TYPE_IMG2IMG)){
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", jsonObject);
+        } else {
+            sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", jsonObject);
         }
     }
 
