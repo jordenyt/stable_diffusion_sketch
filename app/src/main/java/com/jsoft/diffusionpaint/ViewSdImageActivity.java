@@ -78,6 +78,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private static Handler handler;
     private static int remainGen = 0;
     private static OkHttpClient postRequestClient;
+    private boolean isPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -319,6 +320,21 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
+    @Override
+    public void onPause() {
+        isPaused = true;
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        isPaused = false;
+        if (isCallingSD) {
+            handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+        }
+        super.onResume();
+    }
+
     private void getSdModel() {
         showSpinner();
         if (sdModelList == null) {
@@ -377,7 +393,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @Override
     public void onSdApiFailure(String requestType, String errMessage) {
         if ("getProgress".equals(requestType)) {
-            handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+            if (!isPaused)
+                handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+        } else if ("Software caused connection abort".equals(errMessage) && ("txt2img".equals(requestType) || "img2img".equals(requestType))) {
+            callSD4Img();
         } else {
             isCallingSD = false;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -401,7 +420,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
             sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject, postRequestClient);
         }
-        handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
+        if (!isPaused)
+            handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
     }
 
     ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
@@ -431,7 +451,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 if ((etaRelative > 0) && (progress > 0)) {
                     txtSdStatus.setText(String.format("%d%% completed.", Math.round(progress * 100)));
                 }
-                handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+                if (!isPaused)
+                    handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
             } else if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
                 isCallingSD = false;
                 JSONObject jsonObject = new JSONObject(responseBody);

@@ -121,7 +121,7 @@ public class SdApiHelper {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, e.getMessage()));
+                    activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, "IOException: " + e.getMessage()));
                 }
             }
         });
