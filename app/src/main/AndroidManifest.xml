@@ -13,17 +13,22 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_magic_pen"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_magic_pen_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DiffusionPaint"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <service
+            android:name=".ViewSdImageService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".ViewSdImageActivity"
             android:configChanges="keyboardHidden|screenSize"
@@ -36,17 +41,20 @@
             android:theme="@style/Theme.DiffusionPaintFullScreen" />
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.DiffusionPaint"
-            android:exported="true">
+            android:theme="@style/Theme.DiffusionPaint">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>

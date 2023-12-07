@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,6 +19,7 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,7 +53,7 @@ import okhttp3.OkHttpClient;
 
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
-    private static Sketch mCurrentSketch;
+    public static Sketch mCurrentSketch;
     private TouchImageView sdImage;
     private LinearLayout spinner_bg;
     private FloatingActionButton sdButton;
@@ -68,17 +71,19 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private SharedPreferences sharedPreferences;
     //private String aspectRatio;
     @SuppressLint("StaticFieldLeak")
-    private static SdApiHelper sdApiHelper;
-    private boolean isCallingSD = false;
-    private static String savedImageName = null;
+    public static SdApiHelper sdApiHelper;
+    public static boolean isCallingSD = false;
+    public static String savedImageName = null;
     public static boolean isCallingAPI = false;
     public static List<ApiResult> apiResultList;
     public static int currentResult;
     public static Map<String, String> sdModelList = null;
     private static Handler handler;
-    private static int remainGen = 0;
+    public static int remainGen = 0;
     private static OkHttpClient postRequestClient;
     private boolean isPaused = false;
+    private ViewSdImageService mService;
+    private boolean mBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -228,7 +233,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
             showSpinner();
             isCallingSD = true;
-            sdApiHelper.sendPostRequest("extraSingleImage", "/sdapi/v1/extra-single-image", jsonObject);
+            if (mBound) {
+                mService.setObject(sdApiHelper, mCurrentSketch, postRequestClient, sharedPreferences.getString("sdServerAddress", ""), this);
+                mService.sendRequest("extraSingleImage", sharedPreferences.getString("sdServerAddress", ""), "/sdapi/v1/extra-single-image", jsonObject);
+            }
         });
 
         editButton.setOnClickListener(view -> {
@@ -321,6 +329,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService.
+        Intent intent = new Intent(this, ViewSdImageService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
     public void onPause() {
         isPaused = true;
         super.onPause();
@@ -329,11 +345,23 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @Override
     public void onResume() {
         isPaused = false;
-        if (isCallingSD) {
-            handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
-        }
+        updateScreen();
         super.onResume();
     }
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            ViewSdImageService.ViewSdImageBinder binder = (ViewSdImageService.ViewSdImageBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     private void getSdModel() {
         showSpinner();
@@ -395,8 +423,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if ("getProgress".equals(requestType)) {
             if (!isPaused)
                 handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
-        } else if ("Software caused connection abort".equals(errMessage) && ("txt2img".equals(requestType) || "img2img".equals(requestType))) {
-            callSD4Img();
+        /*} else if ("Software caused connection abort".equals(errMessage) && ("txt2img".equals(requestType) || "img2img".equals(requestType))) {
+            callSD4Img();*/
         } else {
             isCallingSD = false;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -411,14 +439,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     public void callSD4Img() {
-        isCallingSD = true;
-        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-            JSONObject jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
-            sdApiHelper.sendPostRequest("txt2img", "/sdapi/v1/txt2img", jsonObject, postRequestClient);
-        } else {
-            JSONObject jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
-            sdApiHelper.sendPostRequest("img2img", "/sdapi/v1/img2img", jsonObject, postRequestClient);
+        if (mBound) {
+            showSpinner();
+            mService.setObject(sdApiHelper, mCurrentSketch, postRequestClient, sharedPreferences.getString("sdServerAddress", ""), this);
+            mService.callSD4Img();
         }
         if (!isPaused)
             handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
@@ -453,39 +477,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
                 if (!isPaused)
                     handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
-            } else if ("img2img".equals(requestType) || "txt2img".equals(requestType)) {
-                isCallingSD = false;
-                JSONObject jsonObject = new JSONObject(responseBody);
-                JSONArray images = jsonObject.getJSONArray("images");
-                if (images.length() > 0) {
-                    mBitmap = Utils.base64String2Bitmap((String) images.get(0));
-                    if ("img2img".equals(requestType)) {
-                        updateMBitmap();
-                    }
-                    sdImage.resetView();
-                    sdImage.setImageBitmap(mBitmap);
-                }
-                savedImageName = null;
-                addResult(requestType);
-
-                handler.removeCallbacksAndMessages(null);
-                remainGen--;
-                if (remainGen > 0) {
-                    callSD4Img();
-                } else {
-                    hideSpinner();
-                }
-            } else if ("extraSingleImage".equals(requestType)) {
-                isCallingSD = false;
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String imageStr = jsonObject.getString("image");
-                mBitmap = Utils.base64String2Bitmap(imageStr);
-                updateMBitmap();
-                sdImage.resetView();
-                sdImage.setImageBitmap(mBitmap);
-                savedImageName = null;
-                addResult(requestType);
-                hideSpinner();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -493,7 +484,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
-    private void addResult(String requestType) {
+    public static void addResult(String requestType) {
         ApiResult r = new ApiResult();
         r.requestType = requestType;
         r.mBitmap = mBitmap.copy(mBitmap.getConfig(), true);
@@ -503,10 +494,25 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         //r.savedImageName = savedImageName;
         apiResultList.add(r);
         currentResult = apiResultList.size() - 1;
-        txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
     }
 
-    private void updateMBitmap() {
+    public void updateScreen() {
+        sdImage.resetView();
+        sdImage.setImageBitmap(mBitmap);
+        txtCount.setText(apiResultList.size() > 0 ? (currentResult + 1) + "/" + apiResultList.size() : "");
+
+        if (isCallingSD) {
+            showSpinner();
+            handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+        } else {
+            handler.removeCallbacksAndMessages(null);
+            hideSpinner();
+        }
+
+        if (isCallingAPI) { showSpinner();}
+    }
+
+    public static void updateMBitmap() {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
