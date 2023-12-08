@@ -194,7 +194,7 @@ public class ViewSdImageService extends Service {
                     break;
                 }
                 case "deepFaceLab": {
-                    ViewSdImageActivity.isCallingSD = false;
+                    ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     String imageStr = jsonObject.getString("processed_image");
                     ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);

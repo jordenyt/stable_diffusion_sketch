@@ -78,6 +78,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @SuppressLint("StaticFieldLeak")
     private static SdApiHelper sdApiHelper;
     public static boolean isCallingSD = false;
+    public static boolean isCallingDFL = false;
     public static String savedImageName = null;
     public static boolean isCallingAPI = false;
     private static List<ApiResult> apiResultList;
@@ -272,7 +273,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 jsonObject = sdApiHelper.getDflJSON(mBitmap);
             }
             showSpinner();
-
+            isCallingDFL = true;
             if (mBound) {
                 String baseUrl = sharedPreferences.getString("dflApiAddress", "");
                 mService.setObject(baseUrl, jsonObject);
@@ -363,6 +364,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
             remainGen = 0;
             isInterrupted = true;
+        } else if (isCallingDFL) {
+            //doNothing;
         } else {
             isCallingAPI = false;
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
@@ -568,6 +571,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (isCallingSD) {
             showSpinner();
             handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
+        } else if (isCallingDFL) {
+            showSpinner();
         } else {
             handler.removeCallbacksAndMessages(null);
             hideSpinner();
