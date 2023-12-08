@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 
 import androidx.annotation.NonNull;
@@ -33,9 +34,8 @@ public class ViewSdImageService extends Service {
 
     private final IBinder binder = new ViewSdImageBinder();
     private ViewSdImageActivity activity;
+    private JSONObject requestJSON;
     private static OkHttpClient client;
-    //private SdApiHelper sdApiHelper;
-    //private Sketch mCurrentSketch;
     private String sdBaseUrl;
 
     private static final int FOREGROUND_ID = 1;
@@ -62,15 +62,10 @@ public class ViewSdImageService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         isRunning = true;
         showForegroundNotification();
-
-        // Start long-running API call in a separate thread
         new Thread(() -> {
             try {
                 String requestType = intent.getStringExtra("requestType");
-                JSONObject jsonObject = new JSONObject(intent.getStringExtra("json"));
-                callSD4Img(requestType, jsonObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
+                callSD4Img(requestType);
             } finally {
                 isRunning = false;
                 stopForeground(true);
@@ -99,18 +94,22 @@ public class ViewSdImageService extends Service {
         startForeground(FOREGROUND_ID, notification);
     }
 
-    public void setObject(String baseUrl, ViewSdImageActivity activity) {
-        this.activity = activity;
+    public void setObject(String baseUrl, JSONObject jsonObject) {
         this.sdBaseUrl = baseUrl;
+        this.requestJSON = jsonObject;
     }
 
-    public void callSD4Img(String requestType, JSONObject jsonObject) {
+    public void setActivity(ViewSdImageActivity activity) {
+        this.activity = activity;
+    }
+
+    public void callSD4Img(String requestType) {
         if (requestType.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-            sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", jsonObject);
+            sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", requestJSON);
         } else if (requestType.equals(SdParam.SD_MODE_TYPE_IMG2IMG)){
-            sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", jsonObject);
+            sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
         } else {
-            sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", jsonObject);
+            sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
         }
     }
 
@@ -140,7 +139,7 @@ public class ViewSdImageService extends Service {
 
                     assert responseBody != null;
                     String responseString = responseBody.string();
-                    onSdApiResponse(requestType, responseString, jsonObject);
+                    onSdApiResponse(requestType, responseString);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -150,39 +149,45 @@ public class ViewSdImageService extends Service {
         });
     }
 
-    private void onSdApiResponse(String requestType, String responseBody, JSONObject requestJsonObject) {
+    private void onSdApiResponse(String requestType, String responseBody) {
         try {
-            if (requestType.equals("txt2img") || requestType.equals("img2img")) {
+            switch (requestType) {
+                case "txt2img":
+                case "img2img": {
 
-                JSONObject jsonObject = new JSONObject(responseBody);
-                JSONArray images = jsonObject.getJSONArray("images");
-                if (images.length() > 0) {
-                    ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap((String) images.get(0));
-                    if ("img2img".equals(requestType)) {
-                        ViewSdImageActivity.updateMBitmap();
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    JSONArray images = jsonObject.getJSONArray("images");
+                    if (images.length() > 0) {
+                        ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap((String) images.get(0));
+                        if ("img2img".equals(requestType)) {
+                            ViewSdImageActivity.updateMBitmap();
+                        }
                     }
-                }
-                ViewSdImageActivity.savedImageName = null;
-                ViewSdImageActivity.addResult(requestType);
+                    ViewSdImageActivity.savedImageName = null;
+                    ViewSdImageActivity.addResult(requestType);
 
-                ViewSdImageActivity.remainGen--;
-                if (ViewSdImageActivity.remainGen > 0) {
-                    callSD4Img(requestType, requestJsonObject);
-                } else {
+                    ViewSdImageActivity.remainGen--;
+                    if (ViewSdImageActivity.remainGen > 0) {
+                        callSD4Img(requestType);
+                    } else {
+                        ViewSdImageActivity.isCallingSD = false;
+                    }
+                    activity.runOnUiThread(() -> activity.updateScreen());
+
+                    break;
+                }
+                case "extraSingleImage": {
                     ViewSdImageActivity.isCallingSD = false;
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    String imageStr = jsonObject.getString("image");
+                    ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
+                    ViewSdImageActivity.updateMBitmap();
+
+                    ViewSdImageActivity.savedImageName = null;
+                    ViewSdImageActivity.addResult(requestType);
+                    activity.runOnUiThread(() -> activity.updateScreen());
+                    break;
                 }
-                activity.runOnUiThread(() -> activity.updateScreen());
-
-            } else if (requestType.equals("extraSingleImage")) {
-                ViewSdImageActivity.isCallingSD = false;
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String imageStr = jsonObject.getString("image");
-                ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
-                ViewSdImageActivity.updateMBitmap();
-
-                ViewSdImageActivity.savedImageName = null;
-                ViewSdImageActivity.addResult(requestType);
-                activity.runOnUiThread(() -> activity.updateScreen());
             }
         } catch (JSONException ignored) {}
     }
