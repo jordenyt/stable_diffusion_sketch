@@ -337,10 +337,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     @Override
     public void onBackPressed() {
-        if (isCallingSD) {
+        if (isCallingSD && !isInterrupted) {
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
-            remainGen = 0;
             isInterrupted = true;
+        } else if (isCallingSD) {
+            // do Nothing
         } else {
             isCallingAPI = false;
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
@@ -506,8 +507,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else if ("setSdModel".equals(requestType)) {
                 callSD4Img();
             } else if ("interrupt".equals(requestType)) {
-                isCallingSD = false;
-                updateScreen();
+                //isCallingSD = false;
+                //updateScreen();
             } else if ("getProgress".equals(requestType)) {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 double progress = jsonObject.getDouble("progress");

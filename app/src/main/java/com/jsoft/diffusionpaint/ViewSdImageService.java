@@ -154,19 +154,20 @@ public class ViewSdImageService extends Service {
             switch (requestType) {
                 case "txt2img":
                 case "img2img": {
-                    if (!ViewSdImageActivity.isInterrupted) {
-                        ViewSdImageActivity.isCallingSD = false;
-                        JSONObject jsonObject = new JSONObject(responseBody);
-                        JSONArray images = jsonObject.getJSONArray("images");
-                        if (images.length() > 0) {
-                            ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap((String) images.get(0));
-                            if ("img2img".equals(requestType)) {
-                                ViewSdImageActivity.updateMBitmap();
-                            }
-                        }
-                        ViewSdImageActivity.savedImageName = null;
-                        ViewSdImageActivity.addResult(requestType);
 
+                    ViewSdImageActivity.isCallingSD = false;
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    JSONArray images = jsonObject.getJSONArray("images");
+                    if (images.length() > 0) {
+                        ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap((String) images.get(0));
+                        if ("img2img".equals(requestType)) {
+                            ViewSdImageActivity.updateMBitmap();
+                        }
+                    }
+                    ViewSdImageActivity.savedImageName = null;
+                    ViewSdImageActivity.addResult(requestType);
+
+                    if (!ViewSdImageActivity.isInterrupted) {
                         ViewSdImageActivity.remainGen--;
                         if (ViewSdImageActivity.remainGen > 0) {
                             callSD4Img(requestType);
@@ -174,20 +175,21 @@ public class ViewSdImageService extends Service {
                             ViewSdImageActivity.isInterrupted = false;
                         }
                     }
+
                     activity.runOnUiThread(() -> activity.updateScreen());
                     break;
                 }
                 case "extraSingleImage": {
-                    if (!ViewSdImageActivity.isInterrupted) {
-                        ViewSdImageActivity.isCallingSD = false;
-                        JSONObject jsonObject = new JSONObject(responseBody);
-                        String imageStr = jsonObject.getString("image");
-                        ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
-                        ViewSdImageActivity.updateMBitmap();
 
-                        ViewSdImageActivity.savedImageName = null;
-                        ViewSdImageActivity.addResult(requestType);
-                    }
+                    ViewSdImageActivity.isCallingSD = false;
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    String imageStr = jsonObject.getString("image");
+                    ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
+                    ViewSdImageActivity.updateMBitmap();
+
+                    ViewSdImageActivity.savedImageName = null;
+                    ViewSdImageActivity.addResult(requestType);
+
                     activity.runOnUiThread(() -> activity.updateScreen());
                     break;
                 }
