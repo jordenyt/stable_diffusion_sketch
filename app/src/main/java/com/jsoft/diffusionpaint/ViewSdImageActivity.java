@@ -373,6 +373,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                                        IBinder service) {
             ViewSdImageService.ViewSdImageBinder binder = (ViewSdImageService.ViewSdImageBinder) service;
             mService = binder.getService();
+            mService.setObject(sharedPreferences.getString("sdServerAddress", ""), ViewSdImageActivity.this);
             mBound = true;
         }
         @Override
