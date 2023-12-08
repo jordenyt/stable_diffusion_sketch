@@ -459,8 +459,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     public void callSD4Img() {
+        showSpinner();
         if (mBound) {
-            showSpinner();
             String sdBaseUrl = sharedPreferences.getString("sdServerAddress", "");
 
             isCallingSD = true;

@@ -104,9 +104,9 @@ public class ViewSdImageService extends Service {
     }
 
     public void callSD4Img(String requestType) {
-        if (requestType.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
+        if (requestType.equals("txt2img")) {
             sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", requestJSON);
-        } else if (requestType.equals(SdParam.SD_MODE_TYPE_IMG2IMG)){
+        } else if (requestType.equals("img2img")){
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
         } else {
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
