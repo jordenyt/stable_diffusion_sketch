@@ -88,6 +88,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private boolean isPaused = false;
     private ViewSdImageService mService;
     private boolean mBound = false;
+    public static boolean isInterrupted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -253,12 +254,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
             showSpinner();
             isCallingSD = true;
+            isInterrupted = false;
             if (mBound) {
                 mService.setObject(sharedPreferences.getString("sdServerAddress", ""), jsonObject);
-                //mService.sendRequest("extraSingleImage", sharedPreferences.getString("sdServerAddress", ""), "/sdapi/v1/extra-single-image", jsonObject);
                 Intent intent = new Intent(this, ViewSdImageService.class);
                 intent.putExtra("requestType", "extraSingleImage");
-                //intent.putExtra("json", jsonObject.toString());
                 startService(intent);
             }
         });
@@ -301,7 +301,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     if (mCurrentSketch.getId() >= 0) {
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }
-                    //drawingActivityResultLauncher.launch(intent);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 });
@@ -362,6 +361,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void onBackPressed() {
         if (isCallingSD) {
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
+            remainGen = 0;
+            isInterrupted = true;
         } else {
             isCallingAPI = false;
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
@@ -488,6 +489,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             String sdBaseUrl = sharedPreferences.getString("sdServerAddress", "");
 
             isCallingSD = true;
+            isInterrupted = false;
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
 
             Intent intent = new Intent(this, ViewSdImageService.class);
