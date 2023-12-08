@@ -183,8 +183,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
                 }
+                getSdModel();
             }
-            getSdModel();
         } else {
             if (isCallingAPI) { showSpinner();}
             else { hideSpinner();}
