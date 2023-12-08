@@ -272,8 +272,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 jsonObject = sdApiHelper.getDflJSON(mBitmap);
             }
             showSpinner();
-            String baseUrl = sharedPreferences.getString("dflApiAddress", "");
-            sdApiHelper.sendRequest("deepFaceLab", baseUrl, "/processimage", jsonObject, "POST");
+
+            if (mBound) {
+                String baseUrl = sharedPreferences.getString("dflApiAddress", "");
+                mService.setObject(baseUrl, jsonObject);
+                Intent intent = new Intent(this, ViewSdImageService.class);
+                intent.putExtra("requestType", "deepFaceLab");
+                startService(intent);
+            }
         });
 
         editButton.setOnClickListener(view -> {
@@ -533,17 +539,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
                 if (!isPaused && isCallingSD)
                     handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
-            } else if ("deepFaceLab".equals(requestType)) {
-                isCallingSD = false;
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String imageStr = jsonObject.getString("processed_image");
-                mBitmap = Utils.base64String2Bitmap(imageStr);
-                updateMBitmap();
-                sdImage.resetView();
-                sdImage.setImageBitmap(mBitmap);
-                savedImageName = null;
-                addResult(requestType);
-                hideSpinner();
             }
         } catch (JSONException e) {
             e.printStackTrace();

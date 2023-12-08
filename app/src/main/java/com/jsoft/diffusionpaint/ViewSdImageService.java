@@ -108,6 +108,8 @@ public class ViewSdImageService extends Service {
             sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", requestJSON);
         } else if (requestType.equals(SdParam.SD_MODE_TYPE_IMG2IMG)){
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
+        } else if (requestType.equals("deepFaceLab")){
+            sendRequest("deepFaceLab", sdBaseUrl, "/processimage", requestJSON);
         } else {
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
         }
@@ -180,6 +182,18 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.isCallingSD = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     String imageStr = jsonObject.getString("image");
+                    ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
+                    ViewSdImageActivity.updateMBitmap();
+
+                    ViewSdImageActivity.savedImageName = null;
+                    ViewSdImageActivity.addResult(requestType);
+                    activity.runOnUiThread(() -> activity.updateScreen());
+                    break;
+                }
+                case "deepFaceLab": {
+                    ViewSdImageActivity.isCallingSD = false;
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    String imageStr = jsonObject.getString("processed_image");
                     ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
                     ViewSdImageActivity.updateMBitmap();
 
