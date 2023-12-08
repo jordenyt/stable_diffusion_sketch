@@ -507,7 +507,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 callSD4Img();
             } else if ("interrupt".equals(requestType)) {
                 isCallingSD = false;
-                onBackPressed();
+                updateScreen();
             } else if ("getProgress".equals(requestType)) {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 double progress = jsonObject.getDouble("progress");
