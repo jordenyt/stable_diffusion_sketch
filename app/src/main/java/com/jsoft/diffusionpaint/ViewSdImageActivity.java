@@ -345,6 +345,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     jsonExif.put("CreateDate", sdf.format(date));
                     exif = jsonExif.toString();
                 } catch (JSONException ignored) {}
+            } else if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) {
+                try {
+                    JSONObject jsonExif = new JSONObject(exif);
+                    if (!jsonExif.has("UserComment")) {
+                        String userComment = String.format("%s\nNegative prompt: %s\nSteps: %d, Sampler: %s, CFG scale: %.1f, Size: %dx%d",
+                                mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt(), param.steps,
+                                sharedPreferences.getString("sdSampler", "Euler a"), param.cfgScale, mBitmap.getWidth(), mBitmap.getHeight());
+                        jsonExif.put("UserComment", userComment);
+                        exif = jsonExif.toString();
+                    }
+                } catch (JSONException ignored) {}
             }
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName, exif);
             apiResultList.get(currentResult).savedImageName = savedImageName;
