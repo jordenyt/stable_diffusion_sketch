@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import okhttp3.OkHttpClient;
@@ -127,6 +129,19 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch = dbSketch;
                     mCurrentSketch.setCnMode(cnMode);
                     mBitmap = mCurrentSketch.getImgPreview();
+                    SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                    if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && param.inpaintPartial == 1) {
+                        Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                        Canvas canvasEdit = new Canvas(bmEdit);
+                        canvasEdit.drawBitmap(mCurrentSketch.getImgPreview(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                        Paint paint = new Paint();
+                        paint.setColor(Color.RED);
+                        paint.setAlpha(128);
+                        paint.setStyle(Paint.Style.STROKE);
+                        paint.setStrokeWidth((float)(15d * (double)mCurrentSketch.getImgBackground().getHeight() / (double)mCurrentSketch.getImgPreview().getHeight()));
+                        canvasEdit.drawRect(mCurrentSketch.getRectInpaint(param.sdSize),paint);
+                        mBitmap = bmEdit;
+                    }
                 }
             } else if (sketchId == -3) {
                 mCurrentSketch = new Sketch();
@@ -136,7 +151,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mCurrentSketch.setId(-3);
                 String aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
                 if (i.hasExtra("aspectRatio")) aspectRatio = i.getStringExtra("aspectRatio");
-                switch (aspectRatio) {
+                switch (Objects.requireNonNull(aspectRatio)) {
                     case Sketch.ASPECT_RATIO_PORTRAIT:
                         mCurrentSketch.setImgBackground(Bitmap.createBitmap(30, 40, Bitmap.Config.ARGB_8888));
                         break;
