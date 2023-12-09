@@ -169,6 +169,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 remainGen = 0;
                 hideSpinner();
             } else {
+                showSpinner();
                 if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
                     SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                     mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode, Color.BLACK, false, param.sdSize));
