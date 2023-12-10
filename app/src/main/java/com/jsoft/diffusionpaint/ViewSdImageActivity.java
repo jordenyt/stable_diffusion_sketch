@@ -231,7 +231,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
         }
         sdButton.setOnClickListener(view -> {
-            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) getSdModel();
+            if (!cnMode.equals(Sketch.CN_MODE_ORIGIN)) callSD4Img();
         });
 
         spinner_bg.setOnTouchListener((v, event) -> true);
@@ -353,8 +353,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                                 mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt(), param.steps,
                                 sharedPreferences.getString("sdSampler", "Euler a"), param.cfgScale, mBitmap.getWidth(), mBitmap.getHeight());
                         jsonExif.put("UserComment", userComment);
-                        exif = jsonExif.toString();
                     }
+                    if (!jsonExif.has("DateTimeOriginal")) {
+                        Date date = new Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+                        jsonExif.put("DateTimeOriginal", sdf.format(date));
+                    }
+                    exif = jsonExif.toString();
                 } catch (JSONException ignored) {}
             }
             Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName, exif);
@@ -415,7 +420,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     };
 
     private void getSdModel() {
-        showSpinner();
         if (sdModelList == null) {
             sdApiHelper.sendGetRequest("getSDModel", "/sdapi/v1/sd-models");
         } else {
