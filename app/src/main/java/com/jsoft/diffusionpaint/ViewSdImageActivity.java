@@ -445,6 +445,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     };
 
     private void getSdModel() {
+        showSpinner();
         if (sdModelList == null) {
             sdApiHelper.sendGetRequest("getSDModel", "/sdapi/v1/sd-models");
         } else {
