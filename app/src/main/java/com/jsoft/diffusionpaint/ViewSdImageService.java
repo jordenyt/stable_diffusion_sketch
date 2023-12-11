@@ -62,16 +62,8 @@ public class ViewSdImageService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         isRunning = true;
         showForegroundNotification();
-        new Thread(() -> {
-            try {
-                String requestType = intent.getStringExtra("requestType");
-                callSD4Img(requestType);
-            } finally {
-                isRunning = false;
-                stopForeground(true);
-                stopSelf();
-            }
-        }).start();
+        String requestType = intent.getStringExtra("requestType");
+        callSD4Img(requestType);
 
         return START_STICKY;
     }
@@ -80,6 +72,7 @@ public class ViewSdImageService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (isRunning) {
+            isRunning = false;
             stopForeground(true);
         }
     }
@@ -175,7 +168,13 @@ public class ViewSdImageService extends Service {
                             callSD4Img(requestType);
                             ViewSdImageActivity.isCallingSD = true;
                             ViewSdImageActivity.isInterrupted = false;
+                        } else {
+                            isRunning = false;
+                            stopForeground(true);
                         }
+                    } else {
+                        isRunning = false;
+                        stopForeground(true);
                     }
 
                     activity.runOnUiThread(() -> activity.updateScreen());
@@ -193,6 +192,8 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.addResult(requestType);
 
                     activity.runOnUiThread(() -> activity.updateScreen());
+                    isRunning = false;
+                    stopForeground(true);
                     break;
                 }
                 case "deepFaceLab": {
