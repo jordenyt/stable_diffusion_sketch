@@ -1,5 +1,5 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.13.1-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
-Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111's Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) which is installed on **your own server**. <br/>
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.14.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) instalation on your Android device.<br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 
@@ -17,11 +17,8 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
 - Enhance your sketch with Stable Diffusion
   - Preset Modes:
     - img2img(sketch) + Scribble(sketch)
-    - img2img(sketch) + Depth(sketch)
-    - img2img(sketch) + Pose(sketch)
     - txt2img + Canny(sketch)
     - txt2img + Scribble(sketch)
-    - txt2img + Depth(sketch)
     - txt2img + Pose(sketch)
     - Inpainting (background) 
     - Inpainting (sketch)
@@ -38,11 +35,12 @@ Stable Diffusion Sketch is an Android app that enable you to use [Automatic1111'
   - Eyedropper
   - Eraser
   - Undo/redo
+  - Zooming / Panning
 - Preset values for your prompt
   - Prompt Prefix
   - Prompt Postfix
   - Negative Prompt
-- 3 Canvas aspect ratio: landscape, portrait and square
+- 4 Canvas aspect ratio: wide landscape, landscape, portrait and square
 - Upscaler
 - Long press image on Main Screen to delete
 - Group related sketches
@@ -110,11 +108,8 @@ https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8
 | Mode                               | Config                                                                                                                                                              | Demo Input                                                                                                                   | Demo Output                                                                                                                                                                                                                                               |
 |------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | img2img(sketch) + Scribble(sketch) | `{"baseImage":"sketch", "cn":[{"cnInputImage":"sketch", "cnModelKey":"cnScribbleModel", "cnModule":"none", "cnWeight":0.7}], "denoise":0.8, "type":"img2img"}`      | <img src="https://user-images.githubusercontent.com/5007252/228425856-3600d997-4c4d-4b03-9727-7d90bde2a528.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228426672-466d23e2-730e-4186-ab84-1658750099bb.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228426679-8dbc6c20-1e99-473f-9109-b96b2a29a542.png" width="140"> |
-| img2img(sketch) + Depth(sketch)    | `{"baseImage":"sketch", "cn":[{"cnInputImage":"sketch", "cnModelKey":"cnDepthModel", "cnModule":"depth_leres", "cnWeight":1.0}], "denoise":0.8, "type":"img2img"}`  | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228435631-6500ea57-f8e5-453d-97ec-be8783e66453.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228435664-77d27294-df71-472c-8f9a-38957f7c7046.png" width="140"> |
-| img2img(sketch) + Pose(sketch)     | `{"baseImage":"sketch", "cn":[{"cnInputImage":"sketch", "cnModelKey":"cnPoseModel", "cnModule":"openpose_full", "cnWeight":1.0}], "denoise":0.8, "type":"img2img"}` | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436000-e6aec212-d912-42e0-821a-0df25683ee23.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436016-9cb7f092-99b7-445f-a06a-03beedea5d7f.png" width="140"> |
 | txt2img + Canny(sketch)            | `{"cn":[{"cnInputImage":"sketch", "cnModelKey":"cnCannyModel", "cnModule":"canny", "cnWeight":1.0}], "type":"txt2img"}`                                             | <img src="https://user-images.githubusercontent.com/5007252/228436349-638047c0-97e9-43b1-8c5a-9f8a95d6d256.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436419-1252130c-166c-462b-b4ae-b1f643492a71.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436480-9c1112ff-2517-4c26-9875-0d51ad888d7e.png" width="140"> |
 | txt2img + Scribble(sketch)         | `{"cn":[{"cnInputImage":"sketch", "cnModelKey":"cnScribbleModel", "cnModule":"scribble_hed", "cnWeight":0.7}], "type":"txt2img"}`                                   | <img src="https://user-images.githubusercontent.com/5007252/228436349-638047c0-97e9-43b1-8c5a-9f8a95d6d256.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436620-5263c004-851a-4b95-a19b-b808a8184257.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436637-f0898e2e-d884-4a25-942c-6b3cff1a1aad.png" width="140"> |
-| txt2img + Depth(sketch)            | `{"cn":[{"cnInputImage":"sketch", "cnModelKey":"cnDepthModel", "cnModule":"depth_leres", "cnWeight":1.0}], "type":"txt2img"}`                                       | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228436747-7ec3b80a-686d-47cf-a505-c0ec27230100.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228436764-d7962b77-6006-49b1-aecb-59fc3941858b.png" width="140"> |
 | txt2img + Pose(sketch)             | `{"cn":[{"cnInputImage":"sketch", "cnModelKey":"cnPoseModel", "cnModule":"openpose_full", "cnWeight":1.0}], "type":"txt2img"}`                                      | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> |                                                                                                                                                                                                                                                           |
 | Inpainting(background)             | `{"baseImage":"background", "denoise":1.0, "inpaintFill":2, "type":"inpaint"}`                                                                                      | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437109-942bd67f-1c05-4004-874f-61d818314765.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437128-467737fe-850d-44d3-8eb2-3fbd6c136895.png" width="140"> |
 | Inpainting(sketch)                 | `{"baseImage":"sketch", "denoise":0.8, "inpaintFill":1, "type":"inpaint"}`                                                                                          | <img src="https://user-images.githubusercontent.com/5007252/228435585-62fbe0f0-1cdf-42b3-821e-9dc12fc29a21.png" width="140"> | <img src="https://user-images.githubusercontent.com/5007252/228437282-6acad62a-49f9-45e4-98b5-141ee02215a3.png" width="140"> <img src="https://user-images.githubusercontent.com/5007252/228437310-8cc54a11-f3fc-45aa-a846-3f080994cf1c.png" width="140"> |
