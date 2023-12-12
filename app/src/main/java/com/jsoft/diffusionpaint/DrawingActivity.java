@@ -199,6 +199,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         if (sketchId == -2) {
             mDrawingView.setmBaseBitmap(rotatedBitmap);
+            mDrawingView.prepareBitmap(mCurrentSketch, null);
         }
     }
 
