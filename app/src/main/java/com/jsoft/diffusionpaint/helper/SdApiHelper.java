@@ -166,6 +166,22 @@ public class SdApiHelper {
         return jsonObject;
     }
 
+    public JSONObject getInterrogateJSON(Bitmap bitmap) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("model", "clip");
+            double scale = (double)Math.max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
+            Bitmap resultBm = bitmap;
+            if (scale > 1) {
+                resultBm = Bitmap.createScaledBitmap(bitmap, (int)Math.round(bitmap.getWidth() / scale), (int)Math.round(bitmap.getHeight() / scale), true);
+            }
+            jsonObject.put("image", Utils.jpg2Base64String(resultBm));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public SdParam getSdCnParm(String cnMode) {
 
         Gson gson = new Gson();

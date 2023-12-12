@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -439,6 +440,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch"));
                 startActivity(intent);
                 break;
+            case R.id.mi_sd_refresh_loras:
+                if (!validateSettings()) break;
+                sdApiHelper.sendPostRequest("refreshLoras", "/sdapi/v1/refresh-loras", new JSONObject());
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -565,6 +570,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             promptTV.setThreshold(1);
             promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
+
+        Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
+        btnInterrogate.setVisibility(View.GONE);
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
 
@@ -797,6 +805,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
+            } else if ("refreshLoras".equals(requestType)) {
+                DrawingActivity.loraList = null;
             }
         } catch (JSONException e) {
             e.printStackTrace();
