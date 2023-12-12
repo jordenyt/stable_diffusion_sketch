@@ -431,6 +431,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch"));
                 startActivity(intent);
                 break;
+            case R.id.mi_sd_refresh_loras:
+                if (!validateSettings()) break;
+                sdApiHelper.sendPostRequest("refreshLoras", "/sdapi/v1/refresh-loras", new JSONObject());
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -784,6 +788,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("getLoras".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showPromptDialog();
+            } else if ("refreshLoras".equals(requestType)) {
+                DrawingActivity.loraList = null;
             }
         } catch (JSONException e) {
             e.printStackTrace();
