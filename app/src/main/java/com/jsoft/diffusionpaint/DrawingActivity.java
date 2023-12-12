@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.SeekBar;
@@ -44,6 +45,7 @@ import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Utils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -79,6 +81,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     public static ArrayList<Paint> mPaints = new ArrayList<>();
     public static ArrayList<Path> mUndonePaths = new ArrayList<>();
     public static ArrayList<Paint> mUndonePaints = new ArrayList<>();
+    private MultiAutoCompleteTextView promptTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -359,6 +362,18 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             promptTV.setThreshold(1);
             promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
+        promptTextView = promptTV;
+
+        Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
+        if (mCurrentSketch.getImgBackground()==null) {
+            btnInterrogate.setVisibility(View.GONE);
+        } else {
+            btnInterrogate.setOnClickListener(view -> {
+               JSONObject jsonObject = sdApiHelper.getInterrogateJSON(mCurrentSketch.getImgBackground());
+               sdApiHelper.sendPostRequest("interrogate", "/sdapi/v1/interrogate", jsonObject);
+               btnInterrogate.setEnabled(false);
+            });
+        }
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
@@ -531,9 +546,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     }
 
     @Override
-    public void onSdApiResponse(String requestType, String responseBody) {
+    public void onSdApiResponse(String requestType, String responseBody)  {
         if ("getLoras".equals(requestType)) {
             loraList = sdApiHelper.getLoras(responseBody);
+        } else if ("interrogate".equals(requestType)) {
+            try {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                promptTextView.setText(jsonObject.getString("caption"));
+            } catch (JSONException ignored) {}
         }
     }
 }

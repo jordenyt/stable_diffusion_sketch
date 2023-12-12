@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -556,6 +557,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             promptTV.setThreshold(1);
             promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
+
+        Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
+        btnInterrogate.setVisibility(View.GONE);
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
 
