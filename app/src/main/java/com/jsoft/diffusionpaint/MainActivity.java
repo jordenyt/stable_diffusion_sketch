@@ -444,6 +444,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendPostRequest("refreshLoras", "/sdapi/v1/refresh-loras", new JSONObject());
                 break;
+            case R.id.mi_sd_refresh_ckpt:
+                if (!validateSettings()) break;
+                sdApiHelper.sendPostRequest("refreshCheckpoints", "/sdapi/v1/refresh-checkpoints", new JSONObject());
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -807,6 +811,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 alert.show();
             } else if ("refreshLoras".equals(requestType)) {
                 DrawingActivity.loraList = null;
+            } else if ("refreshCheckpoints".equals(requestType)) {
+                //Do nothing;
             }
         } catch (JSONException e) {
             e.printStackTrace();
