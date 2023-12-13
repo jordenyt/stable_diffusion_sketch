@@ -26,9 +26,9 @@
             <item android:id="@+id/mi_sd_inpaint_model" android:title="Stable Diffusion inpaint model"/>
             <item android:id="@+id/mi_sdxl_base_model" android:title="SDXL Base model"/>
             <item android:id="@+id/mi_sdxl_refine_model" android:title="SDXL Refiner model"/>
-            <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
             <item android:title="ControlNet models">
                 <menu>
+                    <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
                     <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
                     <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
                     <item android:id="@+id/mi_cn_canny" android:title="ControlNet Canny model"/>
