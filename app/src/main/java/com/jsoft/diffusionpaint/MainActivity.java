@@ -387,6 +387,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
                 break;
+            case R.id.mi_cn_ipadapter:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setCnIPAdapter", "/controlnet/model_list");
+                break;
+            case R.id.mi_cnxl_ipadapter:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setCnxlIPAdapter", "/controlnet/model_list");
+                break;
             case R.id.mi_cn_other1:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnOther1", "/controlnet/model_list");
@@ -786,12 +794,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Normal Model", "cnNormalModel", "control_v11p_sd15_normalbae [316696f1]", "normal");
             } else if ("setCnMlsd".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet MLSD Model", "cnMlsdModel", "control_v11p_sd15_mlsd [aca30ff0]", "mlsd");
-            }else if ("setCnLineart".equals(requestType)) {
+            } else if ("setCnLineart".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Line Art Model", "cnLineartModel", "control_v11p_sd15s2_lineart_anime [3825e83e]", "lineart");
             } else if ("setCnSoftedge".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Soft Edge Model", "cnSoftedgeModel", "control_v11p_sd15_softedge [a8575a2a]", "softedge");
             } else if ("setCnSeg".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Seg Model", "cnSegModel", "control_v11p_sd15_seg [e1f51eb9]", "seg");
+            } else if ("setCnIPAdapter".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet IP Adapter Model", "cnIPAdapterModel", "", "ip-adapter");
+            } else if ("setCnxlIPAdapter".equals(requestType)) {
+                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet IP Adapter SDXL Model", "cnxlIPAdapterModel", "", "ip-adapter");
             } else if ("setCnOther1".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 1", "cnOther1Model", "", "");
             } else if ("setCnOther2".equals(requestType)) {
