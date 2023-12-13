@@ -206,6 +206,8 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.savedImageName = null;
                     ViewSdImageActivity.addResult(requestType);
                     activity.runOnUiThread(() -> activity.updateScreen());
+                    isRunning = false;
+                    stopForeground(true);
                     break;
                 }
             }
