@@ -10,6 +10,7 @@
             <item android:id="@+id/mi_sd_sampler" android:title="Sampling method"/>
             <item android:id="@+id/mi_sd_upscaler" android:title="Upscaler"/>
             <item android:id="@+id/mi_sd_refresh_loras" android:title="Refresh Loras"/>
+            <item android:id="@+id/mi_sd_refresh_ckpt" android:title="Refresh Checkpoints"/>
         </menu>
     </item>
     <item android:title="Prompt Settings">
