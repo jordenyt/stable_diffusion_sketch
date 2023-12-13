@@ -302,8 +302,10 @@ public class SdApiHelper {
                                                 mCurrentSketch.getImgBackground()));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
-                        if (!"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
+                        if (cnparam.cnModelKey != null && !"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
                             cnArgObject.put("model", sharedPreferences.getString(cnparam.cnModelKey, "None"));
+                        } else {
+                            cnArgObject.put("model", "None");
                         }
                         cnArgObject.put("weight", cnparam.cnWeight);
 
@@ -449,8 +451,10 @@ public class SdApiHelper {
                         cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
-                        if (!"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
+                        if (cnparam.cnModelKey != null && !"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
                             cnArgObject.put("model", sharedPreferences.getString(cnparam.cnModelKey, "None"));
+                        } else {
+                            cnArgObject.put("model", "None");
                         }
                         cnArgObject.put("weight", cnparam.cnWeight);
                         cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
