@@ -30,18 +30,22 @@
             <item android:id="@+id/mi_sdxl_base_model" android:title="SDXL Base model"/>
             <item android:id="@+id/mi_sdxl_refine_model" android:title="SDXL Refiner model"/>
             <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
-            <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
-            <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
-            <item android:id="@+id/mi_cn_canny" android:title="ControlNet Canny model"/>
-            <item android:id="@+id/mi_cn_normal" android:title="ControlNet Normal model"/>
-            <item android:id="@+id/mi_cn_mlsd" android:title="ControlNet MLSD model"/>
-            <item android:id="@+id/mi_cn_lineart" android:title="ControlNet Lineart model"/>
-            <item android:id="@+id/mi_cn_softedge" android:title="ControlNet Softedge model"/>
-            <item android:id="@+id/mi_cn_seg" android:title="ControlNet Seg model"/>
-            <item android:id="@+id/mi_cn_tile" android:title="ControlNet Tile model"/>
-            <item android:id="@+id/mi_cn_other1" android:title="Other ControlNet Model 1"/>
-            <item android:id="@+id/mi_cn_other2" android:title="Other ControlNet Model 2"/>
-            <item android:id="@+id/mi_cn_other3" android:title="Other ControlNet Model 3"/>
+            <item android:title="ControlNet models">
+                <menu>
+                    <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
+                    <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
+                    <item android:id="@+id/mi_cn_canny" android:title="ControlNet Canny model"/>
+                    <item android:id="@+id/mi_cn_normal" android:title="ControlNet Normal model"/>
+                    <item android:id="@+id/mi_cn_mlsd" android:title="ControlNet MLSD model"/>
+                    <item android:id="@+id/mi_cn_lineart" android:title="ControlNet Lineart model"/>
+                    <item android:id="@+id/mi_cn_softedge" android:title="ControlNet Softedge model"/>
+                    <item android:id="@+id/mi_cn_seg" android:title="ControlNet Seg model"/>
+                    <item android:id="@+id/mi_cn_tile" android:title="ControlNet Tile model"/>
+                    <item android:id="@+id/mi_cn_other1" android:title="Other ControlNet Model 1"/>
+                    <item android:id="@+id/mi_cn_other2" android:title="Other ControlNet Model 2"/>
+                    <item android:id="@+id/mi_cn_other3" android:title="Other ControlNet Model 3"/>
+                </menu>
+            </item>
         </menu>
     </item>
     <item android:title="Customized Mode">
