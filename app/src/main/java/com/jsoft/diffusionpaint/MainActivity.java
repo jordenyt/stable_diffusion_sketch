@@ -811,8 +811,19 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 alert.show();
             } else if ("refreshLoras".equals(requestType)) {
                 DrawingActivity.loraList = null;
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Refresh LORAs Command sent.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
             } else if ("refreshCheckpoints".equals(requestType)) {
-                //Do nothing;
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Refresh Checkpoints Command sent.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
