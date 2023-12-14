@@ -113,7 +113,7 @@ public class TouchImageView extends AppCompatImageView {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (Math.abs(velocityX) > Math.abs(velocityY) && activity != null) {
+            if (Math.abs(velocityX) > Math.abs(velocityY) && activity != null && saveScale==minScale) {
                 if (velocityX > 0) {
                     activity.changeResult(-1);
                 } else {
