@@ -102,6 +102,7 @@ public class ViewSdImageService extends Service {
         } else if (requestType.equals("img2img")){
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
         } else {
+            ViewSdImageActivity.isCallingAPI = true;
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
         }
     }
@@ -180,7 +181,7 @@ public class ViewSdImageService extends Service {
                 }
                 case "extraSingleImage": {
 
-                    ViewSdImageActivity.isCallingSD = false;
+                    ViewSdImageActivity.isCallingAPI = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     String imageStr = jsonObject.getString("image");
                     ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
