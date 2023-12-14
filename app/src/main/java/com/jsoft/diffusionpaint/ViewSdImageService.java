@@ -98,8 +98,10 @@ public class ViewSdImageService extends Service {
 
     public void callSD4Img(String requestType) {
         if (requestType.equals("txt2img")) {
+            ViewSdImageActivity.isCallingSD = true;
             sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", requestJSON);
         } else if (requestType.equals("img2img")){
+            ViewSdImageActivity.isCallingSD = true;
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
         } else {
             ViewSdImageActivity.isCallingAPI = true;

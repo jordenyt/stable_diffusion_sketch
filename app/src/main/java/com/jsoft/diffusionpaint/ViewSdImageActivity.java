@@ -95,7 +95,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        boolean isFirstCall = (mBitmap == null && !isCallingAPI);
+        boolean isFirstCall = (mBitmap == null && !isCallingAPI && !isCallingSD);
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Intent i = getIntent();
         int sketchId = i.getIntExtra("sketchId", -1);
@@ -458,7 +458,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     private void showSpinner() {
-        isCallingAPI = true;
         txtSdStatus.setText("Working...");
         spinner_bg.setVisibility(View.VISIBLE);
         sdButton.setVisibility(View.GONE);
@@ -471,19 +470,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     private void hideSpinner() {
-        isCallingAPI = false;
         handler.removeCallbacksAndMessages(null);
         spinner_bg.setVisibility(View.GONE);
-        if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) {
-            sdButton.setVisibility(View.VISIBLE);
-        }
+        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) ? View.GONE : View.VISIBLE);
+
         saveButton.setVisibility((savedImageName != null) ? View.GONE : View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
-        //((currentResult + 1) + "/" + apiResultList.size() : "");)
-        if (apiResultList.size() > 0) {
-            prevButton.setVisibility(View.VISIBLE);
-            nextButton.setVisibility(View.VISIBLE);
-        }
+        prevButton.setVisibility((apiResultList.size() > 1) ? View.VISIBLE : View.GONE);
+        nextButton.setVisibility((apiResultList.size() > 1) ? View.VISIBLE : View.GONE);
+
         expandButton.setVisibility(View.VISIBLE);
         editButton.setVisibility(View.VISIBLE);
     }
@@ -495,6 +490,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
         } else {
             isCallingSD = false;
+            isCallingAPI = false;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Call Stable Diffusion API failed (" + requestType + ")")
                     .setMessage(errMessage)
@@ -511,7 +507,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (mBound) {
             String sdBaseUrl = sharedPreferences.getString("sdServerAddress", "");
 
-            isCallingSD = true;
             isInterrupted = false;
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
 
@@ -554,9 +549,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else if ("setSdModel".equals(requestType)) {
                 isCallingAPI = false;
                 callSD4Img();
-            } else if ("interrupt".equals(requestType)) {
-                //isCallingSD = false;
-                //updateScreen();
             } else if ("getProgress".equals(requestType)) {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 double progress = jsonObject.getDouble("progress");
@@ -596,10 +588,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             handler.removeCallbacksAndMessages(null);
         }
 
-        if (isCallingDFL || isCallingAPI || isCallingSD) {
+        if (isCallingAPI || isCallingSD) {
             showSpinner();
+        } else {
+            hideSpinner();
         }
-
     }
 
     public static void updateMBitmap() {
