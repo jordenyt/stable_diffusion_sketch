@@ -104,6 +104,7 @@ public class ViewSdImageService extends Service {
             ViewSdImageActivity.isCallingSD = true;
             sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
         } else if (requestType.equals("deepFaceLab")){
+            ViewSdImageActivity.isCallingDFL = true;
             sendRequest("deepFaceLab", sdBaseUrl, "/processimage", requestJSON);
         } else {
             ViewSdImageActivity.isCallingAPI = true;

@@ -515,6 +515,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
         } else {
             isCallingSD = false;
+            isCallingDFL = false;
             isCallingAPI = false;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Call Stable Diffusion API failed (" + requestType + ")")
@@ -609,13 +610,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         if (isCallingSD) {
             handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
-        } else if (isCallingDFL) {
-            showSpinner();
         } else {
             handler.removeCallbacksAndMessages(null);
         }
 
-        if (isCallingAPI || isCallingSD) {
+        if (isCallingAPI || isCallingSD || isCallingDFL) {
             showSpinner();
         } else {
             hideSpinner();
