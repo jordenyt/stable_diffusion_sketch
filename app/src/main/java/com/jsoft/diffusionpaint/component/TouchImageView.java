@@ -14,6 +14,8 @@ import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
+import com.jsoft.diffusionpaint.ViewSdImageActivity;
+
 public class TouchImageView extends AppCompatImageView {
     Matrix matrix;
 
@@ -30,6 +32,8 @@ public class TouchImageView extends AppCompatImageView {
     ScaleGestureDetector mScaleDetector;
     GestureDetector mGestureDetector;
 
+    ViewSdImageActivity activity;
+
     public TouchImageView(Context context) {
         super(context);
         sharedConstructing(context);
@@ -38,6 +42,10 @@ public class TouchImageView extends AppCompatImageView {
     public TouchImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         sharedConstructing(context);
+    }
+
+    public void setActivity(ViewSdImageActivity activity) {
+        this.activity = activity;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -101,6 +109,19 @@ public class TouchImageView extends AppCompatImageView {
             matrix.postTranslate(fixTransX, fixTransY);
             fixTrans();
             return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (Math.abs(velocityX) > Math.abs(velocityY) && activity != null) {
+                if (velocityX > 0) {
+                    activity.changeResult(-1);
+                } else {
+                    activity.changeResult(1);
+                }
+                return true;
+            }
+            return false;
         }
     }
 
