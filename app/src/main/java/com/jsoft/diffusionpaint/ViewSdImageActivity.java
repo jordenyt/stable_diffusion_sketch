@@ -230,6 +230,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (mBitmap != null) {
             sdImage.setImageBitmap(mBitmap);
         }
+        sdImage.setActivity(this);
         txtCount.setText("");
         if (apiResultList != null && apiResultList.size() > 0) {
             txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
@@ -325,29 +326,32 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         prevButton.setOnClickListener(view -> {
-            if (currentResult > 0) {
-                currentResult -= 1;
-                changeResult();
-            }
+            changeResult(-1);
         });
 
         nextButton.setOnClickListener(view -> {
-            if (currentResult < apiResultList.size() - 1) {
-                currentResult += 1;
-                changeResult();
-            }
+            changeResult(1);
         });
     }
 
-    private void changeResult() {
-        ApiResult r = apiResultList.get(currentResult);
-        savedImageName = r.savedImageName;
-        mBitmap = r.mBitmap;
-        inpaintBitmap = r.inpaintBitmap;
-        saveButton.setVisibility((savedImageName != null)?View.GONE:View.VISIBLE);
-        sdImage.resetView();
-        sdImage.setImageBitmap(mBitmap);
-        txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
+    public void changeResult(int change) {
+        int newPosition = currentResult + change;
+        if (newPosition < 0) {
+            newPosition = 0;
+        } else if (newPosition > apiResultList.size() - 1) {
+            newPosition = apiResultList.size() - 1;
+        }
+        if (newPosition != currentResult) {
+            currentResult = newPosition;
+            ApiResult r = apiResultList.get(currentResult);
+            savedImageName = r.savedImageName;
+            mBitmap = r.mBitmap;
+            inpaintBitmap = r.inpaintBitmap;
+            saveButton.setVisibility((savedImageName != null) ? View.GONE : View.VISIBLE);
+            sdImage.resetView();
+            sdImage.setImageBitmap(mBitmap);
+            txtCount.setText((currentResult + 1) + "/" + apiResultList.size());
+        }
     }
 
     private void saveImage()  {
