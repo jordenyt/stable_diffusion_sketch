@@ -166,19 +166,16 @@ public class ViewSdImageService extends Service {
                     if (!ViewSdImageActivity.isInterrupted) {
                         ViewSdImageActivity.remainGen--;
                         if (ViewSdImageActivity.remainGen > 0) {
+                            activity.runOnUiThread(() -> activity.updateScreen());
                             callSD4Img(requestType);
-                            ViewSdImageActivity.isCallingSD = true;
-                            ViewSdImageActivity.isInterrupted = false;
-                        } else {
-                            isRunning = false;
-                            stopForeground(true);
+                            break;
                         }
                     } else {
-                        isRunning = false;
-                        stopForeground(true);
+                        ViewSdImageActivity.isInterrupted = false;
                     }
-
                     activity.runOnUiThread(() -> activity.updateScreen());
+                    isRunning = false;
+                    stopForeground(true);
                     break;
                 }
                 case "extraSingleImage": {

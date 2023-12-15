@@ -401,6 +401,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @Override
     public void onPause() {
         isPaused = true;
+        handler.removeCallbacksAndMessages(null);
         super.onPause();
     }
 
@@ -470,7 +471,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     private void hideSpinner() {
-        handler.removeCallbacksAndMessages(null);
+
         spinner_bg.setVisibility(View.GONE);
         sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) ? View.GONE : View.VISIBLE);
 
@@ -491,6 +492,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         } else {
             isCallingSD = false;
             isCallingAPI = false;
+            handler.removeCallbacksAndMessages(null);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Call Stable Diffusion API failed (" + requestType + ")")
                     .setMessage(errMessage)
