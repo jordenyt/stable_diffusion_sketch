@@ -166,8 +166,8 @@ public class ViewSdImageService extends Service {
                     if (!ViewSdImageActivity.isInterrupted) {
                         ViewSdImageActivity.remainGen--;
                         if (ViewSdImageActivity.remainGen > 0) {
-                            activity.runOnUiThread(() -> activity.updateScreen());
                             callSD4Img(requestType);
+                            activity.runOnUiThread(() -> activity.updateScreen());
                             break;
                         }
                     } else {
