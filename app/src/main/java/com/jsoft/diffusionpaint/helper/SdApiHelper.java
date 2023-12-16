@@ -60,16 +60,8 @@ public class SdApiHelper {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET");
     }
 
-    public void sendGetRequest(String requestType, String url, OkHttpClient client) {
-        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, null, "GET", client);
-    }
-
     public void sendPostRequest(String requestType, String url, JSONObject jsonObject) {
         sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST");
-    }
-
-    public void sendPostRequest(String requestType, String url, JSONObject jsonObject, OkHttpClient client) {
-        sendRequest(requestType, sharedPreferences.getString("sdServerAddress", ""), url, jsonObject, "POST", client);
     }
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod) {
