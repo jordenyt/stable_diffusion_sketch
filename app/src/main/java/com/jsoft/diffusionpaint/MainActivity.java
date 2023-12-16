@@ -56,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -106,6 +107,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
             newPaintFromImage(intent);
         }
+
+        CompletableFuture.supplyAsync(() -> {
+            sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info", null, "GET");
+            return "";
+        });
+
     }
 
     private void gotoDrawActivity(Intent intent) {
@@ -744,10 +751,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     @Override
     public void onSdApiFailure(String requestType, String errMessage) {
-        if (!"setSDModel1".equals(requestType) ) {
+        if (!"setSDModel1".equals(requestType) && !"getVersionCode".equals(requestType)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Request Type: " + requestType)
-                    .setTitle("Call Stable Diffusion API failed.")
+            builder.setTitle("Call Stable Diffusion Web UI API failed. (" + requestType + ")")
                     .setMessage(errMessage)
                     .setPositiveButton("OK", (dialog, id) -> {
                     });
@@ -819,6 +825,27 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
+            } else if ("getVersionCode".equals(requestType)) {
+                int appVersionCode = BuildConfig.VERSION_CODE;
+                JSONObject jsonObject = new JSONObject(responseBody);
+                int latestVersionCode = jsonObject.getInt("versionCode");
+                String latestVersionName = jsonObject.getString("versionName");
+
+                if (latestVersionCode > appVersionCode) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("New updates found.")
+                            .setMessage("A new version " + latestVersionName + " has been released.  Do you want to go to get the new APK?")
+                            .setPositiveButton("OK", (dialog, id) -> {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch/releases"));
+                                startActivity(intent);
+                            })
+                            .setNegativeButton("Cancel", (dialog, id) -> {
+
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
