@@ -108,10 +108,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             newPaintFromImage(intent);
         }
 
-        CompletableFuture.supplyAsync(() -> {
+        /*CompletableFuture.supplyAsync(() -> {
             sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info", null, "GET");
             return "";
-        });
+        });*/
 
     }
 
