@@ -206,6 +206,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     @Override
     public void onBackPressed() {
         gotoMainActivity();
+        super.onBackPressed();
     }
 
     protected void initButtons() {
