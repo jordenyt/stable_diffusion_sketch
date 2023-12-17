@@ -284,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             showGrid(-1);
         } else {
             finish();
+            super.onBackPressed();
         }
     }
 
