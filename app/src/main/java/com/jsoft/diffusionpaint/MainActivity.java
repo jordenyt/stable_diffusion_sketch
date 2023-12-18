@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static File mImageFile;
     private SdApiHelper sdApiHelper;
     private int currentRootId = -1;
+    private static int lastModeSelection = 0;
+    private static int lastAspectSelection = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -612,7 +614,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sdMode.setAdapter(adapter);
-        sdMode.setSelection(0);
+        sdMode.setSelection(lastModeSelection);
 
         Spinner sdAspectRatio = dialogView.findViewById(R.id.sd_aspect_ratio);
         Map<String, String> aspectRatioMap = new LinkedHashMap<>();
@@ -624,12 +626,17 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         ArrayAdapter<String> aspectRatioAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, aspectRatioList);
         aspectRatioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sdAspectRatio.setAdapter(aspectRatioAdapter);
-        String defaultAspectRatio = sharedPreferences.getString("sdImageAspect", ASPECT_RATIO_SQUARE);
-        for (int i=0; i<aspectRatioMap.size(); i++) {
-            String aspectRatioDesc = sdAspectRatio.getItemAtPosition(i).toString();
-            if (Objects.equals(aspectRatioMap.get(aspectRatioDesc), defaultAspectRatio)) {
-                sdAspectRatio.setSelection(i);
-                break;
+
+        if (lastAspectSelection >= 0) {
+            sdAspectRatio.setSelection(lastAspectSelection);
+        } else {
+            String defaultAspectRatio = sharedPreferences.getString("sdImageAspect", ASPECT_RATIO_SQUARE);
+            for (int i = 0; i < aspectRatioMap.size(); i++) {
+                String aspectRatioDesc = sdAspectRatio.getItemAtPosition(i).toString();
+                if (Objects.equals(aspectRatioMap.get(aspectRatioDesc), defaultAspectRatio)) {
+                    sdAspectRatio.setSelection(i);
+                    break;
+                }
             }
         }
 
@@ -652,7 +659,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             editor.apply();
 
             String selectMode = sdMode.getSelectedItem().toString();
+            lastModeSelection = sdMode.getSelectedItemPosition();
             String selectAspectRatio = sdAspectRatio.getSelectedItem().toString();
+            lastAspectSelection = sdAspectRatio.getSelectedItemPosition();
             Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
