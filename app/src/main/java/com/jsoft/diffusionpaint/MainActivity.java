@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,12 +33,14 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
@@ -327,6 +330,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_negative_prompt:
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
                 break;
+            case R.id.mi_autocomplete_phrases:
+                if (DrawingActivity.loraList == null) {
+                    sdApiHelper.sendGetRequest("getLoras2", "/sdapi/v1/loras");
+                } else {
+                    showAutoCompleteDialog();
+                }
+                break;
             case R.id.mi_mode_txt2img:
                 showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", "{\"type\":\"txt2img\"}");
                 break;
@@ -596,12 +606,25 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
         promptTV.setText(sharedPreferences.getString("txt2imgPrompt", ""));
         negPromptTV.setText(sharedPreferences.getString("txt2imgNegPrompt", ""));
+        List<String> acList = new ArrayList<>();
         if (DrawingActivity.loraList != null) {
-            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, DrawingActivity.loraList);
-            promptTV.setAdapter(loraAdapter);
-            promptTV.setThreshold(1);
-            promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+            acList.addAll(DrawingActivity.loraList);
         }
+        String autoCompletePhrases = sharedPreferences.getString("autoCompletePhrases", "[]");
+        try {
+            JSONArray jsonArray = new JSONArray(autoCompletePhrases);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                acList.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, acList);
+        promptTV.setAdapter(loraAdapter);
+        promptTV.setThreshold(1);
+        promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
 
         Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
         btnInterrogate.setVisibility(View.GONE);
@@ -704,6 +727,78 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    private void showAutoCompleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_autocomplete, null);
+        builder.setView(dialogView);
+
+        ListView stringListView = dialogView.findViewById(R.id.autocomplete_phrase_list);
+        final MultiAutoCompleteTextView newStringInput = dialogView.findViewById(R.id.new_string_input);
+        Button addButton = dialogView.findViewById(R.id.add_button);
+        Button removeButton = dialogView.findViewById(R.id.remove_button);
+        final int[] selectedPosition = {-1};
+
+        if (DrawingActivity.loraList != null) {
+            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, DrawingActivity.loraList);
+            newStringInput.setAdapter(loraAdapter);
+            newStringInput.setThreshold(1);
+            newStringInput.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        }
+
+        List<String> stringList;
+        String listString = sharedPreferences.getString("autoCompletePhrases", "[]");
+
+        try {
+            JSONArray jsonArray = new JSONArray(listString);
+            stringList = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                stringList.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        ArrayAdapter<String> stringAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringList);
+        stringListView.setAdapter(stringAdapter);
+        stringListView.setOnItemClickListener((parent, view, position, id) -> selectedPosition[0] = position);
+
+        addButton.setOnClickListener(view -> {
+            String newString = newStringInput.getText().toString();
+            if (!TextUtils.isEmpty(newString)) {
+                stringList.add(newString);
+                selectedPosition[0] = -1;
+                stringListView.setAdapter(new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, stringList));
+                newStringInput.setText("");
+            }
+        });
+
+        removeButton.setOnClickListener(view -> {
+            if (selectedPosition[0] != -1) {
+                stringList.remove(selectedPosition[0]);
+                stringListView.setAdapter(new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, stringList));
+                selectedPosition[0] = -1; // Reset selection
+            }
+        });
+
+        builder.setPositiveButton("Save List", (dialog, which) -> {
+            Gson gson2 = new Gson();
+            String listString2 = gson2.toJson(stringList);
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("autoCompletePhrases", listString2);
+            editor.apply();
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+
 
     private void addTxt2img() {
         if (!validateSettings()) return;
@@ -841,6 +936,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("getLoras".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showPromptDialog();
+            } else if ("getLoras2".equals(requestType)) {
+                DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
+                showAutoCompleteDialog();
             } else if ("restart_Server".equals(requestType)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Restart Command sent.")

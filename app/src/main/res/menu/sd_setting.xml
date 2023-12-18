@@ -20,6 +20,7 @@
             <item android:id="@+id/mi_prompt_prefix" android:title="Prompt prefix"/>
             <item android:id="@+id/mi_prompt_postfix" android:title="Prompt postfix"/>
             <item android:id="@+id/mi_negative_prompt" android:title="Negative prompt"/>
+            <item android:id="@+id/mi_autocomplete_phrases" android:title="Auto-Complete Phrases"/>
         </menu>
     </item>
     <item android:title="Model Settings">

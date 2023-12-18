@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Autocomplete Phrases" />
+
+    <ListView
+        android:id="@+id/autocomplete_phrase_list"
+        android:scrollbars="vertical"
+        android:choiceMode="singleChoice"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/new_string_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add phrase" />
+
+        <Button
+            android:id="@+id/remove_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove phrase" />
+
+    </LinearLayout>
+
+</LinearLayout>
