@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -737,8 +738,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         ListView stringListView = dialogView.findViewById(R.id.autocomplete_phrase_list);
         final MultiAutoCompleteTextView newStringInput = dialogView.findViewById(R.id.new_string_input);
         Button addButton = dialogView.findViewById(R.id.add_button);
-        Button removeButton = dialogView.findViewById(R.id.remove_button);
-        final int[] selectedPosition = {-1};
 
         if (DrawingActivity.loraList != null) {
             ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, DrawingActivity.loraList);
@@ -761,23 +760,19 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
         ArrayAdapter<String> stringAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringList);
         stringListView.setAdapter(stringAdapter);
-        stringListView.setOnItemClickListener((parent, view, position, id) -> selectedPosition[0] = position);
+
+        stringListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            stringList.remove(position);
+            stringListView.setAdapter(new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, stringList));
+            return true;
+        });
 
         addButton.setOnClickListener(view -> {
             String newString = newStringInput.getText().toString();
             if (!TextUtils.isEmpty(newString)) {
                 stringList.add(newString);
-                selectedPosition[0] = -1;
                 stringListView.setAdapter(new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, stringList));
                 newStringInput.setText("");
-            }
-        });
-
-        removeButton.setOnClickListener(view -> {
-            if (selectedPosition[0] != -1) {
-                stringList.remove(selectedPosition[0]);
-                stringListView.setAdapter(new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, stringList));
-                selectedPosition[0] = -1; // Reset selection
             }
         });
 

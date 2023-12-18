@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -9,37 +10,40 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Autocomplete Phrases" />
+        android:text="Auto-complete Phrases: (long press to delete)" />
 
     <ListView
         android:id="@+id/autocomplete_phrase_list"
         android:scrollbars="vertical"
         android:choiceMode="singleChoice"
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="300dp" >
 
-    <MultiAutoCompleteTextView
-        android:id="@+id/new_string_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="" />
+    </ListView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <MultiAutoCompleteTextView
+            android:id="@+id/new_string_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="" />
+
         <Button
             android:id="@+id/add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add phrase" />
-
-        <Button
-            android:id="@+id/remove_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Remove phrase" />
+            android:layout_gravity="top|center"
+            android:minWidth="0dip"
+            android:paddingLeft="10dip"
+            android:paddingTop="10dip"
+            android:paddingRight="3dip"
+            android:paddingBottom="10dip"
+            app:icon="@drawable/ic_input_add" />
 
     </LinearLayout>
 
