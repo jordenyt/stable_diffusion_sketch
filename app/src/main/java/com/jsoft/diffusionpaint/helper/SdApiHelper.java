@@ -179,6 +179,7 @@ public class SdApiHelper {
         Gson gson = new Gson();
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", "{\"type\":\"txt2img\", \"sdSize\":1280}") :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", "{\"type\":\"txt2img\", \"sdSize\":1280, \"cfgScale\":2.0, \"steps\":5}") :
                         cnMode.equals(Sketch.CN_MODE_REFINER_SDXL) ? sharedPreferences.getString("modeRefiner", "{\"type\":\"img2img\",\"baseImage\":\"background\",\"denoise\":0.2, \"sdSize\":1280}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
@@ -225,6 +226,7 @@ public class SdApiHelper {
         if (param.model == null) {
             param.model = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) ? SdParam.SD_MODEL_INPAINT:
                     Sketch.CN_MODE_TXT_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_BASE :
+                    Sketch.CN_MODE_TXT_SDXL_TURBO.equals(cnMode) ? SdParam.SD_MODEL_SDXL_TURBO :
                     Sketch.CN_MODE_REFINER_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_REFINER : SdParam.SD_MODEL_V1;
         }
         if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
@@ -238,6 +240,9 @@ public class SdApiHelper {
             try {
                 param.steps = Integer.parseInt(sharedPreferences.getString("defaultSteps", "50"));
             } catch (Exception e) { param.steps = 50; }
+        }
+        if (param.sampler == null) {
+            param.sampler = sharedPreferences.getString("sdSampler", "Euler a");
         }
         if (param.cn != null) {
             for (CnParam cnParam : param.cn) {
@@ -287,7 +292,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
-            jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
+            jsonObject.put("sampler_name", param.sampler);
             jsonObject.put("save_images", false);
 
             if (param.cn != null) {
@@ -420,7 +425,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("negative_prompt", sharedPreferences.getString("negativePrompt", "") + ", " + mCurrentSketch.getNegPrompt());
             jsonObject.put("steps", param.steps);
-            jsonObject.put("sampler_name", sharedPreferences.getString("sdSampler", "Euler a"));
+            jsonObject.put("sampler_name", param.sampler);
             jsonObject.put("save_images", false);
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("cfg_scale", param.cfgScale);
