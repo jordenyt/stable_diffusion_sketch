@@ -411,9 +411,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             // do Nothing
         } else {
             isCallingAPI = false;
-            Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
+            /*Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
             setResult(Activity.RESULT_CANCELED, intent);
+            startActivity(intent);*/
+            finish();
         }
     }
 
