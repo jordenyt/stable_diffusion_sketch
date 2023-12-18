@@ -41,6 +41,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_POSE = "pose";
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
+    public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
     public static final String CN_MODE_IMG_SDXL = "imgSDXL";
     public static final String CN_MODE_REFINER_SDXL = "refinerSDXL";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
@@ -85,6 +86,7 @@ public class Sketch implements Serializable {
         cnMode.put("txt2img", CN_MODE_TXT);
         cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
         cnMode.put("SDXL img2img", CN_MODE_IMG_SDXL);
+        cnMode.put("SDXL Turbo txt2img", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("SDXL Refiner", CN_MODE_REFINER_SDXL);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_COLOR);
@@ -113,6 +115,7 @@ public class Sketch implements Serializable {
     static {
         Map<String, String> mode = new LinkedHashMap<>();
         mode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
+        mode.put("SDXL Turbo txt2img", CN_MODE_TXT_SDXL_TURBO);
         mode.put("txt2img", CN_MODE_TXT);
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }

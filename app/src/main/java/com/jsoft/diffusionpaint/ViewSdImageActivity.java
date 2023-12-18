@@ -388,10 +388,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             // do Nothing
         } else {
             isCallingAPI = false;
-            /*Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
-            intent.putExtra("sketchId", mCurrentSketch.getId());
-            setResult(Activity.RESULT_CANCELED, intent);
-            startActivity(intent);*/
             finish();
         }
     }
@@ -452,6 +448,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_REFINER) ? sharedPreferences.getString("sdxlRefinerModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SDXL_TURBO) ? sharedPreferences.getString("sdxlTurboModel", ""):
                 sharedPreferences.getString("sdModelCheckpoint", "");
         JSONObject setConfigRequest = new JSONObject();
         if (sdModelList !=null && sdModelList.get(preferredModel) != null) {

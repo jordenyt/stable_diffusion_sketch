@@ -56,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -319,10 +320,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", "{\"type\":\"txt2img\"}");
                 break;
             case R.id.mi_mode_sdxl:
-                showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1024}");
+                showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1280}");
                 break;
             case R.id.mi_mode_refiner:
-                showTextInputDialog("modeRefiner", "Parameters for SDXL Refiner:", "", "{\"type\":\"img2img\", \"baseImage\":\"background\", \"denoise\":0.2, \"sdSize\":1024}");
+                showTextInputDialog("modeRefiner", "Parameters for SDXL Refiner img2img:", "", "{\"type\":\"img2img\", \"baseImage\":\"background\", \"denoise\":0.2, \"sdSize\":1280}");
+                break;
+            case R.id.mi_mode_sdxl_turbo:
+                showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1280, \"cfgScale\":2.0, \"steps\":5}");
                 break;
             case R.id.mi_mode_custom1:
                 showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", "{\"type\":\"inpaint\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnDepthModel\",\"cnModule\":\"depth\",\"cnWeight\":1.0}");
@@ -435,6 +439,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sdxl_refine_model:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDXLRefineModel", "/sdapi/v1/sd-models");
+                break;
+            case R.id.mi_sdxl_turbo_model:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setSDXLTurboModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sd_sampler:
                 if (!validateSettings()) break;
@@ -776,6 +784,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Base Model", "sdxlBaseModel", "", "");
             } else if ("setSDXLRefineModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Refiner Model", "sdxlRefinerModel", "", "refiner");
+            } else if ("setSDXLTurboModel".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Turbo Model", "sdxlTurboModel", "", "");
             } else if ("setSampler".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "name", "SD Sampling Method", "sdSampler", "Euler a", "");
             } else if ("setUpscaler".equals(requestType)) {
