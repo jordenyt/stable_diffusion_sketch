@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("modeRefiner", "Parameters for SDXL Refiner img2img:", "", "{\"type\":\"img2img\", \"baseImage\":\"background\", \"denoise\":0.2, \"sdSize\":1280}");
                 break;
             case R.id.mi_mode_sdxl_turbo:
-                showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1280, \"cfgScale\":2.0, \"steps\":5}");
+                showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}");
                 break;
             case R.id.mi_mode_custom1:
                 showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", "{\"type\":\"inpaint\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnDepthModel\",\"cnModule\":\"depth\",\"cnWeight\":1.0}");
