@@ -41,6 +41,7 @@ import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -78,6 +79,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     public static ArrayList<Path> mUndonePaths = new ArrayList<>();
     public static ArrayList<Paint> mUndonePaints = new ArrayList<>();
     private MultiAutoCompleteTextView promptTextView;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +103,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     private void loadSketch(Intent i) {
         mCurrentSketch = new Sketch();
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         int sketchId = i.getIntExtra("sketchId", -1);
         int parentId = i.getIntExtra("parentId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
@@ -357,12 +359,24 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
         promptTV.setText(mCurrentSketch.getPrompt());
         negPromptTV.setText(mCurrentSketch.getNegPrompt());
-        if (loraList != null) {
-            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, loraList);
-            promptTV.setAdapter(loraAdapter);
-            promptTV.setThreshold(1);
-            promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        List<String> acList = new ArrayList<>();
+        if (DrawingActivity.loraList != null) {
+            acList.addAll(DrawingActivity.loraList);
         }
+        String autoCompletePhrases = sharedPreferences.getString("autoCompletePhrases", "[]");
+        try {
+            JSONArray jsonArray = new JSONArray(autoCompletePhrases);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                acList.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, acList);
+        promptTV.setAdapter(loraAdapter);
+        promptTV.setThreshold(1);
+        promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         promptTextView = promptTV;
 
         Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
