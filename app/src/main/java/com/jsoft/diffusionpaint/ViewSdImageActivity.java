@@ -1,5 +1,6 @@
 package com.jsoft.diffusionpaint;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -245,7 +246,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
         spinner_bg.setOnTouchListener((v, event) -> true);
 
-        backButton.setOnClickListener(view -> this.onBackPressed());
+        backButton.setOnClickListener(view -> this.goBack());
 
         saveButton.setOnClickListener(view -> {
             showSpinner();
@@ -335,6 +336,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         nextButton.setOnClickListener(view -> {
             changeResult(1);
         });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { goBack();}
+        });
     }
 
     public void changeResult(int change) {
@@ -397,8 +403,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    public void goBack() {
         if (isCallingSD && !isInterrupted) {
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
             isInterrupted = true;
@@ -409,7 +414,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
             setResult(Activity.RESULT_CANCELED, intent);
-            super.onBackPressed();
         }
     }
 

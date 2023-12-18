@@ -2,20 +2,16 @@ package com.jsoft.diffusionpaint;
 
 import static com.jsoft.diffusionpaint.dto.Sketch.*;
 
-import androidx.activity.result.ActivityResult;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
@@ -188,6 +184,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         circleView.setColor(mCurrentColor);
         circleView.setRadius(mCurrentStroke/2f);
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { goBack();}
+        });
+
         if (sketchId >= 0) {
             if (mCurrentSketch.getImgPreview() != null) {
                 mDrawingView.setmBaseBitmap(mCurrentSketch.getImgBackground() == null? mCurrentSketch.getImgPreview(): mCurrentSketch.getImgBackground());
@@ -203,10 +204,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    public void goBack() {
         gotoMainActivity();
-        super.onBackPressed();
     }
 
     protected void initButtons() {
