@@ -1,8 +1,8 @@
 package com.jsoft.diffusionpaint;
 
 import static com.jsoft.diffusionpaint.dto.Sketch.ASPECT_RATIO_SQUARE;
-import static com.jsoft.diffusionpaint.dto.Sketch.cnModeMap;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -56,7 +56,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -97,6 +96,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(this::menuItemClick);
             popupMenu.show();
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() { goBack();}
         });
 
         isPermissionGranted();
@@ -278,13 +282,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         return -1;
     }
 
-    @Override
-    public void onBackPressed() {
+    public void goBack() {
         if (currentRootId != -1) {
             showGrid(-1);
         } else {
             finish();
-            super.onBackPressed();
         }
     }
 
