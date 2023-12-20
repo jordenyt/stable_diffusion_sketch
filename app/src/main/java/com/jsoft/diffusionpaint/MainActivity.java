@@ -26,6 +26,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -59,6 +60,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static int lastModeSelection = 0;
     private static int lastAspectSelection = -1;
     private static boolean updateChecked = false;
+    private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +104,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         menuButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(this, menuButton);
             popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
+            MenuItem submenuItem = popupMenu.getMenu().getItem(3);
+            if (submenuItem.hasSubMenu()) {
+                SubMenu subMenu = submenuItem.getSubMenu();
+                for (int i=1;i<=Sketch.customModeCount;i++) {
+                    subMenu.add(0, MI_CUSTOM_MODE_BASE + i, 0, "Custom Mode " + i);
+                }
+            }
             popupMenu.setOnMenuItemClickListener(this::menuItemClick);
             popupMenu.show();
         });
@@ -338,30 +348,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sdxl_turbo:
                 showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
                 break;
-            case R.id.mi_mode_custom1:
-                showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom2:
-                showTextInputDialog("modeCustom2", "Parameters for Custom Mode 2:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom3:
-                showTextInputDialog("modeCustom3", "Parameters for Custom Mode 3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom4:
-                showTextInputDialog("modeCustom4", "Parameters for Custom Mode 4:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom5:
-                showTextInputDialog("modeCustom5", "Parameters for Custom Mode 5:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom6:
-                showTextInputDialog("modeCustom6", "Parameters for Custom Mode 6", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom7:
-                showTextInputDialog("modeCustom7", "Parameters for Custom Mode 7:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
-            case R.id.mi_mode_custom8:
-                showTextInputDialog("modeCustom8", "Parameters for Custom Mode 8:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                break;
             case R.id.mi_cn_scribble:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
@@ -472,6 +458,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 sdApiHelper.sendPostRequest("refreshCheckpoints", "/sdapi/v1/refresh-checkpoints", new JSONObject());
                 break;
             default:
+                if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
+                    int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
+                    showTextInputDialog("modeCustom" + i, "Parameters for Custom Mode "+ i +":", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
+                }
                 return super.onOptionsItemSelected(item);
         }
         return true;

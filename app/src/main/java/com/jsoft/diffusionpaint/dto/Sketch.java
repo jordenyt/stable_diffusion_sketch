@@ -35,8 +35,7 @@ public class Sketch implements Serializable {
 
     private String exif;
     private List<Sketch> children;
-    public static final int customModeCount = 8;
-
+    public static final int customModeCount = 10;
     public static final String CN_MODE_SCRIBBLE = "scribble";
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
