@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.14.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.15.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
@@ -7,7 +7,9 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
 
 - Support ControlNet v1.1
 - Support SDXL
+- Support SDXL Turbo
 - Autocomplete LORA tag in prompt
+- Autocomplete Phrase setup
 - Sketch with color
 - Create new paint from:
   - Blank Canvas
@@ -15,8 +17,9 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
   - Output of Stable Diffusion txt2img
   - shared image from other apps
 - Enhance your sketch with Stable Diffusion
-  - Preset Modes:
+  - Preset Modes:  
     - img2img(sketch) + Scribble(sketch)
+    - txt2img
     - txt2img + Canny(sketch)
     - txt2img + Scribble(sketch)
     - txt2img + Pose(sketch)
@@ -74,7 +77,8 @@ Custom mode can be defined in JSON format.<br/>
 | `type`           | M       | M       | M          | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting                        |
 | `steps`          | O       | O       | O          | integer from 1 to 120, default value is 40                                                                       |
 | `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |
-| `model`          | O       | O       | O          | `v1Model` - Default for txt2img and img2img mode <br/> `v1Inpaint` - Default for Inpainting <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlRefiner` - Default for SDXL Refiner mode|
+| `model`          | O       | O       | O          | `v1Model` - Default for txt2img and img2img mode <br/> `v1Inpaint` - Default for Inpainting <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlRefiner` - Default for SDXL Refiner mode <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode|
+| `sampler`        | O       | O       | O          | Can use all samplers available in your A1111 webui.                                                              |
 | `denoise`        | -       | M       | M          | decimal from 0 to 1                                                                                              |
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
 | `inpaintFill`    | -       | -       | O          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
