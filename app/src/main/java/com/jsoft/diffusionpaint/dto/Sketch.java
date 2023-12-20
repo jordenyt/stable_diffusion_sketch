@@ -37,17 +37,12 @@ public class Sketch implements Serializable {
     private List<Sketch> children;
 
     public static final String CN_MODE_SCRIBBLE = "scribble";
-    public static final String CN_MODE_DEPTH = "depth";
-    public static final String CN_MODE_POSE = "pose";
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
     public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
     public static final String CN_MODE_IMG_SDXL = "imgSDXL";
-    public static final String CN_MODE_REFINER_SDXL = "refinerSDXL";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
-    public static final String CN_MODE_TXT_DEPTH = "txtDepth";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
-    public static final String CN_MODE_TXT_POSE = "txtPose";
     public static final String CN_MODE_INPAINT = "inpaintNoise";
     public static final String CN_MODE_INPAINT_COLOR = "inpaintColor";
     public static final String CN_MODE_INPAINT_PARTIAL = "inpaintPartial";
@@ -77,17 +72,12 @@ public class Sketch implements Serializable {
     static {
         Map<String, String> cnMode = new LinkedHashMap<>();
         cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_SCRIBBLE);
-        //cnMode.put("img2img(sketch) + Depth(sketch)", CN_MODE_DEPTH);
-        //cnMode.put("img2img(sketch) + Pose(sketch)", CN_MODE_POSE);
         cnMode.put("txt2img + Canny(sketch)", CN_MODE_TXT_CANNY);
         cnMode.put("txt2img + Scribble(sketch)", CN_MODE_TXT_SCRIBBLE);
-        //cnMode.put("txt2img + Depth(sketch)", CN_MODE_TXT_DEPTH);
-        cnMode.put("txt2img + Pose(sketch)", CN_MODE_TXT_POSE);
         cnMode.put("txt2img", CN_MODE_TXT);
         cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
         cnMode.put("SDXL img2img", CN_MODE_IMG_SDXL);
         cnMode.put("SDXL Turbo txt2img", CN_MODE_TXT_SDXL_TURBO);
-        cnMode.put("SDXL Refiner", CN_MODE_REFINER_SDXL);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_COLOR);
         cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);

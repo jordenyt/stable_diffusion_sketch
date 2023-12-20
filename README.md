@@ -3,6 +3,12 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 
+## Screenshots
+<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/50681a65-53a9-4368-87ec-571fc773b674" height="450"> 
+<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/b7d8002c-700d-4055-9be5-17c59683ae5a" height="450"> 
+<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/a83524c2-f12d-498b-8643-dccddcc89088" height="450">
+<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/7cebca43-0745-4547-8b1c-70a95a65bce5" height="450"> 
+
 ## Supported Features
 
 - Support ControlNet v1.1
@@ -98,13 +104,6 @@ Custom mode can be defined in JSON format.<br/>
 | `cnWeight`       | decimal from 0 to 1                                                                                                                                                                                                                                                                                                                                                                             |
 | `cnModuleParamA` | First Parameter for ControlNet Module                                                                                                                                                                                                                                                                                                                                                           |
 | `cnModuleParamB` | Second Parameter for ControlNet Module                                                                                                                                                                                                                                                                                                                                                          |
-## Screenshots
-<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/50681a65-53a9-4368-87ec-571fc773b674" height="450"> 
-<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/b7d8002c-700d-4055-9be5-17c59683ae5a" height="450"> 
-<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/a83524c2-f12d-498b-8643-dccddcc89088" height="450"> 
-
-<img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/7cebca43-0745-4547-8b1c-70a95a65bce5" height="450"> 
-
 ## Demo Video (on outdated version)
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
 

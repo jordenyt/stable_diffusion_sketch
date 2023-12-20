@@ -29,7 +29,6 @@
             <item android:id="@+id/mi_sd_model" android:title="Stable Diffusion model"/>
             <item android:id="@+id/mi_sd_inpaint_model" android:title="Stable Diffusion inpaint model"/>
             <item android:id="@+id/mi_sdxl_base_model" android:title="SDXL Base model"/>
-            <item android:id="@+id/mi_sdxl_refine_model" android:title="SDXL Refiner model"/>
             <item android:id="@+id/mi_sdxl_turbo_model" android:title="SDXL Turbo model"/>
             <item android:title="ControlNet models">
                 <menu>
@@ -57,7 +56,6 @@
             <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
             <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
             <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
-            <item android:id="@+id/mi_mode_refiner" android:title="SDXL Refiner"/>
             <item android:id="@+id/mi_mode_custom1" android:title="Custom Mode 1"/>
             <item android:id="@+id/mi_mode_custom2" android:title="Custom Mode 2"/>
             <item android:id="@+id/mi_mode_custom3" android:title="Custom Mode 3"/>

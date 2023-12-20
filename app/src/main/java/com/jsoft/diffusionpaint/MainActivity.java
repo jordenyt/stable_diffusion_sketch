@@ -345,9 +345,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sdxl:
                 showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1280}");
                 break;
-            case R.id.mi_mode_refiner:
-                showTextInputDialog("modeRefiner", "Parameters for SDXL Refiner img2img:", "", "{\"type\":\"img2img\", \"baseImage\":\"background\", \"denoise\":0.2, \"sdSize\":1280}");
-                break;
             case R.id.mi_mode_sdxl_turbo:
                 showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}");
                 break;
@@ -458,10 +455,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sdxl_base_model:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDXLBaseModel", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sdxl_refine_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSDXLRefineModel", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sdxl_turbo_model:
                 if (!validateSettings()) break;
@@ -891,8 +884,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SD Inpaint Model", "sdInpaintModel", "", "inpainting.");
             } else if ("setSDXLBaseModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Base Model", "sdxlBaseModel", "", "");
-            } else if ("setSDXLRefineModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Refiner Model", "sdxlRefinerModel", "", "refiner");
             } else if ("setSDXLTurboModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Turbo Model", "sdxlTurboModel", "", "");
             } else if ("setSampler".equals(requestType)) {

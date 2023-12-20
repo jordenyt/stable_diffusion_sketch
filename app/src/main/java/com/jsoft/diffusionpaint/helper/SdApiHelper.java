@@ -180,7 +180,6 @@ public class SdApiHelper {
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", "{\"type\":\"txt2img\", \"sdSize\":1280}") :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}") :
-                        cnMode.equals(Sketch.CN_MODE_REFINER_SDXL) ? sharedPreferences.getString("modeRefiner", "{\"type\":\"img2img\",\"baseImage\":\"background\",\"denoise\":0.2, \"sdSize\":1280}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
@@ -191,12 +190,8 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_CUSTOM_8) ? sharedPreferences.getString("modeCustom8", "{\"type\":\"txt2img\"}") :
                         cnMode.equals(Sketch.CN_MODE_IMG_SDXL) ? "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}" :
                         cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.75, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_DEPTH) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"denoise\":0.75, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_POSE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0}], \"denoise\":0.75, \"type\":\"img2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
                         cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_DEPTH) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_leres\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_POSE) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnPoseModel\", \"cnModule\":\"openpose_full\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
                         cnMode.equals(Sketch.CN_MODE_MERGE) ? "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
@@ -226,8 +221,7 @@ public class SdApiHelper {
         if (param.model == null) {
             param.model = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) ? SdParam.SD_MODEL_INPAINT:
                     Sketch.CN_MODE_TXT_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_BASE :
-                    Sketch.CN_MODE_TXT_SDXL_TURBO.equals(cnMode) ? SdParam.SD_MODEL_SDXL_TURBO :
-                    Sketch.CN_MODE_REFINER_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_REFINER : SdParam.SD_MODEL_V1;
+                    Sketch.CN_MODE_TXT_SDXL_TURBO.equals(cnMode) ? SdParam.SD_MODEL_SDXL_TURBO : SdParam.SD_MODEL_V1;
         }
         if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
         if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
