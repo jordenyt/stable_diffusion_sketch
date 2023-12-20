@@ -56,14 +56,6 @@
             <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
             <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
             <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
-            <item android:id="@+id/mi_mode_custom1" android:title="Custom Mode 1"/>
-            <item android:id="@+id/mi_mode_custom2" android:title="Custom Mode 2"/>
-            <item android:id="@+id/mi_mode_custom3" android:title="Custom Mode 3"/>
-            <item android:id="@+id/mi_mode_custom4" android:title="Custom Mode 4"/>
-            <item android:id="@+id/mi_mode_custom5" android:title="Custom Mode 5"/>
-            <item android:id="@+id/mi_mode_custom6" android:title="Custom Mode 6"/>
-            <item android:id="@+id/mi_mode_custom7" android:title="Custom Mode 7"/>
-            <item android:id="@+id/mi_mode_custom8" android:title="Custom Mode 8"/>
         </menu>
     </item>
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
