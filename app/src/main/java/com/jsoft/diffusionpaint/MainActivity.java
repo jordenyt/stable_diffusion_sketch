@@ -700,6 +700,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = editText.getText().toString();
+            inputText.replace("“", "\"");
+            inputText.replace("”", "\"");
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(key,inputText);
             editor.apply();
