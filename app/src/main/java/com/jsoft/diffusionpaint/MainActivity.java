@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private int currentRootId = -1;
     private static int lastModeSelection = 0;
     private static int lastAspectSelection = -1;
+    private static boolean updateChecked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -963,13 +964,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 int latestVersionCode = jsonObject.getInt("versionCode");
                 String latestVersionName = jsonObject.getString("versionName");
 
-                if (latestVersionCode > appVersionCode) {
+                if (latestVersionCode > appVersionCode && !updateChecked) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("New updates found.")
-                            .setMessage("A new version " + latestVersionName + " has been released.  Do you want to go to get the new APK?")
+                            .setMessage("A new version " + latestVersionName + " has been released.  Do you want to get the new APK now?")
                             .setPositiveButton("OK", (dialog, id) -> {
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch/releases"));
+                                intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch/releases/latest"));
                                 startActivity(intent);
                             })
                             .setNegativeButton("Cancel", (dialog, id) -> {
@@ -978,6 +979,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
+                updateChecked = true;
             }
         } catch (JSONException e) {
             e.printStackTrace();
