@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void showServerAddressInput() {
-        showTextInputDialog("sdServerAddress", "Stable Diffusion API Server Address:", "http://192.168.1.101:7860", "");
+        showTextInputDialog("sdServerAddress", "A1111 SD-webui Address:", "http://192.168.1.101:7860", "");
     }
 
     public boolean menuItemClick(MenuItem item) {
@@ -421,10 +421,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showOutputDimenDialog();
                 break;
             case R.id.mi_canvas_dim:
-                showTextInputDialog("canvasDim", "Canvas Dimension:", "", "2560");
+                showTextInputDialog("canvasDim", "Drawing Canvas Maximum Size (long edge):", "", "3840");
                 break;
             case R.id.mi_steps:
-                showTextInputDialog("defaultSteps", "Steps:", "", "50");
+                showTextInputDialog("defaultSteps", "Steps:", "", "30");
                 break;
             case R.id.mi_cfg_scale:
                 showTextInputDialog("defaultCfgScale", "CFG Scale:", "", "7.0");
@@ -551,7 +551,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         builder.setView(dialogView);
 
         Spinner spSize = dialogView.findViewById(R.id.sd_size_selection);
-        int prefSize = sharedPreferences.getInt("sdImageSize", 512);
+        int prefSize = sharedPreferences.getInt("sdImageSize", 768);
         spSize.setSelection(prefSize == 768 ? 1 : prefSize == 1024 ? 2 : prefSize == 1280 ? 3 : 0);
 
         Spinner spAspect = dialogView.findViewById(R.id.sd_aspect_selection);
@@ -868,15 +868,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     public void onSdApiResponse(String requestType, String responseBody) {
         try {
             if ("setSDModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "Stable Diffusion Model", "sdModelCheckpoint", "", "");
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SD 1.5 Model", "sdModelCheckpoint", "", "");
             } else if ("setSDInpaintModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SD Inpaint Model", "sdInpaintModel", "", "inpainting.");
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SD 1.5 Inpaint Model", "sdInpaintModel", "", "inpainting.");
             } else if ("setSDXLBaseModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Base Model", "sdxlBaseModel", "", "");
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Model", "sdxlBaseModel", "", "");
             } else if ("setSDXLTurboModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Turbo Model", "sdxlTurboModel", "", "");
             } else if ("setSampler".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "name", "SD Sampling Method", "sdSampler", "Euler a", "");
+                showSpinnerDialog(new JSONArray(responseBody), "name", "Default Sampling Method", "sdSampler", "Euler a", "");
             } else if ("setUpscaler".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "name", "Upscaler", "sdUpscaler", "R-ESRGAN General 4xV3", "");
             } else if ("setCnScribble".equals(requestType)) {

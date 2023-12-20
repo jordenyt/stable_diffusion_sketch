@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Output Image Size:"
+        android:text="Default output image size (long edge):"
         android:textAppearance="?android:textAppearanceMedium" />
     <Spinner
         android:id="@+id/sd_size_selection"
