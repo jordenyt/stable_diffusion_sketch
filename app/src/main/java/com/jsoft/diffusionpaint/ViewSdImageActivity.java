@@ -449,7 +449,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
         String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
-                param.model.equals(SdParam.SD_MODEL_SDXL_REFINER) ? sharedPreferences.getString("sdxlRefinerModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_TURBO) ? sharedPreferences.getString("sdxlTurboModel", ""):
                 sharedPreferences.getString("sdModelCheckpoint", "");
         JSONObject setConfigRequest = new JSONObject();

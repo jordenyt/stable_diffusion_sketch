@@ -18,7 +18,6 @@ public class SdParam {
     public static final String SD_MODEL_V1 = "v1Model";
     public static final String SD_MODEL_INPAINT = "v1Inpaint";
     public static final String SD_MODEL_SDXL_BASE = "sdxlBase";
-    public static final String SD_MODEL_SDXL_REFINER = "sdxlRefiner";
     public static final String SD_MODEL_SDXL_TURBO = "sdxlTurbo";
     public static final String SD_MODE_TYPE_TXT2IMG = "txt2img";
     public static final String SD_MODE_TYPE_IMG2IMG = "img2img";
