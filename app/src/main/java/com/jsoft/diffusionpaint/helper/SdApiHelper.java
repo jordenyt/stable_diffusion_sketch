@@ -177,29 +177,12 @@ public class SdApiHelper {
     public SdParam getSdCnParm(String cnMode) {
 
         Gson gson = new Gson();
-        String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", "{\"type\":\"txt2img\", \"sdSize\":1280}") :
-                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_1) ? sharedPreferences.getString("modeCustom1", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_2) ? sharedPreferences.getString("modeCustom2", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_3) ? sharedPreferences.getString("modeCustom3", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_4) ? sharedPreferences.getString("modeCustom4", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_5) ? sharedPreferences.getString("modeCustom5", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_6) ? sharedPreferences.getString("modeCustom6", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_7) ? sharedPreferences.getString("modeCustom7", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_CUSTOM_8) ? sharedPreferences.getString("modeCustom8", "{\"type\":\"txt2img\"}") :
-                        cnMode.equals(Sketch.CN_MODE_IMG_SDXL) ? "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}" :
-                        cnMode.equals(Sketch.CN_MODE_SCRIBBLE) ? "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.75, \"type\":\"img2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_CANNY) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}" :
-                        cnMode.equals(Sketch.CN_MODE_TXT_SCRIBBLE) ? "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}" :
-                        cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
-                        cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}" :
-                        cnMode.equals(Sketch.CN_MODE_MERGE) ? "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT_COLOR) ? "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL) ? "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
-                        cnMode.equals(Sketch.CN_MODE_INPAINT_PARTIAL_SKETCH) ? "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}" :
-                                "{\"type\":\"txt2img\"}";
+        String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.startsWith(Sketch.CN_MODE_CUSTOM) ? sharedPreferences.getString("modeCustom" + cnMode.substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM)) :
+                        cnMode.startsWith(Sketch.CN_MODE_OUTPAINT) ? Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT) :
+                        Sketch.defaultJSON.get(cnMode) != null ? Sketch.defaultJSON.get(cnMode) : Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {

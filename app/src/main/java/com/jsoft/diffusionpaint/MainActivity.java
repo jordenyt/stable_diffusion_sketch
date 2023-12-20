@@ -27,7 +27,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -340,37 +339,37 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 }
                 break;
             case R.id.mi_mode_txt2img:
-                showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", "{\"type\":\"txt2img\"}");
+                showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT));
                 break;
             case R.id.mi_mode_sdxl:
-                showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":1280}");
+                showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL));
                 break;
             case R.id.mi_mode_sdxl_turbo:
-                showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}");
+                showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
                 break;
             case R.id.mi_mode_custom1:
-                showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", "{\"type\":\"inpaint\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnDepthModel\",\"cnModule\":\"depth\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom1", "Parameters for Custom Mode 1:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom2:
-                showTextInputDialog("modeCustom2", "Parameters for Custom Mode 2:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom2", "Parameters for Custom Mode 2:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom3:
-                showTextInputDialog("modeCustom3", "Parameters for Custom Mode 3:", "", "{\"type\":\"inpaint\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnDepthModel\",\"cnModule\":\"depth\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom3", "Parameters for Custom Mode 3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom4:
-                showTextInputDialog("modeCustom4", "Parameters for Custom Mode 4:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom4", "Parameters for Custom Mode 4:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom5:
-                showTextInputDialog("modeCustom5", "Parameters for Custom Mode 5:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom5", "Parameters for Custom Mode 5:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom6:
-                showTextInputDialog("modeCustom6", "Parameters for Custom Mode 6", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom6", "Parameters for Custom Mode 6", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom7:
-                showTextInputDialog("modeCustom7", "Parameters for Custom Mode 7:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom7", "Parameters for Custom Mode 7:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_mode_custom8:
-                showTextInputDialog("modeCustom8", "Parameters for Custom Mode 8:", "", "{\"type\":\"img2img\",\"steps\":40,\"denoise\":0.8,\"cfgScale\":7.0,\"baseImage\":\"sketch\",\"inpaintFill\":1,\"cnInputImage\":\"background\",\"cnModelKey\":\"cnPoseModel\",\"cnModule\":\"openpose_full\",\"cnWeight\":1.0}");
+                showTextInputDialog("modeCustom8", "Parameters for Custom Mode 8:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 break;
             case R.id.mi_cn_scribble:
                 if (!validateSettings()) break;
