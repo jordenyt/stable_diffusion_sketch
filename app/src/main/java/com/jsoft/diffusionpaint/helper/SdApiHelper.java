@@ -120,8 +120,8 @@ public class SdApiHelper {
     }
 
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
-        int canvasDim = 2560;
-        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560")); } catch (Exception ignored) {}
+        int canvasDim = 3840;
+        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
         return getExtraSingleImageJSON(bitmap, Math.min(4d, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
     }
 
@@ -197,7 +197,7 @@ public class SdApiHelper {
                     Sketch.CN_MODE_TXT_SDXL_TURBO.equals(cnMode) ? SdParam.SD_MODEL_SDXL_TURBO : SdParam.SD_MODEL_V1;
         }
         if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
-        if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 512); }
+        if (param.sdSize == 0) { param.sdSize = sharedPreferences.getInt("sdImageSize", 768); }
         if (param.cfgScale == 0d) {
             try {
                 param.cfgScale = Double.parseDouble(sharedPreferences.getString("defaultCfgScale", "7.0"));
@@ -205,7 +205,7 @@ public class SdApiHelper {
         }
         if (param.steps == 0) {
             try {
-                param.steps = Integer.parseInt(sharedPreferences.getString("defaultSteps", "50"));
+                param.steps = Integer.parseInt(sharedPreferences.getString("defaultSteps", "30"));
             } catch (Exception e) { param.steps = 50; }
         }
         if (param.sampler == null) {

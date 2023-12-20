@@ -36,7 +36,7 @@ public class DrawingView extends View
 	private boolean isEraser = false;
 	private DrawingViewListener listener;
 
-	private int maxImgSize = 2560;
+	private int maxImgSize = 3840;
 	private String aspectRatio;
 
 	private double minScale = 1.0;

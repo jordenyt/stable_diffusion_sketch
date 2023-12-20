@@ -171,7 +171,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         mDrawingView = findViewById(R.id.drawing_view);
         try {
-            int canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "2560"));
+            int canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840"));
             mDrawingView.setCanvasSize(canvasDim);
         } catch (Exception ignored) {}
         mDrawingView.setAspectRatio(aspectRatio);
