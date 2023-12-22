@@ -187,7 +187,7 @@ public class SdApiHelper {
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {
             JsonObject cnObj = new JsonObject();
-            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB"};
+            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB", "cnResizeMode"};
             for (String cnProp : cnProperties) {
                 if (rootObj.get(cnProp) != null) {
                     cnObj.add(cnProp, rootObj.get(cnProp));
@@ -238,8 +238,12 @@ public class SdApiHelper {
                         cnParam.cnModuleParamB = 1;
                     }
                 }
+                if (cnParam.cnResizeMode == -1) {
+                    cnParam.cnResizeMode = 2;
+                }
             }
         }
+
         return param;
     }
 
@@ -293,7 +297,8 @@ public class SdApiHelper {
                         }
                         cnArgObject.put("weight", cnparam.cnWeight);
 
-                        cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
+                        cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
+                                cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
                         cnArgObject.put("lowvram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
@@ -441,7 +446,8 @@ public class SdApiHelper {
                             cnArgObject.put("model", "None");
                         }
                         cnArgObject.put("weight", cnparam.cnWeight);
-                        cnArgObject.put("resize_mode", "Inner Fit (Scale to Fit)");
+                        cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
+                                cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
                         cnArgObject.put("lowvram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
