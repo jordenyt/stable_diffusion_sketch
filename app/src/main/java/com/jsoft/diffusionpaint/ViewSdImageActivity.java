@@ -344,6 +344,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (savedImageName==null) {
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             String exif = mCurrentSketch.getExif();
+            if (exif == null || exif.length() < 2) { exif = "{}"; }
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
             if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
