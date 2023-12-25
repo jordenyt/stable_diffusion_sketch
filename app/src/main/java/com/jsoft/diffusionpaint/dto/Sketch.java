@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import androidx.exifinterface.media.ExifInterface;
 
 import com.jsoft.diffusionpaint.helper.Utils;
 
@@ -36,7 +35,7 @@ public class Sketch implements Serializable {
     private String exif;
     private List<Sketch> children;
     public static final int customModeCount = 10;
-    public static final String CN_MODE_SCRIBBLE = "scribble";
+    public static final String CN_MODE_IMG_SCRIBBLE = "scribble";
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
     public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
@@ -44,17 +43,17 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
     public static final String CN_MODE_INPAINT = "inpaintNoise";
-    public static final String CN_MODE_INPAINT_COLOR = "inpaintColor";
+    public static final String CN_MODE_INPAINT_SKETCH = "inpaintColor";
     public static final String CN_MODE_INPAINT_PARTIAL = "inpaintPartial";
-    public static final String CN_MODE_INPAINT_PARTIAL_SKETCH = "inpaintPartialSketch";
+    public static final String CN_MODE_INPAINT_SKETCH_PARTIAL = "inpaintPartialSketch";
     public static final String CN_MODE_OUTPAINT = "outpaint";
-    public static final String CN_MODE_OUTPAINT_H = "outpaintH";
-    public static final String CN_MODE_OUTPAINT_H_LEFT = "outpaintHL";
-    public static final String CN_MODE_OUTPAINT_H_RIGHT = "outpaintHR";
-    public static final String CN_MODE_OUTPAINT_V = "outpaintV";
-    public static final String CN_MODE_OUTPAINT_V_TOP = "outpaintVT";
-    public static final String CN_MODE_OUTPAINT_V_BOTTOM = "outpaintVB";
-    public static final String CN_MODE_MERGE = "mergeReference";
+    public static final String CN_MODE_OUTPAINT_H = CN_MODE_OUTPAINT + "H";
+    public static final String CN_MODE_OUTPAINT_H_LEFT = CN_MODE_OUTPAINT + "HL";
+    public static final String CN_MODE_OUTPAINT_H_RIGHT = CN_MODE_OUTPAINT + "HR";
+    public static final String CN_MODE_OUTPAINT_V = CN_MODE_OUTPAINT + "V";
+    public static final String CN_MODE_OUTPAINT_V_TOP = CN_MODE_OUTPAINT + "VT";
+    public static final String CN_MODE_OUTPAINT_V_BOTTOM = CN_MODE_OUTPAINT + "VB";
+    public static final String CN_MODE_INPAINT_MERGE = "mergeReference";
     public static final String CN_MODE_CUSTOM = "custom";
     public static final String CN_MODE_ORIGIN = "original";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
@@ -64,7 +63,7 @@ public class Sketch implements Serializable {
     public static final Map<String, String> defaultJSON;
     static {
         Map<String, String> json = new LinkedHashMap<>();
-        json.put(CN_MODE_SCRIBBLE, "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.75, \"type\":\"img2img\"}");
+        json.put(CN_MODE_IMG_SCRIBBLE, "{\"baseImage\":\"sketch\", \"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"none\", \"cnWeight\":0.7}], \"denoise\":0.75, \"type\":\"img2img\"}");
         json.put(CN_MODE_TXT_CANNY, "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\", \"cnWeight\":1.0}], \"type\":\"txt2img\"}");
         json.put(CN_MODE_TXT_SCRIBBLE, "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}");
         json.put(CN_MODE_TXT, "{\"type\":\"txt2img\"}");
@@ -72,11 +71,11 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_IMG_SDXL, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_SDXL_TURBO, "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}");
         json.put(CN_MODE_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}");
-        json.put(CN_MODE_INPAINT_COLOR, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
+        json.put(CN_MODE_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
-        json.put(CN_MODE_INPAINT_PARTIAL_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
+        json.put(CN_MODE_INPAINT_SKETCH_PARTIAL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_OUTPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}");
-        json.put(CN_MODE_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}");
+        json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
         defaultJSON = Collections.unmodifiableMap(json);
     }
@@ -84,7 +83,7 @@ public class Sketch implements Serializable {
     public static final Map<String, String> cnModeMap;
     static {
         Map<String, String> cnMode = new LinkedHashMap<>();
-        cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_SCRIBBLE);
+        cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_IMG_SCRIBBLE);
         cnMode.put("txt2img + Canny(sketch)", CN_MODE_TXT_CANNY);
         cnMode.put("txt2img + Scribble(sketch)", CN_MODE_TXT_SCRIBBLE);
         cnMode.put("txt2img", CN_MODE_TXT);
@@ -92,9 +91,9 @@ public class Sketch implements Serializable {
         cnMode.put("SDXL Turbo txt2img", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("SDXL img2img", CN_MODE_IMG_SDXL);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
-        cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_COLOR);
+        cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
         cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);
-        cnMode.put("Partial Inpainting (sketch)", CN_MODE_INPAINT_PARTIAL_SKETCH);
+        cnMode.put("Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL);
         cnMode.put("Outpainting Horizontally", CN_MODE_OUTPAINT_H);
         cnMode.put("Outpainting on Left", CN_MODE_OUTPAINT_H_LEFT);
         cnMode.put("Outpainting on Right", CN_MODE_OUTPAINT_H_RIGHT);
@@ -102,7 +101,7 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting on Top", CN_MODE_OUTPAINT_V_TOP);
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
-        cnMode.put("Merge with Reference", CN_MODE_MERGE);
+        cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
         }
@@ -125,7 +124,7 @@ public class Sketch implements Serializable {
         this.prompt = "";
         this.negPrompt = "";
         this.imgPreview = null;
-        this.cnMode = CN_MODE_SCRIBBLE;
+        this.cnMode = CN_MODE_IMG_SCRIBBLE;
     }
 
     public Bitmap getImgPreview() {
