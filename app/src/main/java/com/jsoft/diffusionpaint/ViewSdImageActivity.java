@@ -55,8 +55,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import okhttp3.OkHttpClient;
-
 public class ViewSdImageActivity extends AppCompatActivity implements SdApiResponseListener {
 
     public static final String CHANNEL_ID = "foreground_service_channel";
@@ -196,7 +194,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch.setImgPaint(Utils.getOutpaintBmp(mCurrentSketch.getImgPaint(), cnMode, Color.BLACK, true, param.sdSize));
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
-                } else if (cnMode.equals(Sketch.CN_MODE_MERGE)) {
+                } else if (cnMode.equals(Sketch.CN_MODE_INPAINT_MERGE)) {
                     mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef());
                     mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(32));
                     mCurrentSketch.setImgPreview(mCurrentSketch.getImgBgRefPreview());
