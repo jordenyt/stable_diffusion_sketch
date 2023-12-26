@@ -458,6 +458,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         JSONObject setConfigRequest = new JSONObject();
         if (sdModelList !=null && sdModelList.get(preferredModel) != null) {
             isCallingAPI = true;
+            setConfigRequest.put("CLIP_stop_at_last_layers", param.clipSkip);
             setConfigRequest.put("sd_model_checkpoint", preferredModel);
             setConfigRequest.put("sd_checkpoint_hash", sdModelList.get(preferredModel));
             sdApiHelper.sendPostRequest("setSdModel", "/sdapi/v1/options", setConfigRequest);

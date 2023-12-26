@@ -415,10 +415,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("canvasDim", "Drawing Canvas Maximum Size (long edge):", "", "3840");
                 break;
             case R.id.mi_steps:
-                showTextInputDialog("defaultSteps", "Steps:", "", "30");
+                showTextInputDialog("defaultSteps", "Steps:", "Integer from 1 to 150", "30");
+                break;
+            case R.id.mi_clip_skip:
+                showTextInputDialog("defaultClipSkip", "Clip skip:", "Integer from 1 to 12", "1");
                 break;
             case R.id.mi_cfg_scale:
-                showTextInputDialog("defaultCfgScale", "CFG Scale:", "", "7.0");
+                showTextInputDialog("defaultCfgScale", "CFG Scale:", "Decimal from 1.0 to 30.0", "7.0");
                 break;
             case R.id.mi_sd_model:
                 if (!validateSettings()) break;
