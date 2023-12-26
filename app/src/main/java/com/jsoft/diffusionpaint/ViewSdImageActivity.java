@@ -325,6 +325,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     isCallingAPI = false;
                     isCallingSD = false;
                     isInterrupted = false;
+                    isCallingDFL = false;
                     finish();
                 });
             });
@@ -414,6 +415,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         } else {
             isCallingAPI = false;
             isCallingSD = false;
+            isCallingDFL = false;
             isInterrupted = false;
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
