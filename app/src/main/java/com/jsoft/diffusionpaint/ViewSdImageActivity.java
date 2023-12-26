@@ -299,6 +299,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }
                     setResult(Activity.RESULT_OK, intent);
+                    isCallingAPI = false;
+                    isCallingSD = false;
+                    isInterrupted = false;
                     finish();
                 });
             });
@@ -387,6 +390,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             // do Nothing
         } else {
             isCallingAPI = false;
+            isCallingSD = false;
+            isInterrupted = false;
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
             setResult(Activity.RESULT_CANCELED, intent);
@@ -495,6 +500,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         } else {
             isCallingSD = false;
             isCallingAPI = false;
+            isInterrupted = false;
             handler.removeCallbacksAndMessages(null);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Call Stable Diffusion API failed (" + requestType + ")")
