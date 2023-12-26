@@ -216,10 +216,15 @@ public class SdApiHelper {
         if (param.steps == 0) {
             try {
                 param.steps = Integer.parseInt(sharedPreferences.getString("defaultSteps", "30"));
-            } catch (Exception e) { param.steps = 50; }
+            } catch (Exception e) { param.steps = 30; }
         }
         if (param.sampler == null) {
             param.sampler = sharedPreferences.getString("sdSampler", "Euler a");
+        }
+        if (param.clipSkip < 1 || param.clipSkip > 12) {
+            try {
+                param.clipSkip = Integer.parseInt(sharedPreferences.getString("defaultClipSkip", "1"));
+            } catch (Exception e) { param.clipSkip = 1; }
         }
         if (param.cn != null) {
             for (CnParam cnParam : param.cn) {

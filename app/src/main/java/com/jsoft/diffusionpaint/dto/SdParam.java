@@ -11,6 +11,7 @@ public class SdParam {
     public int inpaintFill; //for inpaint, Original / Noise
     public int inpaintPartial = 0;
     public int sdSize;
+    public int clipSkip;
     public String model;
     public String sampler;
 

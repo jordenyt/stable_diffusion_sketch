@@ -9,6 +9,7 @@
             <item android:id="@+id/mi_steps" android:title="Default Steps" />
             <item android:id="@+id/mi_cfg_scale" android:title="Default CFG Scale" />
             <item android:id="@+id/mi_sd_sampler" android:title="Default Sampling method"/>
+            <item android:id="@+id/mi_clip_skip" android:title="Clip skip" />
             <item android:id="@+id/mi_sd_upscaler" android:title="Upscaler"/>
             <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>
             <item android:id="@+id/mi_sd_refresh_loras" android:title="Refresh Loras"/>
