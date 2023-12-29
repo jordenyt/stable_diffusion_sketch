@@ -173,18 +173,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         initUI(cnMode);
 
         if (isFirstCall) {
+            runOnUiThread(this::showSpinner);
             apiResultList = new ArrayList<>();
             currentResult = 0;
             savedImageName = null;
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-                showSpinner();
                 mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
                 addResult("original");
                 remainGen = 0;
                 hideSpinner();
             } else {
-                runOnUiThread(this::showSpinner);
                 if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
                     SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                     mCurrentSketch.setImgBackground(Utils.getOutpaintBmp(mCurrentSketch.getImgBackground(), cnMode, Color.BLACK, false, param.sdSize));
@@ -484,13 +483,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         spinner_bg.setVisibility(View.GONE);
         sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) ? View.GONE : View.VISIBLE);
 
-        saveButton.setVisibility((savedImageName != null) ? View.GONE : View.VISIBLE);
+        saveButton.setVisibility((savedImageName != null) || (apiResultList.size() == 0) ? View.GONE : View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
         prevButton.setVisibility((apiResultList.size() > 1) ? View.VISIBLE : View.GONE);
         nextButton.setVisibility((apiResultList.size() > 1) ? View.VISIBLE : View.GONE);
-
-        expandButton.setVisibility(View.VISIBLE);
-        editButton.setVisibility(View.VISIBLE);
+        
+        expandButton.setVisibility((apiResultList.size() > 0) ? View.VISIBLE : View.GONE);
+        editButton.setVisibility((apiResultList.size() > 0) ? View.VISIBLE : View.GONE);
     }
 
     @Override
