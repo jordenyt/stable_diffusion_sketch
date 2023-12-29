@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint.dto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SdParam {
@@ -32,7 +34,64 @@ public class SdParam {
     public static final int INPAINT_FULL = 0;
     public static final int INPAINT_PARTIAL = 1;
 
-
+    public static final List<String> modeKeyList = new ArrayList<>(Arrays.asList(
+            "\"type\":\"txt2img\"",
+            "\"type\":\"img2img\"",
+            "\"type\":\"img2img\", \"denoise\":0.75, \"baseImage\":\"background\"",
+            "\"type\":\"inpaint\", \"denoise\":0.75, \"baseImage\":\"background\"",
+            "\"steps\":30",
+            "\"cfgScale\":7.0",
+            "\"model\":\"v1Model\"",
+            "\"model\":\"v1Inpaint\"",
+            "\"model\":\"sdxlBase\"",
+            "\"model\":\"sdxlTurbo\"",
+            "\"sampler\":\"DPM++ SDE Karras\"",
+            "\"sampler\":\"Euler a\"",
+            "\"denoise\":0.75",
+            "\"baseImage\":\"background\"",
+            "\"baseImage\":\"sketch\"",
+            "\"inpaintFill\":1",
+            "\"inpaintFill\":2",
+            "\"inpaintPartial\":1",
+            "\"sdSize\":768",
+            "\"sdSize\":1024",
+            "\"sdSize\":1280",
+            "\"clipSkip\":2",
+            "\"cn\":[{\"cnInputImage\":\"background\"",
+            "\"cn\":[{\"cnInputImage\":\"sketch\"",
+            "\"cn\":[{\"cnInputImage\":\"reference\"",
+            "{\"cnInputImage\":\"background\"",
+            "{\"cnInputImage\":\"sketch\"",
+            "{\"cnInputImage\":\"reference\"",
+            "\"cnInputImage\":\"background\"",
+            "\"cnInputImage\":\"sketch\"",
+            "\"cnInputImage\":\"reference\"",
+            "\"cnModelKey\":\"cnTileModel\", \"cnModule\":\"tile_colorfix+sharp\", \"cnModuleParamA\":8, \"cnModuleParamB\":1",
+            "\"cnModelKey\":\"cnPoseModel \", \"cnModule\":\"dw_openpose_full\"",
+            "\"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\"",
+            "\"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_pidinet\"",
+            "\"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_midas\"",
+            "\"cnModelKey\":\"cnNormalModel\", \"cnModule\":\"normal_bae\"",
+            "\"cnModelKey\":\"cnMlsdModel\", \"cnModule\":\"mlsd\", \"cnModuleParamA\":8, \"cnModuleParamB\":1",
+            "\"cnModelKey\":\"cnLineartModel\", \"cnModule\":\"lineart_standard (from white bg & black line)\"",
+            "\"cnModelKey\":\"cnSoftedgeModel\", \"cnModule\":\"softedge_pidinet\"",
+            "\"cnModelKey\":\"cnSegModel\", \"cnModule\":\"seg_ofade20k\"",
+            "\"cnModelKey\":\"cnIPAdapterModel\", \"cnModule\":\"ip-adapter_clip_sd15\"",
+            "\"cnModelKey\":\"cnxlIPAdapterModel\", \"cnModule\":\"ip-adapter_clip_sdxl_plus_vith\"",
+            "\"cnModelKey\":\"cnOther1Model\"",
+            "\"cnModelKey\":\"cnOther2Model\"",
+            "\"cnModelKey\":\"cnOther3Model\"",
+            "\"cnModule\":\"reference_only\", \"cnModuleParamA\":0.5",
+            "\"cnModuleParamA\":8.0",
+            "\"cnModuleParamB\":1.0",
+            "\"cnControlMode\":0",
+            "\"cnControlMode\":1",
+            "\"cnControlMode\":2",
+            "\"cnWeight\":1.0",
+            "\"cnResizeMode\":0",
+            "\"cnResizeMode\":1",
+            "\"cnResizeMode\":2"
+    ));
 
 
 }

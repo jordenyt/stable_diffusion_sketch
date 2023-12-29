@@ -43,6 +43,7 @@ import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
+import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -697,9 +698,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         TextView tvTitle = dialogView.findViewById(R.id.text_title);
         tvTitle.setText(title);
 
-        EditText editText = dialogView.findViewById(R.id.edit_text);
+        MultiAutoCompleteTextView editText = dialogView.findViewById(R.id.edit_text);
         editText.setHint(hint);
         editText.setText(sharedPreferences.getString(key, defaultValue));
+
+        if (key.startsWith("mode")) {
+            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, SdParam.modeKeyList);
+            editText.setAdapter(loraAdapter);
+            editText.setThreshold(2);
+            editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        }
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String inputText = editText.getText().toString();

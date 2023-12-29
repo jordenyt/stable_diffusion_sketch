@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.15.1-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.15.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
@@ -89,7 +89,8 @@ Custom mode can be defined in JSON format.<br/>
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
 | `inpaintFill`    | -       | -       | O          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
 | `inpaintPartial` | -       | -       | O          | `0` - Inpainting on whole image (DEFAULT) <br/> `1` - Inpainting on "painted" area and paste on original image   |
-| `sdSize`         | O       | O       | O          | Output resolution of SD.  Default value is configured  in setting. <br/>Suggested value: 512 / 768 / 1024 / 1280 |
+| `sdSize`         | O       | O       | O          | Output resolution of SD.  Default value is configured in setting. <br/>Suggested value: 512 / 768 / 1024 / 1280  |
+| `clipSkip`       | O       | O       | O          | Clip skip for v1.5 Model.  Default value is configured in setting. <br/>Suggested value: 1-2                     |
 | `cn`             | O       | O       | O          | JSON Array for ControlNet Object                                                                                 |
 
 (M - Mandatory; O - Optional)
