@@ -37,8 +37,10 @@ public class SdParam {
     public static final List<String> modeKeyList = new ArrayList<>(Arrays.asList(
             "\"type\":\"txt2img\"",
             "\"type\":\"img2img\"",
-            "\"type\":\"img2img\", \"denoise\":0.75, \"baseImage\":\"background\"",
-            "\"type\":\"inpaint\", \"denoise\":0.75, \"baseImage\":\"background\"",
+            "\"type\":\"inpaint\"",
+            "{\"type\":\"txt2img\"",
+            "{\"type\":\"img2img\", \"denoise\":0.75, \"baseImage\":\"background\"",
+            "{\"type\":\"inpaint\", \"denoise\":0.75, \"baseImage\":\"background\"",
             "\"steps\":30",
             "\"cfgScale\":7.0",
             "\"model\":\"v1Model\"",
