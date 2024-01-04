@@ -130,16 +130,16 @@ public class ViewSdImageService extends Service {
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        onSdApiFailure(requestType, "Response Code: " + response.code());
+                        onSdApiFailure(requestType, "onResponse Response Code: " + response.code());
                     }
 
                     assert responseBody != null;
                     String responseString = responseBody.string();
                     onSdApiResponse(requestType, responseString);
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                    onSdApiFailure(requestType, "IOException: " + e.getMessage());
+                    onSdApiFailure(requestType, "onResponse Exception: " + e.getMessage());
                 }
             }
         });
@@ -195,10 +195,15 @@ public class ViewSdImageService extends Service {
                     break;
                 }
             }
-        } catch (JSONException ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+            onSdApiFailure(requestType, "onSdApiResponse Exception: " + e.getMessage());
+        }
     }
 
     private void onSdApiFailure(String requestType, String errMsg) {
+        isRunning = false;
+        stopForeground(true);
         activity.runOnUiThread(() -> activity.onSdApiFailure(requestType, errMsg));
     }
 }
