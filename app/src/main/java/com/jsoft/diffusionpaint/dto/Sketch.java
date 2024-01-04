@@ -31,6 +31,7 @@ public class Sketch implements Serializable {
     private Bitmap imgReference;
     private String cnMode;
     private RectF rectInpaint;
+    private String style;
 
     private String exif;
     private List<Sketch> children;
@@ -123,6 +124,7 @@ public class Sketch implements Serializable {
         this.lastUpdateDate = new Date();
         this.prompt = "";
         this.negPrompt = "";
+        this.style = "";
         this.imgPreview = null;
         this.cnMode = CN_MODE_IMG_SCRIBBLE;
     }
@@ -202,6 +204,9 @@ public class Sketch implements Serializable {
     public String getExif() { return exif; }
 
     public void setExif(String exif) { this.exif = exif; }
+
+    public String getStyle() { return style; }
+    public void setStyle(String style) { this.style = style; }
 
     public RectF getRectInpaint(int sdSize) {
         if (rectInpaint == null) {

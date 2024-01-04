@@ -35,6 +35,7 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.jsoft.diffusionpaint.component.DrawingView;
 import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.component.CircleView;
+import com.jsoft.diffusionpaint.dto.SdStyle;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
@@ -74,6 +75,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     Bitmap bmRef;
     private int intentSketchId;
     public static List<String> loraList;
+    public static List<SdStyle> styleList;
     public static ArrayList<Path> mPaths = new ArrayList<>();
     public static ArrayList<Paint> mPaints = new ArrayList<>();
     public static ArrayList<Path> mUndonePaths = new ArrayList<>();
@@ -89,6 +91,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdApiHelper = new SdApiHelper(this, this);
         if (loraList == null) {
             sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
+        }
+        if (styleList == null) {
+            sdApiHelper.sendGetRequest("getStyles", "/sdapi/v1/prompt-styles");
         }
         Intent i = getIntent();
         loadSketch(i);
@@ -120,6 +125,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setParentId(parentId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
             mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
+            mCurrentSketch.setStyle(i.getStringExtra("style"));
 
             mCurrentSketch.setExif(Utils.getImageExif(bitmapPath));
             if (!i.hasExtra("prompt")) {
@@ -156,12 +162,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             String promptText = i.getStringExtra("prompt");
             String negPromptText = i.getStringExtra("negPrompt");
             String aspectRatioText = i.getStringExtra("aspectRatio");
+            String style = i.getStringExtra("style");
             int numGen = i.getIntExtra("numGen", 1);
             Intent intent = new Intent(DrawingActivity.this, ViewSdImageActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", cnMode);
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
+            intent.putExtra("style", style);
             intent.putExtra("aspectRatio", aspectRatioText);
             intent.putExtra("numGen", numGen);
             sdViewerActivityResultLauncher.launch(intent);
@@ -423,6 +431,21 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdNumGen.setAdapter(sdNumGenAdapter);
         sdNumGen.setSelection(0);
 
+        Spinner sdStyle = dialogView.findViewById(R.id.sd_style);
+        List<String> sdStyleList = new ArrayList<>();
+        sdStyleList.add("--None--");
+        int selectedStyle = 0;
+        for (int i=0;i<styleList.size();i++) {
+            sdStyleList.add(styleList.get(i).name);
+            if (styleList.get(i).name.equals(mCurrentSketch.getStyle())) {
+                selectedStyle = i + 1;
+            }
+        }
+        ArrayAdapter<String> sdStyleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdStyleList);
+        sdStyleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdStyle.setAdapter(sdStyleAdapter);
+        sdStyle.setSelection(selectedStyle);
+
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             mCurrentSketch.setPrompt(promptText);
@@ -430,6 +453,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setCnMode(cnModeMap.get(selectMode));
             String negPromptText = negPromptTV.getText().toString();
             mCurrentSketch.setNegPrompt(negPromptText);
+            String style = sdStyle.getSelectedItem().toString();
+            mCurrentSketch.setStyle(style);
             saveSketch();
             int numGen = sdNumGen.getSelectedItemPosition() + 1;
             if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
@@ -564,6 +589,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     public void onSdApiResponse(String requestType, String responseBody)  {
         if ("getLoras".equals(requestType)) {
             loraList = sdApiHelper.getLoras(responseBody);
+        } else if ("getStyles".equals(requestType)) {
+            styleList = sdApiHelper.getStyles(responseBody);
         } else if ("interrogate".equals(requestType)) {
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);

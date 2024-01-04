@@ -147,6 +147,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
                 mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
                 mCurrentSketch.setCnMode(i.getStringExtra("cnMode"));
+                mCurrentSketch.setStyle(i.getStringExtra("style"));
                 mCurrentSketch.setId(-3);
                 String aspectRatio = sharedPreferences.getString("sdImageAspect", Sketch.ASPECT_RATIO_SQUARE);
                 if (i.hasExtra("aspectRatio")) aspectRatio = i.getStringExtra("aspectRatio");
@@ -294,6 +295,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     intent.putExtra("bitmapPath", file.getAbsolutePath());
                     intent.putExtra("prompt", mCurrentSketch.getPrompt());
                     intent.putExtra("negPrompt", mCurrentSketch.getNegPrompt());
+                    intent.putExtra("style", mCurrentSketch.getStyle());
                     if (mCurrentSketch.getId() >= 0) {
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }

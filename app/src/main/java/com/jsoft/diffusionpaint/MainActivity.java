@@ -44,6 +44,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.dto.SdParam;
+import com.jsoft.diffusionpaint.dto.SdStyle;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private int currentRootId = -1;
     private static int lastModeSelection = 0;
     private static int lastAspectSelection = -1;
+    private static int lastStyleSelection = 0;
     private static boolean updateChecked = false;
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
 
@@ -652,6 +654,17 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         sdNumGen.setAdapter(sdNumGenAdapter);
         sdNumGen.setSelection(0);
 
+        Spinner sdStyle = dialogView.findViewById(R.id.sd_style);
+        List<String> sdStyleList = new ArrayList<>();
+        sdStyleList.add("--None--");
+        for (int i=0;i<DrawingActivity.styleList.size();i++) {
+            sdStyleList.add(DrawingActivity.styleList.get(i).name);
+        }
+        ArrayAdapter<String> sdStyleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdStyleList);
+        sdStyleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sdStyle.setAdapter(sdStyleAdapter);
+        sdStyle.setSelection(lastStyleSelection);
+
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             String negPromptText = negPromptTV.getText().toString();
@@ -664,12 +677,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             lastModeSelection = sdMode.getSelectedItemPosition();
             String selectAspectRatio = sdAspectRatio.getSelectedItem().toString();
             lastAspectSelection = sdAspectRatio.getSelectedItemPosition();
+            String selectStyle = sdStyle.getSelectedItem().toString();
+            lastStyleSelection = sdStyle.getSelectedItemPosition();
             Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));
+            intent.putExtra("style", selectStyle);
             int numGen = sdNumGen.getSelectedItemPosition() + 1;
             intent.putExtra("numGen", numGen);
             gotoDrawActivity(intent);
@@ -787,6 +803,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         if (DrawingActivity.loraList == null) {
             sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
+        } else if (DrawingActivity.styleList == null) {
+            sdApiHelper.sendGetRequest("getStyles", "/sdapi/v1/prompt-styles");
         } else {
             showPromptDialog();
         }
@@ -915,7 +933,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 3", "cnOther3Model", "", "");
             } else if ("getLoras".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
-                showPromptDialog();
+                addTxt2img();
+            } else if ("getStyles".equals(requestType)) {
+                DrawingActivity.styleList = sdApiHelper.getStyles(responseBody);
+                addTxt2img();
             } else if ("getLoras2".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showAutoCompleteDialog();
