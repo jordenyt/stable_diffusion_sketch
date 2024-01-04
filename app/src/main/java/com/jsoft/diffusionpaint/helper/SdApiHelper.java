@@ -259,7 +259,6 @@ public class SdApiHelper {
                 }
             }
         }
-        Log.e("diffusionpaint", "Prompt: " + prompt);
         return sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", "");
     }
 
@@ -277,7 +276,6 @@ public class SdApiHelper {
                 }
             }
         }
-        Log.e("diffusionpaint", "negativePrompt: " + prompt);
         return sharedPreferences.getString("negativePrompt", "") + ", " + prompt;
     }
 
