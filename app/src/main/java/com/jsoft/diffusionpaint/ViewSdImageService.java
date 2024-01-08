@@ -131,6 +131,7 @@ public class ViewSdImageService extends Service {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
                         onSdApiFailure(requestType, "onResponse Response Code: " + response.code());
+                        return;
                     }
 
                     assert responseBody != null;
