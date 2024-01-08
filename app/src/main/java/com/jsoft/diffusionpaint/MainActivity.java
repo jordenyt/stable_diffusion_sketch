@@ -30,7 +30,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -44,7 +43,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.dto.SdParam;
-import com.jsoft.diffusionpaint.dto.SdStyle;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
@@ -63,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -455,9 +452,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
                 break;
-            case R.id.mi_sd_upscaler:
+            case R.id.mi_upscaler:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setUpscaler", "/sdapi/v1/upscalers");
+                break;
+            case R.id.mi_upscaler_gfpgan:
+                showTextInputDialog("upscalerGFPGAN", "GFPGAN Visibility:", "Decimal from 0.0 to 1.0", "0.8");
                 break;
             case R.id.mi_about:
                 Intent intent = new Intent(Intent.ACTION_VIEW);

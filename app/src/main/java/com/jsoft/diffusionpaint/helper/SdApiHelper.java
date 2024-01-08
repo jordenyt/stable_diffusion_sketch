@@ -143,7 +143,9 @@ public class SdApiHelper {
         try {
             jsonObject.put("resize_mode", 0);
             //jsonObject.put("show_extras_results", true);
-            jsonObject.put("gfpgan_visibility", 0.8);
+            double gfpganVisibity = 0.8;
+            try {gfpganVisibity = Double.parseDouble(sharedPreferences.getString("upscalerGFPGAN", "0.8")); } catch (Exception ignored) {}
+            jsonObject.put("gfpgan_visibility", gfpganVisibity);
             jsonObject.put("codeformer_visibility", 0);
             jsonObject.put("codeformer_weight", 0);
             jsonObject.put("upscaling_resize", scale);
