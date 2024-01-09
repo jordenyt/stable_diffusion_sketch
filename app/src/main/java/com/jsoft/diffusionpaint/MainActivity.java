@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
 
         /*CompletableFuture.supplyAsync(() -> {
-            sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info", null, "GET");
+            sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info?v=" + BuildConfig.VERSION_CODE, null, "GET");
             return "";
         });*/
 
