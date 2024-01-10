@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.15.4-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.15.5-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/>
 
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
@@ -82,6 +82,7 @@ Custom mode can be defined in JSON format.<br/>
 ### Parameters for the mode definition JSON:
 | Variable         | txt2img | img2img | inpainting | Value                                                                                                            |
 |------------------|---------|---------|------------|------------------------------------------------------------------------------------------------------------------|
+| `name`           | O       | O       | O          | Name of this custom mode.                                                                                        |
 | `type`           | M       | M       | M          | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting                        |
 | `steps`          | O       | O       | O          | integer from 1 to 120, default value is 40                                                                       |
 | `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |

@@ -400,17 +400,29 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
-        List<String> filteredModes = new ArrayList<>();
+        List<String> modeSelectList = new ArrayList<>();
+        List<String> cnModeList = new ArrayList<>();
         for (String mode : cnModeMap.keySet()) {
-            filteredModes.add(mode);
+            String modeName = mode;
+            if (cnModeMap.get(mode).startsWith(CN_MODE_CUSTOM)) {
+                String jsonMode = sharedPreferences.getString("modeCustom" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
+                try {
+                    JSONObject jsonObjectMode = new JSONObject(jsonMode);
+                    if (jsonObjectMode.has("name")) {
+                        modeName = "CM" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()) + " - " + jsonObjectMode.getString("name");
+                    }
+                } catch (Exception ignored) {}
+            }
+            cnModeList.add(cnModeMap.get(mode));
+            modeSelectList.add(modeName);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modeSelectList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sdMode.setAdapter(adapter);
         for (int i=0; i<cnModeMap.size(); i++) {
-            String modeDesc = sdMode.getItemAtPosition(i).toString();
-            if (Objects.equals(cnModeMap.get(modeDesc), mCurrentSketch.getCnMode())) {
+            String cnMode = cnModeList.get(i);
+            if (Objects.equals(cnMode, mCurrentSketch.getCnMode())) {
                 sdMode.setSelection(i);
                 break;
             }
@@ -449,8 +461,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             mCurrentSketch.setPrompt(promptText);
-            String selectMode = sdMode.getSelectedItem().toString();
-            mCurrentSketch.setCnMode(cnModeMap.get(selectMode));
+            int selectMode = sdMode.getSelectedItemPosition();
+            mCurrentSketch.setCnMode(cnModeList.get(selectMode));
             String negPromptText = negPromptTV.getText().toString();
             mCurrentSketch.setNegPrompt(negPromptText);
             String style = sdStyle.getSelectedItem().toString();
