@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SdParam {
+    public String name;
     public String type; //txt2img, img2img, inpaint
     public String baseImage; //for img2img and inpaint, Background, Sketch
     public double denoise;
@@ -35,6 +36,7 @@ public class SdParam {
     public static final int INPAINT_PARTIAL = 1;
 
     public static final List<String> modeKeyList = new ArrayList<>(Arrays.asList(
+            "\"name\":\"Custom Mode\"",
             "\"type\":\"txt2img\"",
             "\"type\":\"img2img\"",
             "\"type\":\"inpaint\"",
