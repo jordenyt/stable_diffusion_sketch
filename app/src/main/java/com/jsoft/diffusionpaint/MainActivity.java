@@ -440,6 +440,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDXLTurboModel", "/sdapi/v1/sd-models");
                 break;
+            case R.id.mi_sdxl_inpaint_model:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setSDXLInpaintModel", "/sdapi/v1/sd-models");
+                break;
             case R.id.mi_sd_sampler:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
@@ -898,6 +902,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Model", "sdxlBaseModel", "", "");
             } else if ("setSDXLTurboModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Turbo Model", "sdxlTurboModel", "", "");
+            } else if ("setSDXLInpaintModel".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Inpaint Model", "sdxlInpaintModel", "", "");
             } else if ("setSampler".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "name", "Default Sampling Method", "sdSampler", "Euler a", "");
             } else if ("setUpscaler".equals(requestType)) {
