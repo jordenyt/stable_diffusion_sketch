@@ -276,7 +276,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         });
 
         sdButton = findViewById(R.id.fab_stable_diffusion);
-        sdButton.setOnClickListener(view -> showInputDialog());
+        sdButton.setOnClickListener(view -> {
+            if (loraList != null) {
+                showInputDialog();
+            } else {
+                sdApiHelper.sendGetRequest("getLoras2", "/sdapi/v1/loras");
+            }
+        });
 
         circleView.setOnClickListener(view -> {
             if (!mDrawingView.getIsEraserMode()) {
@@ -601,6 +607,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     public void onSdApiResponse(String requestType, String responseBody)  {
         if ("getLoras".equals(requestType)) {
             loraList = sdApiHelper.getLoras(responseBody);
+        } else if ("getLoras2".equals(requestType)) {
+            loraList = sdApiHelper.getLoras(responseBody);
+            showInputDialog();
         } else if ("getStyles".equals(requestType)) {
             styleList = sdApiHelper.getStyles(responseBody);
         } else if ("interrogate".equals(requestType)) {

@@ -47,6 +47,8 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_INPAINT_SKETCH = "inpaintColor";
     public static final String CN_MODE_INPAINT_PARTIAL = "inpaintPartial";
     public static final String CN_MODE_INPAINT_SKETCH_PARTIAL = "inpaintPartialSketch";
+    public static final String CN_MODE_INPAINT_PARTIAL_XL = "inpaintPartialXL";
+    public static final String CN_MODE_INPAINT_SKETCH_PARTIAL_XL = "inpaintPartialSketchXL";
     public static final String CN_MODE_OUTPAINT = "outpaint";
     public static final String CN_MODE_OUTPAINT_H = CN_MODE_OUTPAINT + "H";
     public static final String CN_MODE_OUTPAINT_H_LEFT = CN_MODE_OUTPAINT + "HL";
@@ -75,6 +77,8 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_SKETCH_PARTIAL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
+        json.put(CN_MODE_INPAINT_PARTIAL_XL, "{\"baseImage\":\"background\", \"denoise\":0.9, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\"}");
+        json.put(CN_MODE_INPAINT_SKETCH_PARTIAL_XL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\"}");
         json.put(CN_MODE_OUTPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}");
         json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
@@ -95,6 +99,8 @@ public class Sketch implements Serializable {
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
         cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);
         cnMode.put("Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL);
+        cnMode.put("SDXL Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL_XL);
+        cnMode.put("SDXL Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL_XL);
         cnMode.put("Outpainting Horizontally", CN_MODE_OUTPAINT_H);
         cnMode.put("Outpainting on Left", CN_MODE_OUTPAINT_H_LEFT);
         cnMode.put("Outpainting on Right", CN_MODE_OUTPAINT_H_RIGHT);

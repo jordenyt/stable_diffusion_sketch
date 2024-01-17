@@ -23,6 +23,7 @@ public class SdParam {
     public static final String SD_MODEL_INPAINT = "v1Inpaint";
     public static final String SD_MODEL_SDXL_BASE = "sdxlBase";
     public static final String SD_MODEL_SDXL_TURBO = "sdxlTurbo";
+    public static final String SD_MODEL_SDXL_INPAINT = "sdxlInpaint";
     public static final String SD_MODE_TYPE_TXT2IMG = "txt2img";
     public static final String SD_MODE_TYPE_IMG2IMG = "img2img";
     public static final String SD_MODE_TYPE_INPAINT = "inpaint";
@@ -49,6 +50,7 @@ public class SdParam {
             "\"model\":\"v1Inpaint\"",
             "\"model\":\"sdxlBase\"",
             "\"model\":\"sdxlTurbo\"",
+            "\"model\":\"sdxlInpaint\"",
             "\"sampler\":\"DPM++ SDE Karras\"",
             "\"sampler\":\"Euler a\"",
             "\"denoise\":0.75",
