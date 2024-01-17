@@ -77,8 +77,8 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_SKETCH_PARTIAL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
-        json.put(CN_MODE_INPAINT_PARTIAL_XL, "{\"baseImage\":\"background\", \"denoise\":0.9, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\"}");
-        json.put(CN_MODE_INPAINT_SKETCH_PARTIAL_XL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\"}");
+        json.put(CN_MODE_INPAINT_PARTIAL_XL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
+        json.put(CN_MODE_INPAINT_SKETCH_PARTIAL_XL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
         json.put(CN_MODE_OUTPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}");
         json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
