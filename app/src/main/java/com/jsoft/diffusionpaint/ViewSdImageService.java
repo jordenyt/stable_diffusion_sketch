@@ -211,7 +211,7 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.updateMBitmap();
 
                     ViewSdImageActivity.savedImageName = null;
-                    ViewSdImageActivity.addResult(requestType);
+                    ViewSdImageActivity.addResult(requestType, null);
                     activity.runOnUiThread(() -> activity.updateScreen());
                     isRunning = false;
                     stopForeground(true);
