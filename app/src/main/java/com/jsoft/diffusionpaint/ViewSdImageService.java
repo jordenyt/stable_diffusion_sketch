@@ -158,6 +158,11 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.isCallingSD = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     JSONArray images = jsonObject.getJSONArray("images");
+                    String info = jsonObject.getString("info");
+                    JSONObject infoObject = new JSONObject(info);
+                    JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
+                    String infotexts = infotextsArray.getString(0).replaceAll("\\\\n","\n");
+
                     if (images.length() > 0) {
                         ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap((String) images.get(0));
                         if ("img2img".equals(requestType)) {
@@ -165,7 +170,7 @@ public class ViewSdImageService extends Service {
                         }
                     }
                     ViewSdImageActivity.savedImageName = null;
-                    ViewSdImageActivity.addResult(requestType);
+                    ViewSdImageActivity.addResult(requestType, infotexts);
 
                     if (!ViewSdImageActivity.isInterrupted) {
                         ViewSdImageActivity.remainGen--;
@@ -191,7 +196,7 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.updateMBitmap();
 
                     ViewSdImageActivity.savedImageName = null;
-                    ViewSdImageActivity.addResult(requestType);
+                    ViewSdImageActivity.addResult(requestType, null);
 
                     activity.runOnUiThread(() -> activity.updateScreen());
                     isRunning = false;

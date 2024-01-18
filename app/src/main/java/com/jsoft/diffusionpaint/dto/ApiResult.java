@@ -7,4 +7,5 @@ public class ApiResult {
     public String savedImageName;
     public Bitmap mBitmap;
     public Bitmap inpaintBitmap;
+    public String infoTexts;
 }
