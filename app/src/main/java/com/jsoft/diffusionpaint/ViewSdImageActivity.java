@@ -582,7 +582,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (inpaintBitmap != null) {
             r.inpaintBitmap = inpaintBitmap.copy(inpaintBitmap.getConfig(), true);
         }
-        r.infoTexts = infoTexts;
+        if (infoTexts == null) {
+            r.infoTexts = apiResultList.get(currentResult).infoTexts;
+        } else {
+            r.infoTexts = infoTexts;
+        }
         //r.savedImageName = savedImageName;
         apiResultList.add(r);
         currentResult = apiResultList.size() - 1;
