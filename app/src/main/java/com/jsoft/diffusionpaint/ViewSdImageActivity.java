@@ -181,7 +181,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
                 mBitmap = mCurrentSketch.getImgBgRef();
                 sdImage.setImageBitmap(mBitmap);
-                addResult("original");
+                addResult("original", null);
                 remainGen = 0;
                 hideSpinner();
             } else {
@@ -351,9 +351,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
                     JSONObject jsonExif = new JSONObject();
-                    String userComment = String.format("%s\nNegative prompt: %s\nSteps: %d, Sampler: %s, CFG scale: %.1f, Size: %dx%d",
-                            mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt(), param.steps,
-                            sharedPreferences.getString("sdSampler", "Euler a"), param.cfgScale, mBitmap.getWidth(), mBitmap.getHeight());
+                    String userComment = apiResultList.get(currentResult).infoTexts;
                     jsonExif.put("UserComment", userComment);
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
@@ -365,9 +363,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 try {
                     JSONObject jsonExif = new JSONObject(exif);
                     if (!jsonExif.has("UserComment")) {
-                        String userComment = String.format("%s\nNegative prompt: %s\nSteps: %d, Sampler: %s, CFG scale: %.1f, Size: %dx%d",
-                                mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt(), param.steps,
-                                sharedPreferences.getString("sdSampler", "Euler a"), param.cfgScale, mBitmap.getWidth(), mBitmap.getHeight());
+                        String userComment = apiResultList.get(currentResult).infoTexts;
                         jsonExif.put("UserComment", userComment);
                     }
                     if (!jsonExif.has("DateTimeOriginal")) {
@@ -579,13 +575,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
-    public static void addResult(String requestType) {
+    public static void addResult(String requestType, String infoTexts) {
         ApiResult r = new ApiResult();
         r.requestType = requestType;
         r.mBitmap = mBitmap.copy(mBitmap.getConfig(), true);
         if (inpaintBitmap != null) {
             r.inpaintBitmap = inpaintBitmap.copy(inpaintBitmap.getConfig(), true);
         }
+        r.infoTexts = infoTexts;
         //r.savedImageName = savedImageName;
         apiResultList.add(r);
         currentResult = apiResultList.size() - 1;
