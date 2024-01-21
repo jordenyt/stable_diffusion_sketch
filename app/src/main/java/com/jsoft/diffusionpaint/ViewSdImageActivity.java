@@ -1,8 +1,6 @@
 package com.jsoft.diffusionpaint;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -199,10 +197,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
                 }
-                CompletableFuture.supplyAsync(() -> {
-                    getSdModel();
-                    return "";
-                });
+                getSdModel();
             }
         } else {
             if (isCallingAPI) { showSpinner();}
@@ -405,6 +400,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(connection);
+    }
+
+    @Override
     public void onPause() {
         isPaused = true;
         handler.removeCallbacksAndMessages(null);
@@ -438,15 +439,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             isCallingAPI = true;
             sdApiHelper.sendGetRequest("getSDModel", "/sdapi/v1/sd-models");
         } else {
-            try {
-                setSdModel();
-            } catch (JSONException e) {
-                onSdApiFailure("setConfig", e.getMessage());
-            }
+            setSdModel();
         }
     }
 
-    private void setSdModel() throws JSONException {
+    private void setSdModel() {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
         String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
@@ -456,10 +453,21 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         JSONObject setConfigRequest = new JSONObject();
         if (sdModelList !=null && sdModelList.get(preferredModel) != null) {
             isCallingAPI = true;
-            setConfigRequest.put("CLIP_stop_at_last_layers", param.clipSkip);
-            setConfigRequest.put("sd_model_checkpoint", preferredModel);
-            setConfigRequest.put("sd_checkpoint_hash", sdModelList.get(preferredModel));
-            sdApiHelper.sendPostRequest("setSdModel", "/sdapi/v1/options", setConfigRequest);
+            try {
+                setConfigRequest.put("CLIP_stop_at_last_layers", param.clipSkip);
+                setConfigRequest.put("sd_model_checkpoint", preferredModel);
+                setConfigRequest.put("sd_checkpoint_hash", sdModelList.get(preferredModel));
+            } catch (JSONException ignored) {}
+            if (mBound) {
+                String baseUrl = sharedPreferences.getString("sdServerAddress", "");
+                mService.setObject(baseUrl, setConfigRequest);
+                Intent intent = new Intent(this, ViewSdImageService.class);
+                intent.putExtra("requestType", "setSdModel");
+                startService(intent);
+            } else {
+                Handler h = new Handler();
+                h.postDelayed(() -> setSdModel(), 100);
+            }
         } else {
             callSD4Img();
         }
@@ -540,10 +548,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
-    ActivityResultLauncher<Intent> drawingActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {});
-
     @Override
     public void onSdApiResponse(String requestType, String responseBody) {
         try {
@@ -556,9 +560,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     sdModelList.put(joModel.getString("title"), joModel.getString("sha256"));
                 }
                 setSdModel();
-            } else if ("setSdModel".equals(requestType)) {
-                isCallingAPI = false;
-                callSD4Img();
             } else if ("getProgress".equals(requestType)) {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 double progress = jsonObject.getDouble("progress");
