@@ -544,7 +544,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (!isPaused)
                 handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
         } else {
-            handler.postDelayed(this::callSD4Img, 100);
+            Handler h = new Handler();
+            h.postDelayed(this::callSD4Img, 100);
         }
     }
 
