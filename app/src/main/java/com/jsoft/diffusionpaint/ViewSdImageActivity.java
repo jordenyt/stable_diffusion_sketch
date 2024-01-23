@@ -80,7 +80,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static boolean isCallingAPI = false;
     private static List<ApiResult> apiResultList;
     private static int currentResult;
-    private static Map<String, String> sdModelList = null;
+    public static Map<String, String> sdModelList = null;
     private static Handler handler;
     public static int remainGen = 0;
     private boolean isPaused = false;
@@ -439,36 +439,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             isCallingAPI = true;
             sdApiHelper.sendGetRequest("getSDModel", "/sdapi/v1/sd-models");
         } else {
-            setSdModel();
-        }
-    }
-
-    private void setSdModel() {
-        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
-                param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
-                param.model.equals(SdParam.SD_MODEL_SDXL_TURBO) ? sharedPreferences.getString("sdxlTurboModel", ""):
-                param.model.equals(SdParam.SD_MODEL_SDXL_INPAINT) ? sharedPreferences.getString("sdxlInpaintModel", ""):
-                sharedPreferences.getString("sdModelCheckpoint", "");
-        JSONObject setConfigRequest = new JSONObject();
-        if (sdModelList !=null && sdModelList.get(preferredModel) != null) {
-            isCallingAPI = true;
-            try {
-                setConfigRequest.put("CLIP_stop_at_last_layers", param.clipSkip);
-                setConfigRequest.put("sd_model_checkpoint", preferredModel);
-                setConfigRequest.put("sd_checkpoint_hash", sdModelList.get(preferredModel));
-            } catch (JSONException ignored) {}
-            if (mBound) {
-                String baseUrl = sharedPreferences.getString("sdServerAddress", "");
-                mService.setObject(baseUrl, setConfigRequest);
-                Intent intent = new Intent(this, ViewSdImageService.class);
-                intent.putExtra("requestType", "setSdModel");
-                startService(intent);
-            } else {
-                Handler h = new Handler();
-                h.postDelayed(() -> setSdModel(), 100);
-            }
-        } else {
             callSD4Img();
         }
     }
@@ -560,7 +530,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     JSONObject joModel = jsonArray.getJSONObject(i);
                     sdModelList.put(joModel.getString("title"), joModel.getString("sha256"));
                 }
-                setSdModel();
+                callSD4Img();
             } else if ("getProgress".equals(requestType)) {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 double progress = jsonObject.getDouble("progress");

@@ -1,19 +1,19 @@
 package com.jsoft.diffusionpaint.helper;
 
+import static com.jsoft.diffusionpaint.ViewSdImageActivity.sdModelList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.jsoft.diffusionpaint.DrawingActivity;
 import com.jsoft.diffusionpaint.dto.CnParam;
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.SdStyle;
@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -247,6 +246,24 @@ public class SdApiHelper {
         return param;
     }
 
+    public JSONObject getConfig(SdParam param) {
+        String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SDXL_TURBO) ? sharedPreferences.getString("sdxlTurboModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SDXL_INPAINT) ? sharedPreferences.getString("sdxlInpaintModel", ""):
+                sharedPreferences.getString("sdModelCheckpoint", "");
+        JSONObject setConfigRequest = new JSONObject();
+        if (sdModelList !=null && sdModelList.get(preferredModel) != null) {
+            try {
+                setConfigRequest.put("CLIP_stop_at_last_layers", param.clipSkip);
+                setConfigRequest.put("sd_model_checkpoint", preferredModel);
+                setConfigRequest.put("sd_checkpoint_hash", sdModelList.get(preferredModel));
+            } catch (JSONException ignored) {
+            }
+        }
+        return setConfigRequest;
+    }
+
     public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -278,6 +295,8 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("sampler_name", param.sampler);
             jsonObject.put("save_images", false);
+            jsonObject.put("override_settings", getConfig(param));
+            jsonObject.put("override_settings_restore_afterwards", true);
 
             if (param.cn != null) {
                 JSONObject alwayson_scripts = new JSONObject();
@@ -417,6 +436,8 @@ public class SdApiHelper {
             jsonObject.put("save_images", false);
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("cfg_scale", param.cfgScale);
+            jsonObject.put("override_settings", getConfig(param));
+            jsonObject.put("override_settings_restore_afterwards", true);
 
             // ControlNet Args
             if (param.cn != null) {
