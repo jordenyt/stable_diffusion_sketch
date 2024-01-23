@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint.component;
 
+import static java.lang.Math.*;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -114,7 +116,7 @@ public class DrawingView extends View
 			mBackgroundPaint.setStyle(Paint.Style.FILL);
 			double baseWidth, baseHeight;
 			if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE)) {
-				baseWidth = baseHeight = Math.min(viewCanvas.getWidth(), (double)viewCanvas.getHeight());
+				baseWidth = baseHeight = min(viewCanvas.getWidth(), (double)viewCanvas.getHeight());
 			} else if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
 				double ratio = (double) viewCanvas.getHeight() / (double) viewCanvas.getWidth();
 				baseWidth = (ratio >= 4d / 3d) ? viewCanvas.getWidth() : viewCanvas.getHeight() * 3d / 4d;
@@ -128,15 +130,15 @@ public class DrawingView extends View
 				baseWidth = (ratio >= 16d / 9d) ? viewCanvas.getHeight() * 16d / 9d : viewCanvas.getWidth();
 				baseHeight = (ratio >= 16d / 9d) ? viewCanvas.getHeight() : viewCanvas.getWidth() * 10d / 9d;
 			}
-			mBaseBitmap = Bitmap.createBitmap((int)Math.round(baseWidth), (int)Math.round(baseHeight), Bitmap.Config.ARGB_8888);
+			mBaseBitmap = Bitmap.createBitmap((int) round(baseWidth), (int) round(baseHeight), Bitmap.Config.ARGB_8888);
 			Canvas baseCanvas = new Canvas(mBaseBitmap);
-			baseCanvas.drawRect(0f,0f,(int)Math.round(baseWidth), (int)Math.round(baseHeight), mBackgroundPaint);
+			baseCanvas.drawRect(0f,0f,(int) round(baseWidth), (int) round(baseHeight), mBackgroundPaint);
 
 			curLeft = (viewCanvas.getWidth() - baseCanvas.getWidth()) / 2d;
 			curTop = (viewCanvas.getHeight() - baseCanvas.getHeight()) / 2d;
 
 			minScale = 1.0;
-			maxScale = (double)maxResolution / Math.max(baseWidth, baseHeight);
+			maxScale = (double)maxResolution / max(baseWidth, baseHeight);
 			curScale = 1.0;
 			drawBackground(viewCanvas, curLeft, curTop, curScale);
 		} else {
@@ -145,16 +147,16 @@ public class DrawingView extends View
 	}
 
 	private void drawBitmapOnCanvas(Bitmap bm, Canvas viewCanvas, double offsetX, double offsetY, double viewScale) {
-		double srcTop = Math.max(0d, -offsetY/viewScale);
-		double srcLeft = Math.max(0d, -offsetX/viewScale);
+		double srcTop = max(0d, -offsetY/viewScale);
+		double srcLeft = max(0d, -offsetX/viewScale);
 		double srcHeight = (viewScale * bm.getHeight() <= viewCanvas.getHeight()) ? bm.getHeight() : (double)viewCanvas.getHeight() / viewScale;
 		double srcWidth = (viewScale * bm.getWidth() <= viewCanvas.getWidth()) ? bm.getWidth() : (double)viewCanvas.getWidth() / viewScale;
-		Rect srcRect = new Rect((int)Math.round(srcLeft), (int)Math.round(srcTop), (int)Math.round(srcLeft + srcWidth), (int)Math.round(srcTop+srcHeight));
+		Rect srcRect = new Rect((int) round(srcLeft), (int) round(srcTop), (int) round(srcLeft + srcWidth), (int) round(srcTop+srcHeight));
 		double dstTop = (offsetY > 0d) ? offsetY : 0;
 		double dstLeft = (offsetX > 0d) ? offsetX : 0;
 		double dstHeight = (viewScale * bm.getHeight() <= viewCanvas.getHeight()) ? bm.getHeight() * viewScale: (double)viewCanvas.getHeight();
 		double dstWidth = (viewScale * bm.getWidth() <= viewCanvas.getWidth()) ? bm.getWidth() * viewScale: (double)viewCanvas.getWidth();
-		Rect dstRect = new Rect((int)Math.round(dstLeft), (int)Math.round(dstTop), (int)Math.round(dstLeft + dstWidth), (int)Math.round(dstTop+dstHeight));
+		Rect dstRect = new Rect((int) round(dstLeft), (int) round(dstTop), (int) round(dstLeft + dstWidth), (int) round(dstTop+dstHeight));
 		viewCanvas.drawBitmap(bm, srcRect, dstRect, null);
 	}
 
@@ -216,8 +218,8 @@ public class DrawingView extends View
 		double w = mViewCanvas.getWidth();
 		double h = mViewCanvas.getHeight();
 		if (mBaseBitmap != null) {
-			minScale = Math.min(w / (double)mBaseBitmap.getWidth(), h / (double)mBaseBitmap.getHeight());
-			maxScale = (double)maxResolution / (double)Math.max(mBaseBitmap.getWidth(), mBaseBitmap.getHeight());
+			minScale = min(w / (double)mBaseBitmap.getWidth(), h / (double)mBaseBitmap.getHeight());
+			maxScale = (double)maxResolution / (double) max(mBaseBitmap.getWidth(), mBaseBitmap.getHeight());
 			curScale = minScale;
 			curLeft = (w - mBaseBitmap.getWidth() * curScale) / 2d;
 			curTop = (h - mBaseBitmap.getHeight() * curScale) / 2d;
@@ -237,7 +239,7 @@ public class DrawingView extends View
 				case MotionEvent.ACTION_DOWN:
 					if (!isEyedropper) {
 						mDrawPath.moveTo(realX, realY);
-						mDrawPaint.setStrokeWidth((int)Math.round((double)mStrokeWidth / curScale));
+						mDrawPaint.setStrokeWidth((int) round((double)mStrokeWidth / curScale));
 					}
 					//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
 					break;
@@ -397,7 +399,7 @@ public class DrawingView extends View
 	}
 
 	public Bitmap getPreview() {
-		Bitmap previewBitmap = Bitmap.createBitmap((int)Math.round(mBaseBitmap.getWidth()* minScale), (int)Math.round(mBaseBitmap.getHeight()* minScale), Bitmap.Config.ARGB_8888);
+		Bitmap previewBitmap = Bitmap.createBitmap((int) round(mBaseBitmap.getWidth()* minScale), (int) round(mBaseBitmap.getHeight()* minScale), Bitmap.Config.ARGB_8888);
 		Canvas previewCanvas = new Canvas(previewBitmap);
 		drawBackground(previewCanvas,0,0, minScale);
 		drawPaths(previewCanvas,0,0, minScale);
@@ -417,11 +419,11 @@ public class DrawingView extends View
 			double bitmapWidth = bm.getWidth();
 			double bitmapHeight = bm.getHeight();
 
-			double scale = Math.min(maxImgSize / bitmapWidth, maxImgSize / bitmapHeight);
+			double scale = min(maxImgSize / bitmapWidth, maxImgSize / bitmapHeight);
 			if (scale > 1d) {
 				scale = 1d;
 			}
-			return Bitmap.createScaledBitmap(bm, (int)Math.round(bitmapWidth * scale), (int)Math.round(bitmapHeight * scale), true);
+			return Bitmap.createScaledBitmap(bm, (int) round(bitmapWidth * scale), (int) round(bitmapHeight * scale), true);
 		}
 		return null;
 	}

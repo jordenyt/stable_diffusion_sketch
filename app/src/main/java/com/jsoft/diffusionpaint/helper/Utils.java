@@ -1,5 +1,7 @@
 package com.jsoft.diffusionpaint.helper;
 
+import static java.lang.Math.*;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -285,20 +287,20 @@ public class Utils {
         int expandPixel;
         if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V)) {
             if (originalHeight * 4 / 3 >= originalWidth) {
-                double ratio =  Math.round((double)originalWidth / (originalHeight * 4d / 3d) * sdSize / 64d) * 64d / originalWidth;
-                expandPixel = Math.round((Math.round(sdSize / ratio) - originalHeight) / 2f);
+                double ratio =  round((double)originalWidth / (originalHeight * 4d / 3d) * sdSize / 64d) * 64d / originalWidth;
+                expandPixel = round((round(sdSize / ratio) - originalHeight) / 2f);
             } else {
                 double ratio = (double)sdSize / (double)originalWidth;
-                expandPixel = (int) Math.round((Math.round((originalHeight * 4d / 3d) * ratio / 64d) * 64d / ratio - originalHeight) / 2f);
+                expandPixel = (int) round((round((originalHeight * 4d / 3d) * ratio / 64d) * 64d / ratio - originalHeight) / 2f);
             }
             newHeight += 2 * expandPixel;
         } else {
             if (originalWidth * 4 / 3 >= originalHeight) {
-                double ratio =  Math.round((double)originalHeight / (originalWidth * 4d / 3d) * sdSize / 64d) * 64d / originalHeight;
-                expandPixel = Math.round((Math.round(sdSize / ratio) - originalWidth) / 2f);
+                double ratio =  round((double)originalHeight / (originalWidth * 4d / 3d) * sdSize / 64d) * 64d / originalHeight;
+                expandPixel = round((round(sdSize / ratio) - originalWidth) / 2f);
             } else {
                 double ratio = (double)sdSize / (double)originalHeight;
-                expandPixel = (int) Math.round((Math.round((originalWidth * 4d / 3d) * ratio / 64d) * 64d / ratio - originalWidth) / 2f);
+                expandPixel = (int) round((round((originalWidth * 4d / 3d) * ratio / 64d) * 64d / ratio - originalWidth) / 2f);
             }
             newWidth += 2 * expandPixel;
         }
@@ -345,9 +347,9 @@ public class Utils {
 
     public static long getShortSize(Bitmap bm, int longSize) {
         if (bm.getWidth() >= bm.getHeight()) {
-            return Math.round((double)bm.getHeight() / (double)bm.getWidth() * longSize  / 64d) * 64;
+            return round((double)bm.getHeight() / (double)bm.getWidth() * longSize  / 64d) * 64;
         } else {
-            return Math.round((double)bm.getWidth() / (double)bm.getHeight() * longSize  / 64d) * 64;
+            return round((double)bm.getWidth() / (double)bm.getHeight() * longSize  / 64d) * 64;
         }
     }
 
