@@ -247,44 +247,14 @@ public class SdApiHelper {
         return param;
     }
 
-    private String getPrompt(Sketch mCurrentSketch) {
-        String prompt = mCurrentSketch.getPrompt();
-        if (mCurrentSketch.getStyle() != null && DrawingActivity.styleList != null) {
-            for (int i=0; i < DrawingActivity.styleList.size();i++) {
-                if (mCurrentSketch.getStyle().equals(DrawingActivity.styleList.get(i).name)) {
-                    if (DrawingActivity.styleList.get(i).prompt.contains("{prompt}")) {
-                        prompt = DrawingActivity.styleList.get(i).prompt.replace("{prompt}", mCurrentSketch.getPrompt());
-                    } else {
-                        prompt = DrawingActivity.styleList.get(i).prompt + ", " + mCurrentSketch.getPrompt();
-                    }
-                    break;
-                }
-            }
-        }
-        return sharedPreferences.getString("promptPrefix", "") + " " + prompt + ", " + sharedPreferences.getString("promptPostfix", "");
-    }
-
-    private String getNegPrompt(Sketch mCurrentSketch) {
-        String prompt = mCurrentSketch.getNegPrompt();
-        if (mCurrentSketch.getStyle() != null && DrawingActivity.styleList != null) {
-            for (int i=0; i < DrawingActivity.styleList.size();i++) {
-                if (mCurrentSketch.getStyle().equals(DrawingActivity.styleList.get(i).name)) {
-                    if (DrawingActivity.styleList.get(i).negPrompt.contains("{prompt}")) {
-                        prompt = DrawingActivity.styleList.get(i).negPrompt.replace("{prompt}", mCurrentSketch.getNegPrompt());
-                    } else {
-                        prompt = DrawingActivity.styleList.get(i).negPrompt + ", " + mCurrentSketch.getNegPrompt();
-                    }
-                    break;
-                }
-            }
-        }
-        return sharedPreferences.getString("negativePrompt", "") + ", " + prompt;
-    }
-
     public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("prompt", getPrompt(mCurrentSketch));
+            jsonObject.put("prompt", mCurrentSketch.getPrompt());
+            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt());
+            if (mCurrentSketch.getStyle() != null) {
+                jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
+            }
             jsonObject.put("seed", -1);
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
@@ -306,7 +276,6 @@ public class SdApiHelper {
             jsonObject.put("tiling", false);
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
-            jsonObject.put("negative_prompt", getNegPrompt(mCurrentSketch));
             jsonObject.put("sampler_name", param.sampler);
             jsonObject.put("save_images", false);
 
@@ -405,7 +374,11 @@ public class SdApiHelper {
                 //jsonObject.put("inpainting_mask_invert", 0);
                 jsonObject.put("initial_noise_multiplier", 1);
             }
-            jsonObject.put("prompt", getPrompt(mCurrentSketch));
+            jsonObject.put("prompt", mCurrentSketch.getPrompt());
+            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt());
+            if (mCurrentSketch.getStyle() != null) {
+                jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
+            }
             jsonObject.put("seed", -1);
             jsonObject.put("batch_size", 1);
             jsonObject.put("n_iter", 1);
@@ -439,7 +412,6 @@ public class SdApiHelper {
             jsonObject.put("tiling", false);
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
-            jsonObject.put("negative_prompt", getNegPrompt(mCurrentSketch));
             jsonObject.put("steps", param.steps);
             jsonObject.put("sampler_name", param.sampler);
             jsonObject.put("save_images", false);
