@@ -2,6 +2,8 @@ package com.jsoft.diffusionpaint.helper;
 
 import static com.jsoft.diffusionpaint.ViewSdImageActivity.sdModelList;
 
+import static java.lang.Math.*;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -134,7 +136,7 @@ public class SdApiHelper {
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
-        return getExtraSingleImageJSON(bitmap, Math.min(4d, (double)canvasDim / (double)Math.max(bitmap.getWidth(), bitmap.getHeight())));
+        return getExtraSingleImageJSON(bitmap, min(4d, (double)canvasDim / (double) max(bitmap.getWidth(), bitmap.getHeight())));
     }
 
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap, double scale) {
@@ -166,10 +168,10 @@ public class SdApiHelper {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("model", "clip");
-            double scale = (double)Math.max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
+            double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
             Bitmap resultBm = bitmap;
             if (scale > 1) {
-                resultBm = Bitmap.createScaledBitmap(bitmap, (int)Math.round(bitmap.getWidth() / scale), (int)Math.round(bitmap.getHeight() / scale), true);
+                resultBm = Bitmap.createScaledBitmap(bitmap, (int) round(bitmap.getWidth() / scale), (int) round(bitmap.getHeight() / scale), true);
             }
             jsonObject.put("image", Utils.jpg2Base64String(resultBm));
         } catch (JSONException e) {
@@ -359,33 +361,6 @@ public class SdApiHelper {
         try {
             JSONArray init_images = new JSONArray();
 
-            Bitmap baseImage;
-            if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
-                Bitmap bg = mCurrentSketch.getImgBackground();
-                if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
-                    Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
-                    Canvas canvasEdit = new Canvas(bmEdit);
-                    canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                    canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                    bg = bmEdit;
-                } else if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF)) {
-                    bg = mCurrentSketch.getImgBgRef();
-                }
-                /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
-                Log.e("diffusionpaint", "Rect=" + mCurrentSketch.getRectInpaint(param.sdSize).width() + "X" + mCurrentSketch.getRectInpaint(param.sdSize).height());
-                Log.e("diffusionpaint", "Rect=(" + mCurrentSketch.getRectInpaint(param.sdSize).left + "," + mCurrentSketch.getRectInpaint(param.sdSize).top + ") -> ("
-                        + mCurrentSketch.getRectInpaint(param.sdSize).right + "," + mCurrentSketch.getRectInpaint(param.sdSize).bottom + ")");*/
-                baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
-
-            } else {
-                baseImage = param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getImgBgRef() : mCurrentSketch.getImgBackground();
-            }
-
-            init_images.put(Utils.jpg2Base64String(baseImage));
-            jsonObject.put("init_images", init_images);
-            jsonObject.put("resize_mode", 1);
-
             if (isInpaint) {
                 if (mCurrentSketch.getImgInpaintMask() == null) {
                     mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 20 : 0));
@@ -416,12 +391,12 @@ public class SdApiHelper {
                 if (inpaintRect.width() >= inpaintRect.height()) {
                     jsonObject.put("width", param.sdSize);
                     double h = param.sdSize / (inpaintRect.width() - 1) * (inpaintRect.height() - 1);
-                    h = 64 * Math.round(h / 64);
+                    h = 64 * round(h / 64);
                     jsonObject.put("height", h);
                 } else {
                     jsonObject.put("height", param.sdSize);
                     double w = param.sdSize / (inpaintRect.height() - 1) * (inpaintRect.width() - 1);
-                    w = 64 * Math.round(w / 64);
+                    w = 64 * round(w / 64);
                     jsonObject.put("width", w);
                 }
                 //Log.e("diffusionpaint", "SD Size=" + jsonObject.getDouble("width") + "X" + jsonObject.getDouble("height"));
@@ -448,6 +423,37 @@ public class SdApiHelper {
             jsonObject.put("cfg_scale", param.cfgScale);
             jsonObject.put("override_settings", getConfig(param));
             jsonObject.put("override_settings_restore_afterwards", true);
+
+            Bitmap baseImage;
+            if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
+                Bitmap bg = mCurrentSketch.getImgBackground();
+                if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+                    Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvasEdit = new Canvas(bmEdit);
+                    canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                    canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+                    bg = bmEdit;
+                } else if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF)) {
+                    bg = mCurrentSketch.getImgBgRef();
+                }
+                /*Log.e("diffusionpaint", "ImgBackground=" + mCurrentSketch.getImgBackground().getWidth() + "X" + mCurrentSketch.getImgBackground().getHeight());
+                Log.e("diffusionpaint", "Rect=" + mCurrentSketch.getRectInpaint(param.sdSize).width() + "X" + mCurrentSketch.getRectInpaint(param.sdSize).height());
+                Log.e("diffusionpaint", "Rect=(" + mCurrentSketch.getRectInpaint(param.sdSize).left + "," + mCurrentSketch.getRectInpaint(param.sdSize).top + ") -> ("
+                        + mCurrentSketch.getRectInpaint(param.sdSize).right + "," + mCurrentSketch.getRectInpaint(param.sdSize).bottom + ")");*/
+                baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
+
+            } else {
+                baseImage = param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
+                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getImgBgRef() : mCurrentSketch.getImgBackground();
+                if (baseImage.getHeight() < jsonObject.getInt("height") || baseImage.getWidth() < jsonObject.getInt("width")) {
+                    double scale = max((double)jsonObject.getInt("height") / baseImage.getHeight(), (double)jsonObject.getInt("width") / baseImage.getWidth());
+                    baseImage = Bitmap.createScaledBitmap(baseImage, (int) round(baseImage.getWidth() * scale), (int) round(baseImage.getHeight() * scale), true);
+                }
+            }
+
+            init_images.put(Utils.jpg2Base64String(baseImage));
+            jsonObject.put("init_images", init_images);
+            jsonObject.put("resize_mode", 1);
 
             // ControlNet Args
             if (param.cn != null) {
