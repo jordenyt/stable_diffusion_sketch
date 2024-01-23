@@ -5,17 +5,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
-
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
-import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -106,9 +102,6 @@ public class ViewSdImageService extends Service {
         } else if (requestType.equals("deepFaceLab")){
             ViewSdImageActivity.isCallingDFL = true;
             sendRequest("deepFaceLab", sdBaseUrl, "/processimage", requestJSON);
-        } else if (requestType.equals("setSdModel")){
-            ViewSdImageActivity.isCallingSD = true;
-            sendRequest("setSdModel", sdBaseUrl, "/sdapi/v1/options", requestJSON);
         } else {
             ViewSdImageActivity.isCallingAPI = true;
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
@@ -155,13 +148,6 @@ public class ViewSdImageService extends Service {
     private void onSdApiResponse(String requestType, String responseBody) {
         try {
             switch (requestType) {
-                case "setSdModel": {
-                    ViewSdImageActivity.isCallingAPI = false;
-                    activity.runOnUiThread(() -> activity.callSD4Img());
-                    isRunning = false;
-                    stopForeground(true);
-                    break;
-                }
                 case "txt2img":
                 case "img2img": {
 
