@@ -10,6 +10,8 @@ public class CnParam {
     public double cnWeight;
     public double cnModuleParamA;
     public double cnModuleParamB;
+    public double cnStart = 0.0;
+    public double cnEnd = 1.0;
 
     public static final String CN_RESIZE_MODE_RESIZE = "Just Resize";
     public static final String CN_RESIZE_MODE_CROP = "Crop and Resize";

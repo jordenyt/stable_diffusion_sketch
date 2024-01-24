@@ -100,7 +100,9 @@ public class SdParam {
             "\"cnWeight\":1.0",
             "\"cnResizeMode\":0",
             "\"cnResizeMode\":1",
-            "\"cnResizeMode\":2"
+            "\"cnResizeMode\":2",
+            "\"cnStart\":0.0",
+            "\"cnEnd\":1.0"
     ));
 
 
