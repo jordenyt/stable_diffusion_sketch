@@ -183,7 +183,7 @@ public class SdApiHelper {
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {
             JsonObject cnObj = new JsonObject();
-            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB", "cnResizeMode"};
+            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB", "cnResizeMode", "cnStart", "cnEnd"};
             for (String cnProp : cnProperties) {
                 if (rootObj.get(cnProp) != null) {
                     cnObj.add(cnProp, rootObj.get(cnProp));
@@ -298,7 +298,7 @@ public class SdApiHelper {
             jsonObject.put("sampler_name", param.sampler);
             jsonObject.put("save_images", false);
             jsonObject.put("override_settings", getConfig(param));
-            jsonObject.put("override_settings_restore_afterwards", true);
+            jsonObject.put("override_settings_restore_afterwards", false);
 
             if (param.cn != null) {
                 JSONObject alwayson_scripts = new JSONObject();
@@ -328,9 +328,9 @@ public class SdApiHelper {
                         cnArgObject.put("pixel_perfect", true);
                         cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
                         cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
-                        cnArgObject.put("guidance", 1);
-                        cnArgObject.put("guidance_start", 0);
-                        cnArgObject.put("guidance_end", 1);
+                        //cnArgObject.put("guidance", 1);
+                        cnArgObject.put("guidance_start", cnparam.cnStart);
+                        cnArgObject.put("guidance_end", cnparam.cnEnd);
                         cnArgObject.put("control_mode", cnparam.cnControlMode);
                         args.put(cnArgObject);
                     }
@@ -412,7 +412,7 @@ public class SdApiHelper {
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("cfg_scale", param.cfgScale);
             jsonObject.put("override_settings", getConfig(param));
-            jsonObject.put("override_settings_restore_afterwards", true);
+            jsonObject.put("override_settings_restore_afterwards", false);
 
             Bitmap baseImage;
             if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
@@ -486,9 +486,9 @@ public class SdApiHelper {
                         cnArgObject.put("pixel_perfect", true);
                         cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
                         cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
-                        cnArgObject.put("guidance", 1);
-                        cnArgObject.put("guidance_start", 0);
-                        cnArgObject.put("guidance_end", 1);
+                        //cnArgObject.put("guidance", 1);
+                        cnArgObject.put("guidance_start", cnparam.cnStart);
+                        cnArgObject.put("guidance_end", cnparam.cnEnd);
                         cnArgObject.put("control_mode", cnparam.cnControlMode);
                         cnArgObject.put("processor_res", 512);
                         args.put(cnArgObject);
