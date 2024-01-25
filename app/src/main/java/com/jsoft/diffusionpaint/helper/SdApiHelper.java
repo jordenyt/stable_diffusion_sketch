@@ -279,8 +279,8 @@ public class SdApiHelper {
     public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("prompt", mCurrentSketch.getPrompt());
-            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt());
+            jsonObject.put("prompt", mCurrentSketch.getPrompt() + (param.prompt.length() > 0 ? ", " : "") + param.prompt);
+            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt() + (param.negPrompt.length() > 0 ? ", " : "") + param.negPrompt);
             if (mCurrentSketch.getStyle() != null) {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
@@ -378,8 +378,9 @@ public class SdApiHelper {
                 //jsonObject.put("inpainting_mask_invert", 0);
                 jsonObject.put("initial_noise_multiplier", 1);
             }
-            jsonObject.put("prompt", mCurrentSketch.getPrompt());
-            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt());
+
+            jsonObject.put("prompt", mCurrentSketch.getPrompt() + (param.prompt.length() > 0 ? ", " : "") + param.prompt);
+            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt() + (param.negPrompt.length() > 0 ? ", " : "") + param.negPrompt);
             if (mCurrentSketch.getStyle() != null) {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }

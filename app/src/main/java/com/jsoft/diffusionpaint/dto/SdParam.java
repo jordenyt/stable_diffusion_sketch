@@ -7,6 +7,8 @@ import java.util.List;
 public class SdParam {
     public String name;
     public String type; //txt2img, img2img, inpaint
+    public String prompt = "";
+    public String negPrompt = "";
     public String baseImage; //for img2img and inpaint, Background, Sketch
     public double denoise;
     public int steps;
@@ -102,7 +104,9 @@ public class SdParam {
             "\"cnResizeMode\":1",
             "\"cnResizeMode\":2",
             "\"cnStart\":0.0",
-            "\"cnEnd\":1.0"
+            "\"cnEnd\":1.0",
+            "\"prompt\":\"\"",
+            "\"negPrompt\":\"\""
     ));
 
 
