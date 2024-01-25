@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat;
 import com.jsoft.diffusionpaint.helper.Utils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -60,7 +61,9 @@ public class ViewSdImageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         isRunning = true;
-        showForegroundNotification();
+        try {
+            showForegroundNotification();
+        } catch (Exception e) {}
         String requestType = intent.getStringExtra("requestType");
         callSD4Img(requestType);
 
@@ -96,6 +99,10 @@ public class ViewSdImageService extends Service {
     }
 
     public void callSD4Img(String requestType) {
+        ViewSdImageActivity.rtResultType = null;
+        ViewSdImageActivity.rtBitmap = null;
+        ViewSdImageActivity.rtInfotext = null;
+        ViewSdImageActivity.rtErrMsg = null;
         if (requestType.equals("txt2img")) {
             ViewSdImageActivity.isCallingSD = true;
             sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", requestJSON);
@@ -150,8 +157,6 @@ public class ViewSdImageService extends Service {
             switch (requestType) {
                 case "txt2img":
                 case "img2img": {
-
-
                     JSONObject jsonObject = new JSONObject(responseBody);
                     JSONArray images = jsonObject.getJSONArray("images");
                     String info = jsonObject.getString("info");
@@ -159,29 +164,47 @@ public class ViewSdImageService extends Service {
                     JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
                     String infotexts = infotextsArray.getString(0).replaceAll("\\\\n","\n");
                     List<Bitmap> listBitmap = new ArrayList<>();
-                    if (images.length() > 0) {
-
-                        for (int i=0;i<images.length();i++) {
+                    if (images.length() > 0 && !ViewSdImageActivity.isInterrupted) {
+                        int numImage = 1;
+                        try {
+                            numImage = requestJSON.getInt("batch_size");
+                        } catch (JSONException ignored) {}
+                        for (int i=0;i<numImage;i++) {
                             listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
                         }
+                        try {
+                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, infotexts));
+                        } catch (Exception e) {
+                            ViewSdImageActivity.rtResultType = requestType;
+                            ViewSdImageActivity.rtBitmap = listBitmap;
+                            ViewSdImageActivity.rtInfotext = infotexts;
+                        }
+                    } else {
+                        ViewSdImageActivity.isInterrupted = false;
+                        ViewSdImageActivity.isCallingSD = false;
+                        try {
+                            activity.runOnUiThread(() -> activity.updateScreen());
+                        } catch (Exception ignored) {}
                     }
-                    activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, infotexts));
+
                     isRunning = false;
                     stopForeground(true);
                     break;
                 }
                 case "extraSingleImage": {
-
                     ViewSdImageActivity.isCallingAPI = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     String imageStr = jsonObject.getString("image");
-                    ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
-                    ViewSdImageActivity.updateMBitmap();
+                    List<Bitmap> listBitmap = new ArrayList<>();
+                    listBitmap.add(Utils.base64String2Bitmap(imageStr));
+                    try {
+                        activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
+                    } catch (Exception e) {
+                        ViewSdImageActivity.rtResultType = requestType;
+                        ViewSdImageActivity.rtBitmap = listBitmap;
+                        ViewSdImageActivity.rtInfotext = null;
+                    }
 
-                    ViewSdImageActivity.savedImageName = null;
-                    ViewSdImageActivity.addResult(requestType, null);
-
-                    activity.runOnUiThread(() -> activity.updateScreen());
                     isRunning = false;
                     stopForeground(true);
                     break;
@@ -196,6 +219,11 @@ public class ViewSdImageService extends Service {
     private void onSdApiFailure(String requestType, String errMsg) {
         isRunning = false;
         stopForeground(true);
-        activity.runOnUiThread(() -> activity.onSdApiFailure(requestType, errMsg));
+        try {
+            activity.runOnUiThread(() -> activity.onSdApiFailure(requestType, errMsg));
+        } catch (Exception e) {
+            ViewSdImageActivity.rtResultType = requestType;
+            ViewSdImageActivity.rtErrMsg = errMsg;
+        }
     }
 }
