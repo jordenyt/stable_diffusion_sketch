@@ -653,6 +653,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             isCallingSD = false;
             isCallingAPI = false;
             isInterrupted = false;
+            isCallingDFL = false;
         }
         updateScreen();
     }

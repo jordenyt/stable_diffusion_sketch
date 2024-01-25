@@ -216,12 +216,15 @@ public class ViewSdImageService extends Service {
                     ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     String imageStr = jsonObject.getString("processed_image");
-                    ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap(imageStr);
-                    ViewSdImageActivity.updateMBitmap();
-
-                    ViewSdImageActivity.savedImageName = null;
-                    ViewSdImageActivity.addResult(requestType, null);
-                    activity.runOnUiThread(() -> activity.updateScreen());
+                    List<Bitmap> listBitmap = new ArrayList<>();
+                    listBitmap.add(Utils.base64String2Bitmap(imageStr));
+                    try {
+                        activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
+                    } catch (Exception e) {
+                        ViewSdImageActivity.rtResultType = requestType;
+                        ViewSdImageActivity.rtBitmap = listBitmap;
+                        ViewSdImageActivity.rtInfotext = null;
+                    }
                     isRunning = false;
                     stopForeground(true);
                     break;
