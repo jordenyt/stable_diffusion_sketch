@@ -529,12 +529,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             Intent intent = new Intent(this, ViewSdImageService.class);
             String requestType;
             JSONObject jsonObject;
+            int batchSize = 1;
+            try {
+                batchSize = Math.min(remainGen, Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
+            } catch (Exception ignored) {}
             if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 requestType = "txt2img";
-                jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch);
+                jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch, batchSize);
             } else {
                 requestType = "img2img";
-                jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch);
+                jsonObject = sdApiHelper.getControlnetImg2imgJSON(param, mCurrentSketch, batchSize);
             }
             mService.setObject(sdBaseUrl, jsonObject);
             intent.putExtra("requestType", requestType);
@@ -608,6 +612,27 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         } else {
             hideSpinner();
         }
+    }
+
+    public void processResultBitmap(String requestType, List<Bitmap> results, String infotexts) {
+        for (int i=0;i<results.size();i++) {
+            mBitmap = results.get(i);
+            if ("img2img".equals(requestType)) {
+                updateMBitmap();
+            }
+            savedImageName = null;
+            addResult(requestType, infotexts);
+            if (!isInterrupted) {
+                remainGen--;
+            }
+        }
+        if (!isInterrupted && remainGen > 0) {
+            callSD4Img();
+        } else {
+            isInterrupted = false;
+            isCallingSD = false;
+        }
+        updateScreen();
     }
 
     public static void updateMBitmap() {

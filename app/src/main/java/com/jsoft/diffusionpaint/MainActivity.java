@@ -430,6 +430,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_clip_skip:
                 showTextInputDialog("defaultClipSkip", "Clip skip:", "Integer from 1 to 12", "1");
                 break;
+            case R.id.mi_batch_size:
+                showTextInputDialog("maxBatchSize", "Maximum Batch Size:", "Integer. Setting this value too high will lead to OOM.", "1");
+                break;
             case R.id.mi_cfg_scale:
                 showTextInputDialog("defaultCfgScale", "CFG Scale:", "Decimal from 1.0 to 30.0", "7.0");
                 break;
@@ -660,7 +663,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
         List<String> sdNumGenList = new ArrayList<>();
-        for (int i=1;i<=5;i++) {
+        for (int i=1;i<=6;i++) {
             sdNumGenList.add(String.valueOf(i));
         }
         ArrayAdapter<String> sdNumGenAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdNumGenList);

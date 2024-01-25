@@ -441,7 +441,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
         List<String> sdNumGenList = new ArrayList<>();
-        for (int i=1;i<=5;i++) {
+        for (int i=1;i<=6;i++) {
             sdNumGenList.add(String.valueOf(i));
         }
         ArrayAdapter<String> sdNumGenAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdNumGenList);

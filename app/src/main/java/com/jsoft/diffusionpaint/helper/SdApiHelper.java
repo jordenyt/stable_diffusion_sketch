@@ -276,7 +276,7 @@ public class SdApiHelper {
         return setConfigRequest;
     }
 
-    public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch) {
+    public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("prompt", mCurrentSketch.getPrompt() + (param.prompt.length() > 0 ? ", " : "") + param.prompt);
@@ -285,7 +285,7 @@ public class SdApiHelper {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
             jsonObject.put("seed", -1);
-            jsonObject.put("batch_size", 1);
+            jsonObject.put("batch_size", batchSize);
             jsonObject.put("n_iter", 1);
             jsonObject.put("steps", param.steps);
             jsonObject.put("cfg_scale", param.cfgScale);
@@ -355,7 +355,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getControlnetImg2imgJSON(SdParam param, Sketch mCurrentSketch) {
+    public JSONObject getControlnetImg2imgJSON(SdParam param, Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         boolean isInpaint = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT);
         try {
@@ -385,7 +385,7 @@ public class SdApiHelper {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
             jsonObject.put("seed", -1);
-            jsonObject.put("batch_size", 1);
+            jsonObject.put("batch_size", batchSize);
             jsonObject.put("n_iter", 1);
             if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
                 RectF inpaintRect = mCurrentSketch.getRectInpaint(param.sdSize);
