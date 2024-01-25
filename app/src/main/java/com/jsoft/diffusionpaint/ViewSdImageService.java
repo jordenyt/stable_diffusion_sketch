@@ -3,6 +3,7 @@ package com.jsoft.diffusionpaint;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -15,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -148,34 +151,21 @@ public class ViewSdImageService extends Service {
                 case "txt2img":
                 case "img2img": {
 
-                    ViewSdImageActivity.isCallingSD = false;
+
                     JSONObject jsonObject = new JSONObject(responseBody);
                     JSONArray images = jsonObject.getJSONArray("images");
                     String info = jsonObject.getString("info");
                     JSONObject infoObject = new JSONObject(info);
                     JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
                     String infotexts = infotextsArray.getString(0).replaceAll("\\\\n","\n");
-
+                    List<Bitmap> listBitmap = new ArrayList<>();
                     if (images.length() > 0) {
-                        ViewSdImageActivity.mBitmap = Utils.base64String2Bitmap((String) images.get(0));
-                        if ("img2img".equals(requestType)) {
-                            ViewSdImageActivity.updateMBitmap();
-                        }
-                    }
-                    ViewSdImageActivity.savedImageName = null;
-                    ViewSdImageActivity.addResult(requestType, infotexts);
 
-                    if (!ViewSdImageActivity.isInterrupted) {
-                        ViewSdImageActivity.remainGen--;
-                        if (ViewSdImageActivity.remainGen > 0) {
-                            callSD4Img(requestType);
-                            activity.runOnUiThread(() -> activity.updateScreen());
-                            break;
+                        for (int i=0;i<images.length();i++) {
+                            listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
                         }
-                    } else {
-                        ViewSdImageActivity.isInterrupted = false;
                     }
-                    activity.runOnUiThread(() -> activity.updateScreen());
+                    activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, infotexts));
                     isRunning = false;
                     stopForeground(true);
                     break;
