@@ -116,7 +116,9 @@ public class ViewSdImageService extends Service {
             ViewSdImageActivity.isCallingAPI = true;
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
         }
-        activity.runOnUiThread(()->activity.updateScreen());
+        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+            activity.runOnUiThread(() -> activity.updateScreen());
+        }
     }
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject) {
@@ -167,7 +169,7 @@ public class ViewSdImageService extends Service {
                     String info = jsonObject.getString("info");
                     JSONObject infoObject = new JSONObject(info);
                     JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
-                    String infotexts = infotextsArray.getString(0).replaceAll("\\\\n","\n");
+                    List<String> listInfotext = new ArrayList<>();
                     List<Bitmap> listBitmap = new ArrayList<>();
 
                     if (images.length() > 0 && !ViewSdImageActivity.isInterrupted) {
@@ -176,20 +178,21 @@ public class ViewSdImageService extends Service {
                             numImage = requestJSON.getInt("batch_size");
                         } catch (JSONException ignored) {}
                         for (int i=0;i<numImage;i++) {
+                            listInfotext.add(infotextsArray.getString(i).replaceAll("\\\\n","\n"));
                             listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
                         }
-                        try {
-                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, infotexts));
-                        } catch (Exception e) {
+                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
+                        } else {
                             ViewSdImageActivity.rtResultType = requestType;
                             ViewSdImageActivity.rtBitmap = listBitmap;
-                            ViewSdImageActivity.rtInfotext = infotexts;
+                            ViewSdImageActivity.rtInfotext = listInfotext;
                         }
                     } else {
                         ViewSdImageActivity.isInterrupted = false;
-                        try {
+                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                             activity.runOnUiThread(() -> activity.updateScreen());
-                        } catch (Exception ignored) {}
+                        }
                     }
 
                     isRunning = false;
@@ -202,9 +205,9 @@ public class ViewSdImageService extends Service {
                     String imageStr = jsonObject.getString("image");
                     List<Bitmap> listBitmap = new ArrayList<>();
                     listBitmap.add(Utils.base64String2Bitmap(imageStr));
-                    try {
+                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
-                    } catch (Exception e) {
+                    } else {
                         ViewSdImageActivity.rtResultType = requestType;
                         ViewSdImageActivity.rtBitmap = listBitmap;
                         ViewSdImageActivity.rtInfotext = null;
@@ -220,9 +223,9 @@ public class ViewSdImageService extends Service {
                     String imageStr = jsonObject.getString("processed_image");
                     List<Bitmap> listBitmap = new ArrayList<>();
                     listBitmap.add(Utils.base64String2Bitmap(imageStr));
-                    try {
+                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
-                    } catch (Exception e) {
+                    } else {
                         ViewSdImageActivity.rtResultType = requestType;
                         ViewSdImageActivity.rtBitmap = listBitmap;
                         ViewSdImageActivity.rtInfotext = null;
@@ -245,9 +248,9 @@ public class ViewSdImageService extends Service {
         ViewSdImageActivity.isCallingAPI = false;
         ViewSdImageActivity.isInterrupted = false;
         ViewSdImageActivity.isCallingDFL = false;
-        try {
+        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
             activity.runOnUiThread(() -> activity.onSdApiFailure(requestType, errMsg));
-        } catch (Exception e) {
+        } else {
             ViewSdImageActivity.rtResultType = requestType;
             ViewSdImageActivity.rtErrMsg = errMsg;
         }
