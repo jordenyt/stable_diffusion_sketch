@@ -113,6 +113,7 @@ public class ViewSdImageService extends Service {
             ViewSdImageActivity.isCallingAPI = true;
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
         }
+        activity.runOnUiThread(()->activity.updateScreen());
     }
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject) {
@@ -157,6 +158,7 @@ public class ViewSdImageService extends Service {
             switch (requestType) {
                 case "txt2img":
                 case "img2img": {
+                    ViewSdImageActivity.isCallingSD = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     JSONArray images = jsonObject.getJSONArray("images");
                     String info = jsonObject.getString("info");
@@ -164,6 +166,7 @@ public class ViewSdImageService extends Service {
                     JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
                     String infotexts = infotextsArray.getString(0).replaceAll("\\\\n","\n");
                     List<Bitmap> listBitmap = new ArrayList<>();
+
                     if (images.length() > 0 && !ViewSdImageActivity.isInterrupted) {
                         int numImage = 1;
                         try {
@@ -181,7 +184,6 @@ public class ViewSdImageService extends Service {
                         }
                     } else {
                         ViewSdImageActivity.isInterrupted = false;
-                        ViewSdImageActivity.isCallingSD = false;
                         try {
                             activity.runOnUiThread(() -> activity.updateScreen());
                         } catch (Exception ignored) {}
@@ -219,6 +221,10 @@ public class ViewSdImageService extends Service {
     private void onSdApiFailure(String requestType, String errMsg) {
         isRunning = false;
         stopForeground(true);
+        ViewSdImageActivity.isCallingSD = false;
+        ViewSdImageActivity.isCallingDFL = false;
+        ViewSdImageActivity.isCallingAPI = false;
+        ViewSdImageActivity.isInterrupted = false;
         try {
             activity.runOnUiThread(() -> activity.onSdApiFailure(requestType, errMsg));
         } catch (Exception e) {
