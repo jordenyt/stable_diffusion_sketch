@@ -222,7 +222,6 @@ public class ViewSdImageService extends Service {
         isRunning = false;
         stopForeground(true);
         ViewSdImageActivity.isCallingSD = false;
-        ViewSdImageActivity.isCallingDFL = false;
         ViewSdImageActivity.isCallingAPI = false;
         ViewSdImageActivity.isInterrupted = false;
         try {
