@@ -182,7 +182,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         initUI(cnMode);
 
         if (isFirstCall) {
-            runOnUiThread(this::showSpinner);
             apiResultList = new ArrayList<>();
             currentResult = 0;
             savedImageName = null;
@@ -191,7 +190,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 sdImage.setImageBitmap(mBitmap);
                 addResult("original", null);
                 remainGen = 0;
-                hideSpinner();
             } else {
                 if (cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_V) || cnMode.startsWith(Sketch.CN_MODE_OUTPAINT_H)) {
                     SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
@@ -209,10 +207,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
                 getSdModel();
             }
-        } else {
-            if (isCallingAPI) { showSpinner();}
-            else { hideSpinner();}
         }
+        updateScreen();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -276,8 +272,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else {
                 jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
             }
-            showSpinner();
-            isInterrupted = false;
+            clearStaticVar();
             if (mBound) {
                 mService.setObject(sharedPreferences.getString("sdServerAddress", ""), jsonObject);
                 Intent intent = new Intent(this, ViewSdImageService.class);
@@ -294,8 +289,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else {
                 jsonObject = sdApiHelper.getDflJSON(mBitmap);
             }
-            showSpinner();
-            isCallingDFL = true;
+            clearStaticVar();
             if (mBound) {
                 String baseUrl = sharedPreferences.getString("dflApiAddress", "");
                 mService.setObject(baseUrl, jsonObject);
@@ -326,10 +320,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }
                     setResult(Activity.RESULT_OK, intent);
-                    isCallingAPI = false;
-                    isCallingSD = false;
-                    isInterrupted = false;
-                    isCallingDFL = false;
+                    clearStaticVar();
                     finish();
                 });
             });
@@ -347,6 +338,17 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             @Override
             public void handleOnBackPressed() { goBack();}
         });
+    }
+
+    public void clearStaticVar() {
+        isCallingAPI = false;
+        isCallingSD = false;
+        isInterrupted = false;
+        isCallingDFL = false;
+        rtResultType = null;
+        rtBitmap = null;
+        rtInfotext = null;
+        rtErrMsg = null;
     }
 
     public void changeResult(int change) {
@@ -413,10 +415,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         } else if (isCallingDFL ||isCallingSD || isCallingAPI) {
             // do Nothing
         } else {
-            isCallingAPI = false;
-            isCallingSD = false;
-            isCallingDFL = false;
-            isInterrupted = false;
+            clearStaticVar();
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
             setResult(Activity.RESULT_CANCELED, intent);
@@ -450,13 +449,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         isPaused = false;
         if (rtResultType != null && rtBitmap != null) {
             processResultBitmap(rtResultType, rtBitmap, rtInfotext);
-            rtResultType = null;
-            rtBitmap = null;
-            rtInfotext = null;
+            clearStaticVar();
         } else if (rtResultType != null && rtErrMsg != null) {
             onSdApiFailure(rtResultType, rtErrMsg);
-            rtResultType = null;
-            rtErrMsg = null;
+            clearStaticVar();
         } else {
             updateScreen();
         }
@@ -480,7 +476,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     private void getSdModel() {
         if (sdModelList == null) {
-            isCallingAPI = true;
             sdApiHelper.sendGetRequest("getSDModel", "/sdapi/v1/sd-models");
         } else {
             callSD4Img();
@@ -521,16 +516,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (!isPaused && isCallingSD && !isInterrupted)
                 handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
         } else {
-            isCallingSD = false;
-            isCallingDFL = false;
-            isCallingAPI = false;
-            isInterrupted = false;
+            updateScreen();
             handler.removeCallbacksAndMessages(null);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Call Stable Diffusion API failed (" + requestType + ")")
                     .setMessage(errMessage)
                     .setPositiveButton("OK", (dialog, id) -> {
-                        hideSpinner();
+                        //hideSpinner();
                     });
             AlertDialog alert = builder.create();
             if (!isFinishing()) alert.show();
@@ -538,11 +530,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     public void callSD4Img() {
-        showSpinner();
+        clearStaticVar();
         if (mBound) {
             String sdBaseUrl = sharedPreferences.getString("sdServerAddress", "");
 
-            isInterrupted = false;
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
 
             Intent intent = new Intent(this, ViewSdImageService.class);
@@ -576,7 +567,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void onSdApiResponse(String requestType, String responseBody) {
         try {
             if ("getSDModel".equals(requestType)) {
-                isCallingAPI = false;
                 JSONArray jsonArray = new JSONArray(responseBody);
                 sdModelList = new HashMap<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -643,17 +633,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
             savedImageName = null;
             addResult(requestType, infotexts);
-            if (!isInterrupted && ("txt2img".equals(requestType) || "img2img".equals(requestType))) {
+            if ("txt2img".equals(requestType) || "img2img".equals(requestType)) {
                 remainGen--;
             }
         }
-        if (!isInterrupted && ("txt2img".equals(requestType) || "img2img".equals(requestType)) && remainGen > 0) {
+        if (("txt2img".equals(requestType) || "img2img".equals(requestType)) && remainGen > 0) {
             callSD4Img();
-        } else {
-            isCallingSD = false;
-            isCallingAPI = false;
-            isInterrupted = false;
-            isCallingDFL = false;
         }
         updateScreen();
     }
