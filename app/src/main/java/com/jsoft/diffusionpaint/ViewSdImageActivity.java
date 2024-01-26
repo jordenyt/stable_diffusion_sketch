@@ -89,7 +89,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static boolean isInterrupted = false;
     public static String rtResultType = null;
     public static List<Bitmap> rtBitmap = null;
-    public static String rtInfotext = null;
+    public static List<String> rtInfotext = null;
     public static String rtErrMsg = null;
 
     @Override
@@ -600,14 +600,18 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
-    public void processResultBitmap(String requestType, List<Bitmap> results, String infotexts) {
+    public void processResultBitmap(String requestType, List<Bitmap> results, List<String> listInfotext) {
         for (int i=0;i<results.size();i++) {
             mBitmap = results.get(i);
             if (!"txt2img".equals(requestType)) {
                 updateMBitmap();
             }
             savedImageName = null;
-            addResult(requestType, infotexts);
+            if (listInfotext != null) {
+                addResult(requestType, listInfotext.get(i));
+            } else {
+                addResult(requestType, null);
+            }
             if ("txt2img".equals(requestType) || "img2img".equals(requestType)) {
                 remainGen--;
             }
