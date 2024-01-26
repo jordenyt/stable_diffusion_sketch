@@ -578,8 +578,23 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 JSONObject jsonObject = new JSONObject(responseBody);
                 double progress = jsonObject.getDouble("progress");
                 double etaRelative = jsonObject.getDouble("eta_relative");
-                if ((etaRelative > 0) && (progress > 0)) {
-                    txtSdStatus.setText(String.format("%d%% completed.", Math.round(progress * 100)));
+                JSONObject state = jsonObject.getJSONObject("state");
+                boolean interrupted = state.getBoolean("interrupted");
+                if (!interrupted) {
+                    int sampling_steps = state.getInt("sampling_steps");
+                    int sampling_step = state.getInt("sampling_step");
+                    int job_count = state.getInt("job_count");
+                    if (sampling_step == 0 && job_count > 0) {
+                        txtSdStatus.setText("Loading Model......");
+                    } else if (sampling_step == sampling_steps - 1) {
+                        txtSdStatus.setText("Preparing Images......");
+                    } else if ((etaRelative > 0) && (progress > 0)) {
+                        txtSdStatus.setText(String.format("%d%% completed. %ds remaining.", Math.round(progress * 100), Math.round(etaRelative)));
+                    } else {
+                        txtSdStatus.setText("Working...");
+                    }
+                } else if (interrupted) {
+                    txtSdStatus.setText("Interrupting......");
                 }
                 if (!isPaused && isCallingSD && !isInterrupted)
                     handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 1000);
