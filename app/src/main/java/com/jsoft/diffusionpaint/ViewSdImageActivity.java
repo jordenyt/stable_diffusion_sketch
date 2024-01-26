@@ -555,16 +555,20 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 double etaRelative = jsonObject.getDouble("eta_relative");
                 JSONObject state = jsonObject.getJSONObject("state");
                 boolean interrupted = state.getBoolean("interrupted");
+                int sampling_steps = state.getInt("sampling_steps");
+                int sampling_step = state.getInt("sampling_step");
+                int job_count = state.getInt("job_count");
                 if (!interrupted) {
-                    int sampling_steps = state.getInt("sampling_steps");
-                    int sampling_step = state.getInt("sampling_step");
-                    int job_count = state.getInt("job_count");
-                    if (sampling_step == 0 && job_count > 0) {
-                        txtSdStatus.setText("Loading Model......");
+                    if (sampling_step == 0 && progress > 0.0) {
+                        if (job_count < 0) {
+                            txtSdStatus.setText("Preprocessing......");
+                        } else {
+                            txtSdStatus.setText("Loading Model......");
+                        }
                     } else if (sampling_step == sampling_steps - 1) {
-                        txtSdStatus.setText("Preparing Images......");
+                        txtSdStatus.setText("Finishing......");
                     } else if ((etaRelative > 0) && (progress > 0)) {
-                        txtSdStatus.setText(String.format("%d%% completed. %ds remaining.", Math.round(progress * 100), Math.round(etaRelative)));
+                        txtSdStatus.setText(String.format("%d%% completed. Estimated %ds remaining.", Math.round(progress * 100), Math.round(etaRelative)));
                     } else {
                         txtSdStatus.setText("Working...");
                     }
