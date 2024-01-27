@@ -37,6 +37,29 @@ public class SdParam {
     public static final int SD_INPAINT_FILL_NOISE = 2;
     public static final int INPAINT_FULL = 0;
     public static final int INPAINT_PARTIAL = 1;
+    public static List<String> cnModelList = null;
+    public static List<String> cnModuleList = null;
+    public static List<String> samplerList = null;
+
+    public static List<String> getModelKeyList() {
+        List<String> paramList = new ArrayList<>(modeKeyList);
+        if (cnModelList != null) {
+            for (String s : cnModelList) {
+                paramList.add("\"cnModel\":\"" + s + "\"");
+            }
+        }
+        if (cnModuleList != null) {
+            for (String s : cnModuleList) {
+                paramList.add("\"cnModule\":\"" + s + "\"");
+            }
+        }
+        if (samplerList != null) {
+            for (String s : samplerList) {
+                paramList.add("\"sampler\":\"" + s + "\"");
+            }
+        }
+        return paramList;
+    }
 
     public static final List<String> modeKeyList = new ArrayList<>(Arrays.asList(
             "\"name\":\"Custom Mode\"",
@@ -53,8 +76,6 @@ public class SdParam {
             "\"model\":\"sdxlBase\"",
             "\"model\":\"sdxlTurbo\"",
             "\"model\":\"sdxlInpaint\"",
-            "\"sampler\":\"DPM++ SDE Karras\"",
-            "\"sampler\":\"Euler a\"",
             "\"denoise\":0.75",
             "\"baseImage\":\"background\"",
             "\"baseImage\":\"sketch\"",
@@ -77,23 +98,22 @@ public class SdParam {
             "\"cnInputImage\":\"background\"",
             "\"cnInputImage\":\"sketch\"",
             "\"cnInputImage\":\"reference\"",
-            "\"cnModelKey\":\"cnTileModel\", \"cnModule\":\"tile_colorfix+sharp\", \"cnModuleParamA\":8, \"cnModuleParamB\":1",
-            "\"cnModelKey\":\"cnPoseModel \", \"cnModule\":\"dw_openpose_full\"",
-            "\"cnModelKey\":\"cnCannyModel\", \"cnModule\":\"canny\"",
-            "\"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_pidinet\"",
-            "\"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_midas\"",
-            "\"cnModelKey\":\"cnDepthModel\", \"cnModule\":\"depth_hand_refiner\"",
-            "\"cnModelKey\":\"cnNormalModel\", \"cnModule\":\"normal_bae\"",
-            "\"cnModelKey\":\"cnMlsdModel\", \"cnModule\":\"mlsd\", \"cnModuleParamA\":8, \"cnModuleParamB\":1",
-            "\"cnModelKey\":\"cnLineartModel\", \"cnModule\":\"lineart_standard (from white bg & black line)\"",
-            "\"cnModelKey\":\"cnSoftedgeModel\", \"cnModule\":\"softedge_pidinet\"",
-            "\"cnModelKey\":\"cnSegModel\", \"cnModule\":\"seg_ofade20k\"",
-            "\"cnModelKey\":\"cnIPAdapterModel\", \"cnModule\":\"ip-adapter_clip_sd15\"",
-            "\"cnModelKey\":\"cnxlIPAdapterModel\", \"cnModule\":\"ip-adapter_clip_sdxl_plus_vith\"",
+            "\"cnModelKey\":\"cnTileModel\"",
+            "\"cnModelKey\":\"cnPoseModel\"",
+            "\"cnModelKey\":\"cnCannyModel\"",
+            "\"cnModelKey\":\"cnScribbleModel\"",
+            "\"cnModelKey\":\"cnDepthModel\"",
+            "\"cnModelKey\":\"cnDepthModel\"",
+            "\"cnModelKey\":\"cnNormalModel\"",
+            "\"cnModelKey\":\"cnMlsdModel\"",
+            "\"cnModelKey\":\"cnLineartModel\"",
+            "\"cnModelKey\":\"cnSoftedgeModel\"",
+            "\"cnModelKey\":\"cnSegModel\"",
+            "\"cnModelKey\":\"cnIPAdapterModel\"",
+            "\"cnModelKey\":\"cnxlIPAdapterModel\"",
             "\"cnModelKey\":\"cnOther1Model\"",
             "\"cnModelKey\":\"cnOther2Model\"",
             "\"cnModelKey\":\"cnOther3Model\"",
-            "\"cnModule\":\"reference_only\", \"cnModuleParamA\":0.5",
             "\"cnModuleParamA\":8.0",
             "\"cnModuleParamB\":1.0",
             "\"cnControlMode\":0",
