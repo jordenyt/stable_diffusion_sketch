@@ -276,11 +276,27 @@ public class SdApiHelper {
         return setConfigRequest;
     }
 
+    private String getPrompt(SdParam param, Sketch mCurrentSketch) {
+        String promptPrefix = sharedPreferences.getString("promptPrefix", "");
+        String promptPostfix = sharedPreferences.getString("promptPostfix", "");
+        return (promptPrefix.length() > 0 ? promptPrefix + ", " : "") +
+                (mCurrentSketch.getPrompt().length() > 0 ? mCurrentSketch.getPrompt() + ", " : "") +
+                (param.prompt.length() > 0 ? param.prompt + ", " : "") +
+                (promptPostfix.length() > 0 ? promptPostfix : "");
+    }
+
+    private String getNegPrompt(SdParam param, Sketch mCurrentSketch) {
+        String promptNeg = sharedPreferences.getString("negativePrompt", "");
+        return (mCurrentSketch.getNegPrompt().length() > 0 ? mCurrentSketch.getNegPrompt() + ", " : "") +
+                (param.negPrompt.length() > 0 ? param.negPrompt + ", " : "") +
+                (promptNeg.length() > 0 ? promptNeg : "");
+    }
+
     public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("prompt", mCurrentSketch.getPrompt() + (param.prompt.length() > 0 ? ", " : "") + param.prompt);
-            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt() + (param.negPrompt.length() > 0 ? ", " : "") + param.negPrompt);
+            jsonObject.put("prompt", getPrompt(param, mCurrentSketch));
+            jsonObject.put("negative_prompt", getNegPrompt(param, mCurrentSketch));
             if (mCurrentSketch.getStyle() != null) {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
@@ -379,8 +395,8 @@ public class SdApiHelper {
                 jsonObject.put("initial_noise_multiplier", 1);
             }
 
-            jsonObject.put("prompt", mCurrentSketch.getPrompt() + (param.prompt.length() > 0 ? ", " : "") + param.prompt);
-            jsonObject.put("negative_prompt", mCurrentSketch.getNegPrompt() + (param.negPrompt.length() > 0 ? ", " : "") + param.negPrompt);
+            jsonObject.put("prompt", getPrompt(param, mCurrentSketch));
+            jsonObject.put("negative_prompt", getNegPrompt(param, mCurrentSketch));
             if (mCurrentSketch.getStyle() != null) {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
