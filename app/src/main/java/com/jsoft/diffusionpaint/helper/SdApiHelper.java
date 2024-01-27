@@ -183,7 +183,7 @@ public class SdApiHelper {
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {
             JsonObject cnObj = new JsonObject();
-            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB", "cnResizeMode", "cnStart", "cnEnd"};
+            String[] cnProperties = {"cnInputImage", "cnModelKey", "cnModel", "cnModule", "cnControlMode", "cnWeight", "cnModuleParamA", "cnModuleParamB", "cnResizeMode", "cnStart", "cnEnd"};
             for (String cnProp : cnProperties) {
                 if (rootObj.get(cnProp) != null) {
                     cnObj.add(cnProp, rootObj.get(cnProp));
@@ -241,6 +241,13 @@ public class SdApiHelper {
                 }
                 if (cnParam.cnResizeMode == -1) {
                     cnParam.cnResizeMode = 2;
+                }
+                if (cnParam.cnModel == null) {
+                    if (cnParam.cnModelKey != null) {
+                        cnParam.cnModel = cnParam.cnModelKey = sharedPreferences.getString(cnParam.cnModelKey, cnParam.cnModelKey);
+                    } else {
+                        cnParam.cnModel = "None";
+                    }
                 }
             }
         }
@@ -326,15 +333,11 @@ public class SdApiHelper {
                         JSONObject cnArgObject = new JSONObject();
                         cnArgObject.put("input_image", Utils.jpg2Base64String(
                                 cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                                        cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getImgReference() :
-                                                mCurrentSketch.getImgBackground()));
+                                cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getImgReference() :
+                                mCurrentSketch.getImgBackground()));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
-                        if (cnparam.cnModelKey != null && !"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
-                            cnArgObject.put("model", sharedPreferences.getString(cnparam.cnModelKey, "None"));
-                        } else {
-                            cnArgObject.put("model", "None");
-                        }
+                        cnArgObject.put("model",cnparam.cnModel);
                         cnArgObject.put("weight", cnparam.cnWeight);
 
                         cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
@@ -490,11 +493,7 @@ public class SdApiHelper {
                         cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
-                        if (cnparam.cnModelKey != null && !"None".equals(sharedPreferences.getString(cnparam.cnModelKey, "None"))) {
-                            cnArgObject.put("model", sharedPreferences.getString(cnparam.cnModelKey, "None"));
-                        } else {
-                            cnArgObject.put("model", "None");
-                        }
+                        cnArgObject.put("model", cnparam.cnModel);
                         cnArgObject.put("weight", cnparam.cnWeight);
                         cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
                                 cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
@@ -519,6 +518,51 @@ public class SdApiHelper {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    public List<String> getCnModel(String responseBody) {
+        try {
+            JSONObject responseObject = new JSONObject(responseBody);
+            JSONArray modelList = responseObject.getJSONArray("model_list");
+            List<String> cnModels = new ArrayList<>();
+            for (int i = 0; i < modelList.length(); i++) {
+                cnModels.add(modelList.getString(i));
+            }
+            return cnModels;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<String> getCnModule(String responseBody) {
+        try {
+            JSONObject responseObject = new JSONObject(responseBody);
+            JSONArray moduleList = responseObject.getJSONArray("module_list");
+            List<String> cnModules = new ArrayList<>();
+            for (int i = 0; i < moduleList.length(); i++) {
+                cnModules.add(moduleList.getString(i));
+            }
+            return cnModules;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<String> getSampler(String responseBody) {
+        try {
+            JSONArray response = new JSONArray(responseBody);
+            List<String> samplers = new ArrayList<>();
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject sampler = response.getJSONObject(i);
+                samplers.add(sampler.getString("name"));
+            }
+            return samplers;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     public List<String> getLoras(String responseBody) {

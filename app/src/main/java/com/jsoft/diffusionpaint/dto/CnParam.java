@@ -5,6 +5,7 @@ public class CnParam {
     public String cnInputImage; //Background, Sketch
     public String cnModule;
     public String cnModelKey;
+    public String cnModel;
     public int cnResizeMode = -1;
     public int cnControlMode;
     public double cnWeight;

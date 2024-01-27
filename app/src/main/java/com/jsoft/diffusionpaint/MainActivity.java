@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static int lastStyleSelection = 0;
     private static boolean updateChecked = false;
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
+    private String t_key, t_title, t_hint, t_defaultValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -718,8 +719,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         editText.setText(sharedPreferences.getString(key, defaultValue));
 
         if (key.startsWith("mode")) {
-            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, SdParam.modeKeyList);
-            editText.setAdapter(loraAdapter);
+            if (SdParam.cnModelList == null || SdParam.cnModuleList == null || SdParam.samplerList == null) {
+                t_key = key;
+                t_title = title;
+                t_hint = hint;
+                t_defaultValue = defaultValue;
+                sdApiHelper.sendGetRequest("getCnModel", "/controlnet/model_list?update=true");
+                return;
+            }
+            ArrayAdapter<String> modeKeyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, SdParam.getModelKeyList());
+            editText.setAdapter(modeKeyAdapter);
             editText.setThreshold(2);
             editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
@@ -941,6 +950,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 2", "cnOther2Model", "", "");
             } else if ("setCnOther3".equals(requestType)) {
                 showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 3", "cnOther3Model", "", "");
+            } else if ("getCnModel".equals(requestType)) {
+                SdParam.cnModelList = sdApiHelper.getCnModel(responseBody);
+                sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
+            } else if ("getCnModule".equals(requestType)) {
+                SdParam.cnModuleList = sdApiHelper.getCnModule(responseBody);
+                sdApiHelper.sendGetRequest("getSampler", "/sdapi/v1/samplers");
+            } else if ("getSampler".equals(requestType)) {
+                SdParam.samplerList = sdApiHelper.getSampler(responseBody);
+                showTextInputDialog(t_key, t_title, t_hint, t_defaultValue);
             } else if ("getLoras".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 addTxt2img();
