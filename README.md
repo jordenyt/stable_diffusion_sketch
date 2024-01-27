@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.1-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **NOTES: A1111 SD-webui 1.7.0 does not support SDXL Inpainiting model currently.  Please either use the [dev branch](https://github.com/AUTOMATIC1111/stable-diffusion-webui/tree/dev) or merge [this PR](https://github.com/AUTOMATIC1111/stable-diffusion-webui/pull/14390).**<br/>
 **NOTES: There are several SDXL Inpainting models on [Civitai](https://civitai.com/). For your instance, [JuggerXL_inpaint](https://civitai.com/models/245423/juggerxlinpaint) and [RealVisXL V3.0](https://civitai.com/models/139562?modelVersionId=297320) may be a good choice.**<br/>
@@ -60,6 +60,7 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
 - Group related sketches
 - Support multiple ControlNet
 - Keep EXIF of shared content in your SD output
+- Batch size
 
 ## Custom Modes
 Custom mode can be defined in JSON format.<br/>
@@ -86,10 +87,12 @@ Custom mode can be defined in JSON format.<br/>
 | Variable         | txt2img | img2img | inpainting | Value                                                                                                            |
 |------------------|---------|---------|------------|------------------------------------------------------------------------------------------------------------------|
 | `name`           | O       | O       | O          | Name of this custom mode.                                                                                        |
+| `prompt`         | O       | O       | O          | Postfix for this mode on prompt.                                                                                 |
+| `negPrompt`      | O       | O       | O          | Postfix for this mode on negative prompt.                                                                        |
 | `type`           | M       | M       | M          | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting                        |
 | `steps`          | O       | O       | O          | integer from 1 to 120, default value is 40                                                                       |
 | `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |
-| `model`          | O       | O       | O          | `v1Model` - Default for txt2img and img2img mode <br/> `v1Inpaint` - Default for Inpainting <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode|
+| `model`          | O       | O       | O          | `v1Model` - Default for `type`=`txt2img` and `type`=`img2img` <br/> `v1Inpaint` - Default for `type`=`inpaint` <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlInpaint` <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode|
 | `sampler`        | O       | O       | O          | Can use all samplers available in your A1111 webui.                                                              |
 | `denoise`        | -       | M       | M          | decimal from 0 to 1                                                                                              |
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
@@ -104,14 +107,16 @@ Custom mode can be defined in JSON format.<br/>
 ### Parameters for ControlNet Object:
 | Variable         | Value                                                                                                                                                                                                                                                                                                                                                                                           |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `cnInputImage`   | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image                                                                                                                                                                                                                                                   |
+| `cnInputImage`   | `background` - background image under your drawing <br/> `sketch` - your drawing and the background image <br/> `reference` - reference image |
 | `cnModelKey`     | `cnTileModel` - CN Tile Model <br/> `cnPoseModel` - CN Pose Model <br/> `cnCannyModel` - CN Canny Model <br/> `cnScribbleModel` - CN Scribble Model <br/> `cnDepthModel` - CN Depth Model <br/> `cnNormalModel` - CN Normal Model <br/> `cnMlsdModel` - CN MLSD Model <br/> `cnLineartModel` - CN Line Art Model <br/> `cnSoftedgeModel` - CN Soft Edge Model <br/> `cnSegModel` - CN Seg Model <br/> `cnIPAdapterModel` - CN IP-Adapter Model <br/> `cnxlIPAdapterModel` - CN IP-Adapter XL Model <br/> `cnOther1Model` - Other CN Model 1 <br/> `cnOther2Model` - Other CN Model 2 <br/> `cnOther3Model` - Other CN Model 3 |
-| `cnModule`       | CN Module that ControlNet provided.  Typical values are: `tile_resample` / `reference_only` / `openpose_full` / `canny` / `depth_midas` / `scribble_hed` <br/> For full list, please refer to the Automatic1111 web UI.                                                                                                                                                                         |
-| `cnControlMode`  | `0` - Balanced (DEFAULT) <br/> `1` - My prompt is more important <br/> `2` - ControlNet is more important                                                                                                                                                                                                                                                                                       |
-| `cnWeight`       | decimal from 0 to 1                                                                                                                                                                                                                                                                                                                                                                             |
-| `cnResizeMode`       | `0` - Just Resize <br/> `1` - Crop and Resize <br/> `2` - Resize and Fill (default)                                                                                                                                                                                                                                                                                                         |
-| `cnModuleParamA` | First Parameter for ControlNet Module                                                                                                                                                                                                                                                                                                                                                           |
-| `cnModuleParamB` | Second Parameter for ControlNet Module                                                                                                                                                                                                                                                                                                                                                          |
+| `cnModule`       | CN Module that ControlNet provided.  Typical values are: `tile_resample` / `reference_only` / `openpose_full` / `canny` / `depth_midas` / `scribble_hed` <br/> For full list, please refer to the Automatic1111 web UI. |
+| `cnControlMode`  | `0` - Balanced (DEFAULT) <br/> `1` - My prompt is more important <br/> `2` - ControlNet is more important |
+| `cnWeight`       | decimal from 0 to 1 |
+| `cnResizeMode` | `0` - Just Resize <br/> `1` - Crop and Resize <br/> `2` - Resize and Fill (default) |
+| `cnModuleParamA` | First Parameter for ControlNet Module |
+| `cnModuleParamB` | Second Parameter for ControlNet Module |
+| `cnStart` | Starting Control Step (default 0.0) |
+| `cnEnd` | Ending Control Step (default 1.0) |
 ## Demo Video (on outdated version)
 https://user-images.githubusercontent.com/5007252/225839650-f55a1b4b-3fa3-4181-8989-c55af844440f.mp4
 
