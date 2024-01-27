@@ -98,9 +98,9 @@ public class Utils {
                     String value = exif.getAttribute(attribute);
                     if (attribute.equals(ExifInterface.TAG_ORIENTATION)) {
                         jsonExif.put(attribute, "1");
-                    } else if (attribute.equals(ExifInterface.TAG_USER_COMMENT) && "UNICODE".equals(value)) {
+                    } else if (attribute.equals(ExifInterface.TAG_USER_COMMENT)) {
                         byte[] s = exif.getAttributeBytes(ExifInterface.TAG_USER_COMMENT);
-                        value = new String(s, StandardCharsets.UTF_16).substring(4);
+                        value = new String(s, StandardCharsets.UTF_8);
                         jsonExif.put(attribute, value);
                     } else if (value != null) {
                         jsonExif.put(attribute, value);
