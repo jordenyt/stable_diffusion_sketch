@@ -1,7 +1,14 @@
 package com.jsoft.diffusionpaint.dto;
 
+import com.jsoft.diffusionpaint.helper.SdApiHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class SdParam {
@@ -38,7 +45,8 @@ public class SdParam {
     public static final int INPAINT_FULL = 0;
     public static final int INPAINT_PARTIAL = 1;
     public static List<String> cnModelList = null;
-    public static List<String> cnModuleList = null;
+    //public static List<String> cnModuleList = null;
+    public static String cnModulesResponse = null;
     public static List<String> samplerList = null;
 
     public static List<String> getModelKeyList() {
@@ -48,9 +56,28 @@ public class SdParam {
                 paramList.add("\"cnModel\":\"" + s + "\"");
             }
         }
-        if (cnModuleList != null) {
-            for (String s : cnModuleList) {
-                paramList.add("\"cnModule\":\"" + s + "\"");
+        if (cnModulesResponse != null) {
+            try {
+                JSONObject responseObject = new JSONObject(cnModulesResponse);
+                JSONObject moduleDetail = responseObject.getJSONObject("module_detail");
+                for (Iterator<String> it = moduleDetail.keys(); it.hasNext(); ) {
+                    String m = it.next();
+                    JSONObject module = moduleDetail.getJSONObject(m);
+                    JSONArray sliders = module.getJSONArray("sliders");
+                    if (sliders.length() >=2) {
+                        double paramA = sliders.getJSONObject(1).getDouble("value");
+                        if (sliders.length() >= 3) {
+                            double paramB = sliders.getJSONObject(2).getDouble("value");
+                            paramList.add("\"cnModule\":\"" + m + "\", \"cnModuleParamA\":" + paramA + ", \"cnModuleParamB\":" + paramB);
+                        } else {
+                            paramList.add("\"cnModule\":\"" + m + "\", \"cnModuleParamA\":" + paramA);
+                        }
+                    } else {
+                        paramList.add("\"cnModule\":\"" + m + "\"");
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
         if (samplerList != null) {

@@ -35,6 +35,7 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.jsoft.diffusionpaint.component.DrawingView;
 import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.component.CircleView;
+import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.SdStyle;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.dto.Sketch;
@@ -94,6 +95,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
         if (styleList == null) {
             sdApiHelper.sendGetRequest("getStyles", "/sdapi/v1/prompt-styles");
+        }
+        if (SdParam.cnModulesResponse == null) {
+            sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
         }
         Intent i = getIntent();
         loadSketch(i);
@@ -620,6 +624,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             showInputDialog();
         } else if ("getStyles".equals(requestType)) {
             styleList = sdApiHelper.getStyles(responseBody);
+        } else if ("getCnModule".equals(requestType)) {
+            SdParam.cnModulesResponse = responseBody;
         } else if ("interrogate".equals(requestType)) {
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
