@@ -57,6 +57,7 @@
             <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
             <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
             <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
+            <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
         </menu>
     </item>
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
