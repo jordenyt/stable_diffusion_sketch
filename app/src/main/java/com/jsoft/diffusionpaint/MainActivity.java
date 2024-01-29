@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     }
 
-    private void gotoDrawActivity(Intent intent) {
+    private void gotoDrawingActivity(Intent intent) {
         finish();
         DrawingActivity.clearPath();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -157,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             });
 
             AlertDialog dialog = builder.create();
-            if(!isFinishing()) dialog.show();
+            if (!isFinishing()) dialog.show();
 
             return false;
         }
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
         intent.putExtra("sketchId", sketchID);
-        gotoDrawActivity(intent);
+        gotoDrawingActivity(intent);
     }
 
     @Override
@@ -196,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 drawIntent.putExtra("sketchId", -2);
                 drawIntent.putExtra("bitmapPath", filePath);
-                gotoDrawActivity(drawIntent);
+                gotoDrawingActivity(drawIntent);
             }
         }
     }
@@ -709,7 +708,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             intent.putExtra("style", selectStyle);
             int numGen = sdNumGen.getSelectedItemPosition() + 1;
             intent.putExtra("numGen", numGen);
-            gotoDrawActivity(intent);
+            gotoDrawingActivity(intent);
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -731,7 +730,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         editText.setText(sharedPreferences.getString(key, defaultValue));
 
         if (key.startsWith("mode")) {
-            if (SdParam.cnModelList == null || SdParam.cnModuleList == null || SdParam.samplerList == null) {
+            if (SdParam.cnModelList == null || SdParam.cnModulesResponse == null || SdParam.samplerList == null) {
                 t_key = key;
                 t_title = title;
                 t_hint = hint;
@@ -876,7 +875,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
                     intent.putExtra("sketchId", -2);
                     intent.putExtra("bitmapPath", filePath);
-                    gotoDrawActivity(intent);
+                    gotoDrawingActivity(intent);
                 }
             });
 
@@ -888,7 +887,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
                     intent.putExtra("sketchId", -2);
                     intent.putExtra("bitmapPath", mImageFile.getAbsolutePath());
-                    gotoDrawActivity(intent);
+                    gotoDrawingActivity(intent);
                 }
             });
 
@@ -966,7 +965,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 SdParam.cnModelList = sdApiHelper.getCnModel(responseBody);
                 sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
             } else if ("getCnModule".equals(requestType)) {
-                SdParam.cnModuleList = sdApiHelper.getCnModule(responseBody);
+                SdParam.cnModulesResponse = responseBody;
                 sdApiHelper.sendGetRequest("getSampler", "/sdapi/v1/samplers");
             } else if ("getSampler".equals(requestType)) {
                 SdParam.samplerList = sdApiHelper.getSampler(responseBody);

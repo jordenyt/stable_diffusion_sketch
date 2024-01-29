@@ -234,19 +234,30 @@ public class SdApiHelper {
         }
         if (param.cn != null) {
             for (CnParam cnParam : param.cn) {
-                if (cnParam.cnModuleParamA == 0d) {
-                    if (cnParam.cnModule.contains("reference")) {
-                            cnParam.cnModuleParamA = 0.5;
-                    } else if (cnParam.cnModule.contains("tile_resample")) {
-                        cnParam.cnModuleParamA = 1;
-                    } else if (cnParam.cnModule.contains("tile_colorfix+sharp")) {
-                        cnParam.cnModuleParamA = 8;
-                        cnParam.cnModuleParamB = 1;
-                    } else if (cnParam.cnModule.contains("tile_colorfix")) {
-                        cnParam.cnModuleParamA = 8;
-                    } else if (cnParam.cnModule.contains("mlsd")) {
-                        cnParam.cnModuleParamA = 8;
-                        cnParam.cnModuleParamB = 1;
+                if (SdParam.cnModulesResponse != null && cnParam.cnModule != null) {
+                    try {
+                        JSONObject responseObject = new JSONObject(SdParam.cnModulesResponse);
+                        JSONObject moduleDetails = responseObject.getJSONObject("module_detail");
+                        if (moduleDetails.has(cnParam.cnModule)) {
+                            JSONObject module = moduleDetails.getJSONObject(cnParam.cnModule);
+                            if (module.getBoolean("model_free")) {
+                                cnParam.cnModel = "None";
+                                cnParam.cnModelKey = null;
+                            }
+                            JSONArray sliders = module.getJSONArray("sliders");
+                            if (sliders.length() >= 2) {
+                                cnParam.cnModuleParamA = Double.isNaN(cnParam.cnModuleParamA) ? sliders.getJSONObject(1).getDouble("value") : cnParam.cnModuleParamA;
+                                if (sliders.length() >= 3) {
+                                    cnParam.cnModuleParamB = Double.isNaN(cnParam.cnModuleParamB) ? sliders.getJSONObject(2).getDouble("value") : cnParam.cnModuleParamB;
+                                } else {
+                                    cnParam.cnModuleParamB = Double.NaN;
+                                }
+                            } else {
+                                cnParam.cnModuleParamA = Double.NaN;
+                            }
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
                     }
                 }
                 if (cnParam.cnResizeMode == -1) {
@@ -358,8 +369,8 @@ public class SdApiHelper {
                         cnArgObject.put("lowvram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
-                        cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
-                        cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
+                        if (!Double.isNaN(cnparam.cnModuleParamA)) cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
+                        if (!Double.isNaN(cnparam.cnModuleParamB)) cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
                         //cnArgObject.put("guidance", 1);
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
@@ -513,8 +524,8 @@ public class SdApiHelper {
                         cnArgObject.put("lowvram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
-                        cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
-                        cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
+                        if (!Double.isNaN(cnparam.cnModuleParamA)) cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
+                        if (!Double.isNaN(cnparam.cnModuleParamB)) cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
                         //cnArgObject.put("guidance", 1);
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
@@ -548,20 +559,7 @@ public class SdApiHelper {
         return new ArrayList<>();
     }
 
-    public List<String> getCnModule(String responseBody) {
-        try {
-            JSONObject responseObject = new JSONObject(responseBody);
-            JSONArray moduleList = responseObject.getJSONArray("module_list");
-            List<String> cnModules = new ArrayList<>();
-            for (int i = 0; i < moduleList.length(); i++) {
-                cnModules.add(moduleList.getString(i));
-            }
-            return cnModules;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
+
 
     public List<String> getSampler(String responseBody) {
         try {
