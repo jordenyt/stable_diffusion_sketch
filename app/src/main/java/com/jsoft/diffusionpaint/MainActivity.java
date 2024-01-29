@@ -359,6 +359,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sdxl_turbo:
                 showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
                 break;
+            case R.id.mi_mode_outpaint:
+                showTextInputDialog("modeOutpaint", "Parameters for Outpainting:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT));
+                break;
             case R.id.mi_cn_scribble:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
