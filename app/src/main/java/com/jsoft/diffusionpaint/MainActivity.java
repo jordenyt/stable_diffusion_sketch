@@ -137,13 +137,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     }
 
-    private void gotoDrawingActivity(Intent intent) {
-        finish();
-        DrawingActivity.clearPath();
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
     private boolean validateSettings() {
         if (!sdApiHelper.isValid()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -170,6 +163,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
         intent.putExtra("sketchId", sketchID);
         gotoDrawingActivity(intent);
+    }
+
+    private void gotoDrawingActivity(Intent intent) {
+        finish();
+        DrawingActivity.clearPath();
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

@@ -369,10 +369,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     public void gotoMainActivity() {
         clearPath();
-        finish();
         Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 
     private void showInputDialog() {
@@ -506,15 +506,15 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 if (result.getResultCode() == Activity.RESULT_CANCELED) {
                     if (intentSketchId == -3) {
                         gotoMainActivity();
-                    } else {
+                    } /*else {
                         Intent i = result.getData();
                         if (i != null) {
                             clearPath();
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(i);
                         }
-                    }
+                    }*/
                 } else if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent i = result.getData();
                     if (i != null) {
