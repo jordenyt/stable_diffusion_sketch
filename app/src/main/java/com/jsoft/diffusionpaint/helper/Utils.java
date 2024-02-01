@@ -100,8 +100,10 @@ public class Utils {
                         jsonExif.put(attribute, "1");
                     } else if (attribute.equals(ExifInterface.TAG_USER_COMMENT)) {
                         byte[] s = exif.getAttributeBytes(ExifInterface.TAG_USER_COMMENT);
-                        value = new String(s, StandardCharsets.UTF_8);
-                        jsonExif.put(attribute, value);
+                        if (s != null) {
+                            value = new String(s, StandardCharsets.UTF_8);
+                            jsonExif.put(attribute, value);
+                        }
                     } else if (value != null) {
                         jsonExif.put(attribute, value);
                     }

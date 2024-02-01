@@ -74,7 +74,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     ImageView modeIcon;
     ImageView imgRef;
     Bitmap bmRef;
-    private int intentSketchId;
+    private int startIntentSketchId;
     public static List<String> loraList;
     public static List<SdStyle> styleList;
     public static ArrayList<Path> mPaths = new ArrayList<>();
@@ -99,8 +99,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         if (SdParam.cnModulesResponse == null) {
             sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
         }
-        Intent i = getIntent();
-        loadSketch(i);
+        loadSketch(getIntent());
     }
 
     public static void clearPath() {
@@ -118,7 +117,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         String bitmapPath = i.getStringExtra("bitmapPath");
         aspectRatio = sharedPreferences.getString("sdImageAspect", ASPECT_RATIO_SQUARE);
         Bitmap rotatedBitmap = null;
-        intentSketchId = sketchId;
+        startIntentSketchId = sketchId;
         if (sketchId >= 0) {
             Sketch dbSketch = db.getSketch(sketchId);
             if (dbSketch != null) {
@@ -504,17 +503,19 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_CANCELED) {
-                    if (intentSketchId == -3) {
+                    if (startIntentSketchId == -3) {
                         gotoMainActivity();
-                    } /*else {
+                    } else {
                         Intent i = result.getData();
                         if (i != null) {
-                            clearPath();
-                            //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            finish();
-                            startActivity(i);
+                            if (i.getIntExtra("sketchId", -1) != startIntentSketchId) {
+                                clearPath();
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                finish();
+                                startActivity(i);
+                            }
                         }
-                    }*/
+                    }
                 } else if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent i = result.getData();
                     if (i != null) {
