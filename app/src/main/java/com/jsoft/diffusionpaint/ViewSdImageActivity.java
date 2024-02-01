@@ -319,6 +319,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     if (mCurrentSketch.getId() >= 0) {
                         intent.putExtra("parentId", mCurrentSketch.getId());
                     }
+                    //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     setResult(Activity.RESULT_OK, intent);
                     clearStaticVar();
                     finish();
@@ -418,6 +419,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             clearStaticVar();
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             setResult(Activity.RESULT_CANCELED, intent);
             finish();
         }
