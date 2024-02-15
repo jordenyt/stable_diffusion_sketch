@@ -167,7 +167,8 @@ public class SdApiHelper {
     public JSONObject getInterrogateJSON(Bitmap bitmap) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("model", "clip");
+            jsonObject.put("model", "wd-v1-4-moat-tagger.v2");
+            jsonObject.put("threshold", 0.35);
             double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
             Bitmap resultBm = bitmap;
             if (scale > 1) {

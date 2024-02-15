@@ -48,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -410,7 +411,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else {
             btnInterrogate.setOnClickListener(view -> {
                JSONObject jsonObject = sdApiHelper.getInterrogateJSON(mCurrentSketch.getImgBackground());
-               sdApiHelper.sendPostRequest("interrogate", "/sdapi/v1/interrogate", jsonObject);
+               sdApiHelper.sendPostRequest("interrogate", "/tagger/v1/interrogate", jsonObject);
                btnInterrogate.setEnabled(false);
             });
         }
@@ -630,7 +631,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else if ("interrogate".equals(requestType)) {
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
-                promptTextView.setText(jsonObject.getString("caption"));
+                JSONObject tagObject = jsonObject.getJSONObject("caption").getJSONObject("tag");
+                String tag = "";
+                for (Iterator<String> it = tagObject.keys(); it.hasNext(); ) {
+                    String m = it.next();
+                    tag += m + ", ";
+                }
+                promptTextView.setText(tag);
+                //promptTextView.setText(jsonObject.getString("caption"));
             } catch (JSONException ignored) {}
         }
     }
