@@ -59,26 +59,32 @@ public class SdParam {
         if (cnModulesResponse != null) {
             try {
                 JSONObject responseObject = new JSONObject(cnModulesResponse);
-                JSONObject moduleDetail = responseObject.getJSONObject("module_detail");
-                for (Iterator<String> it = moduleDetail.keys(); it.hasNext(); ) {
-                    String m = it.next();
-                    JSONObject module = moduleDetail.getJSONObject(m);
-                    JSONArray sliders = module.getJSONArray("sliders");
-                    if (sliders.length() >=2) {
-                        double paramA = sliders.getJSONObject(1).getDouble("value");
-                        if (sliders.length() >= 3) {
-                            double paramB = sliders.getJSONObject(2).getDouble("value");
-                            paramList.add("\"cnModule\":\"" + m + "\", \"cnModuleParamA\":" + paramA + ", \"cnModuleParamB\":" + paramB);
+                try {
+                    JSONObject moduleDetail = responseObject.getJSONObject("module_detail");
+                    for (Iterator<String> it = moduleDetail.keys(); it.hasNext(); ) {
+                        String m = it.next();
+                        JSONObject module = moduleDetail.getJSONObject(m);
+                        JSONArray sliders = module.getJSONArray("sliders");
+                        if (sliders.length() >= 2) {
+                            double paramA = sliders.getJSONObject(1).getDouble("value");
+                            if (sliders.length() >= 3) {
+                                double paramB = sliders.getJSONObject(2).getDouble("value");
+                                paramList.add("\"cnModule\":\"" + m + "\", \"cnModuleParamA\":" + paramA + ", \"cnModuleParamB\":" + paramB);
+                            } else {
+                                paramList.add("\"cnModule\":\"" + m + "\", \"cnModuleParamA\":" + paramA);
+                            }
                         } else {
-                            paramList.add("\"cnModule\":\"" + m + "\", \"cnModuleParamA\":" + paramA);
+                            paramList.add("\"cnModule\":\"" + m + "\"");
                         }
-                    } else {
+                    }
+                } catch (JSONException e) {
+                    JSONArray moduleList = responseObject.getJSONArray("module_list");
+                    for (int i=0;i<moduleList.length();i++) {
+                        String m = moduleList.getString(i);
                         paramList.add("\"cnModule\":\"" + m + "\"");
                     }
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            } catch (JSONException ignored) {}
         }
         if (samplerList != null) {
             for (String s : samplerList) {
