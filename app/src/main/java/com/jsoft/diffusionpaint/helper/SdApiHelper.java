@@ -246,9 +246,7 @@ public class SdApiHelper {
                                 cnParam.cnModuleParamA = Double.NaN;
                             }
                         }
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
+                    } catch (JSONException ignored) {}
                 }
                 if (cnParam.cnResizeMode == -1) {
                     cnParam.cnResizeMode = 2;
