@@ -635,7 +635,12 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 String tag = "";
                 for (Iterator<String> it = tagObject.keys(); it.hasNext(); ) {
                     String m = it.next();
-                    tag += m + ", ";
+                    double c = tagObject.getDouble(m);
+                    if (c>=0.7) {
+                        tag += "(" + m + "), ";
+                    } else {
+                        tag += m + ", ";
+                    }
                 }
                 promptTextView.setText(tag);
                 //promptTextView.setText(jsonObject.getString("caption"));

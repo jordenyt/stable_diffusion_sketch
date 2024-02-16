@@ -168,7 +168,7 @@ public class SdApiHelper {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("model", "wd-v1-4-moat-tagger.v2");
-            jsonObject.put("threshold", 0.35);
+            jsonObject.put("threshold", 0.25);
             double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
             Bitmap resultBm = bitmap;
             if (scale > 1) {
