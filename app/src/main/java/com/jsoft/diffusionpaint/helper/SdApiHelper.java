@@ -189,6 +189,7 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.startsWith(Sketch.CN_MODE_CUSTOM) ? sharedPreferences.getString("modeCustom" + cnMode.substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM)) :
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT) ? sharedPreferences.getString("modeOutpaint", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT)) :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_MERGE) ? sharedPreferences.getString("modeMerge", Sketch.defaultJSON.get(cnMode)) :
                         Sketch.defaultJSON.get(cnMode) != null ? Sketch.defaultJSON.get(cnMode) : Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);

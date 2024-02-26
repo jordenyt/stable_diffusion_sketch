@@ -35,7 +35,7 @@ public class Sketch implements Serializable {
 
     private String exif;
     private List<Sketch> children;
-    public static final int customModeCount = 10;
+    public static final int customModeCount = 12;
     public static final String CN_MODE_IMG_SCRIBBLE = "scribble";
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
@@ -95,15 +95,15 @@ public class Sketch implements Serializable {
         cnMode.put("txt2img + Scribble(sketch)", CN_MODE_TXT_SCRIBBLE);
         cnMode.put("txt2img", CN_MODE_TXT);
         cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
-        cnMode.put("SDXL Turbo txt2img", CN_MODE_TXT_SDXL_TURBO);
-        cnMode.put("SDXL Refiner", CN_MODE_IMG_SDXL);
+        cnMode.put("SDXL Turbo/Lightning txt2img", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
+        cnMode.put("Refine with SDXL", CN_MODE_IMG_SDXL);
         cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);
         cnMode.put("Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL);
         cnMode.put("SDXL Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL_XL);
         cnMode.put("SDXL Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL_XL);
-        cnMode.put("SDXL Partial Refiner", CN_MODE_INPAINT_PARTIAL_XL_REFINER);
+        cnMode.put("Partial Refine with SDXL ", CN_MODE_INPAINT_PARTIAL_XL_REFINER);
         cnMode.put("Outpainting Horizontally", CN_MODE_OUTPAINT_H);
         cnMode.put("Outpainting on Left", CN_MODE_OUTPAINT_H_LEFT);
         cnMode.put("Outpainting on Right", CN_MODE_OUTPAINT_H_RIGHT);
@@ -122,7 +122,7 @@ public class Sketch implements Serializable {
     static {
         Map<String, String> mode = new LinkedHashMap<>();
         mode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
-        mode.put("SDXL Turbo txt2img", CN_MODE_TXT_SDXL_TURBO);
+        mode.put("SDXL Turbo/Lightning txt2img", CN_MODE_TXT_SDXL_TURBO);
         mode.put("txt2img", CN_MODE_TXT);
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }

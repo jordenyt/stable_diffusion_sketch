@@ -32,7 +32,7 @@
             <item android:id="@+id/mi_sd_model" android:title="SD 1.5 model"/>
             <item android:id="@+id/mi_sd_inpaint_model" android:title="SD 1.5 Inpaint model"/>
             <item android:id="@+id/mi_sdxl_base_model" android:title="SDXL model"/>
-            <item android:id="@+id/mi_sdxl_turbo_model" android:title="SDXL Turbo model"/>
+            <item android:id="@+id/mi_sdxl_turbo_model" android:title="SDXL Turbo/Lightning model"/>
             <item android:id="@+id/mi_sdxl_inpaint_model" android:title="SDXL Inpaint model"/>
             <item android:title="ControlNet models">
                 <menu>
@@ -55,12 +55,21 @@
             </item>
         </menu>
     </item>
-    <item android:title="Customized Mode">
+    <item android:title="Define Mode with JSON">
         <menu>
-            <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
-            <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
-            <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
-            <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
+            <item android:title="Preset Modes">
+                <menu>
+                    <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
+                    <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
+                    <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
+                    <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
+                    <item android:id="@+id/mi_mode_merge" android:title="Merge with Reference"/>
+                </menu>
+            </item>
+            <item android:title="Customized Modes">
+                <menu>
+                </menu>
+            </item>
         </menu>
     </item>
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
