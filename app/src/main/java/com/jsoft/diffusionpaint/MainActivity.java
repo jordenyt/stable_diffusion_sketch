@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         menuButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(this, menuButton);
             popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
-            MenuItem submenuItem = popupMenu.getMenu().getItem(3);
+            MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(1);
             if (submenuItem.hasSubMenu()) {
                 SubMenu subMenu = submenuItem.getSubMenu();
                 for (int i=1;i<=Sketch.customModeCount;i++) {
@@ -352,6 +352,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 break;
             case R.id.mi_mode_outpaint:
                 showTextInputDialog("modeOutpaint", "Parameters for Outpainting:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT));
+                break;
+            case R.id.mi_mode_merge:
+                showTextInputDialog("modeMerge", "Parameters for Merge with Reference:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT_MERGE));
                 break;
             case R.id.mi_cn_scribble:
                 if (!validateSettings()) break;
