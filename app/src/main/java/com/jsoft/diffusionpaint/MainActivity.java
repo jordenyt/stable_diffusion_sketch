@@ -351,13 +351,31 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 }
                 break;
             case R.id.mi_mode_txt2img:
-                showTextInputDialog("modeTxt2img", "Parameters for basic txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT));
+                showTextInputDialog("modeTxt2img", "Parameters for txt2img with v1.5 model:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT));
                 break;
             case R.id.mi_mode_sdxl:
-                showTextInputDialog("modeSDXL", "Parameters for SDXL txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL));
+                showTextInputDialog("modeSDXL", "Parameters for txt2img with SDXL:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL));
                 break;
             case R.id.mi_mode_sdxl_turbo:
-                showTextInputDialog("modeSDXLTurbo", "Parameters for SDXL Turbo txt2img:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
+                showTextInputDialog("modeSDXLTurbo", "Parameters for txt2img with SDXL Turbo/Lightning:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
+                break;
+            case R.id.mi_mode_inpaint:
+                showTextInputDialog("modeInpaint", "Parameters for Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT));
+                break;
+            case R.id.mi_mode_inpaint_s:
+                showTextInputDialog("modeInpaintS", "Parameters for Inpainting with sketch:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT_SKETCH));
+                break;
+            case R.id.mi_mode_refine:
+                showTextInputDialog("modeRefiner", "Parameters for Refiner:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_REFINER));
+                break;
+            case R.id.mi_mode_p_inpaint:
+                showTextInputDialog("modePInpaint", "Parameters for Partial Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_PARTIAL_INPAINT));
+                break;
+            case R.id.mi_mode_p_inpaint_s:
+                showTextInputDialog("modePInpaintS", "Parameters for Partial Inpainting with sketch:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_PARTIAL_INPAINT_SKETCH));
+                break;
+            case R.id.mi_mode_p_refine:
+                showTextInputDialog("modePRefiner", "Parameters for Partial Refiner:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_PARTIAL_REFINER));
                 break;
             case R.id.mi_mode_outpaint:
                 showTextInputDialog("modeOutpaint", "Parameters for Outpainting:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT));

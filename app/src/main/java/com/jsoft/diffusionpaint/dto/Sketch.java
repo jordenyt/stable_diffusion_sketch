@@ -40,16 +40,14 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
     public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
-    public static final String CN_MODE_IMG_SDXL = "imgSDXL";
+    public static final String CN_MODE_REFINER = "imgSDXL";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
     public static final String CN_MODE_INPAINT = "inpaintNoise";
     public static final String CN_MODE_INPAINT_SKETCH = "inpaintColor";
-    public static final String CN_MODE_INPAINT_PARTIAL = "inpaintPartial";
-    public static final String CN_MODE_INPAINT_SKETCH_PARTIAL = "inpaintPartialSketch";
-    public static final String CN_MODE_INPAINT_PARTIAL_XL = "inpaintPartialXL";
-    public static final String CN_MODE_INPAINT_SKETCH_PARTIAL_XL = "inpaintPartialSketchXL";
-    public static final String CN_MODE_INPAINT_PARTIAL_XL_REFINER = "inpaintPartialXLRefiner";
+    public static final String CN_MODE_PARTIAL_INPAINT = "inpaintPartial";
+    public static final String CN_MODE_PARTIAL_INPAINT_SKETCH = "inpaintPartialSketch";
+    public static final String CN_MODE_PARTIAL_REFINER = "inpaintPartialRefiner";
     public static final String CN_MODE_OUTPAINT = "outpaint";
     public static final String CN_MODE_OUTPAINT_H = CN_MODE_OUTPAINT + "H";
     public static final String CN_MODE_OUTPAINT_H_LEFT = CN_MODE_OUTPAINT + "HL";
@@ -72,15 +70,13 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_TXT_SCRIBBLE, "{\"cn\":[{\"cnInputImage\":\"sketch\", \"cnModelKey\":\"cnScribbleModel\", \"cnModule\":\"scribble_hed\", \"cnWeight\":0.7}], \"type\":\"txt2img\"}");
         json.put(CN_MODE_TXT, "{\"type\":\"txt2img\"}");
         json.put(CN_MODE_TXT_SDXL, "{\"type\":\"txt2img\", \"sdSize\":1280}");
-        json.put(CN_MODE_IMG_SDXL, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
+        json.put(CN_MODE_REFINER, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_SDXL_TURBO, "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}");
         json.put(CN_MODE_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
-        json.put(CN_MODE_INPAINT_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
-        json.put(CN_MODE_INPAINT_SKETCH_PARTIAL, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\"}");
-        json.put(CN_MODE_INPAINT_PARTIAL_XL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
-        json.put(CN_MODE_INPAINT_SKETCH_PARTIAL_XL, "{\"baseImage\":\"sketch\", \"denoise\":0.6, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
-        json.put(CN_MODE_INPAINT_PARTIAL_XL_REFINER, "{\"baseImage\":\"background\", \"denoise\":0.6, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
+        json.put(CN_MODE_PARTIAL_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
+        json.put(CN_MODE_PARTIAL_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.6, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
+        json.put(CN_MODE_PARTIAL_REFINER, "{\"baseImage\":\"background\", \"denoise\":0.6, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
         json.put(CN_MODE_OUTPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}");
         json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
@@ -93,17 +89,15 @@ public class Sketch implements Serializable {
         cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_IMG_SCRIBBLE);
         cnMode.put("txt2img + Canny(sketch)", CN_MODE_TXT_CANNY);
         cnMode.put("txt2img + Scribble(sketch)", CN_MODE_TXT_SCRIBBLE);
-        cnMode.put("txt2img", CN_MODE_TXT);
-        cnMode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
-        cnMode.put("SDXL Turbo/Lightning txt2img", CN_MODE_TXT_SDXL_TURBO);
+        cnMode.put("txt2img with v1.5 model", CN_MODE_TXT);
+        cnMode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
+        cnMode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
-        cnMode.put("Refine with SDXL", CN_MODE_IMG_SDXL);
-        cnMode.put("Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL);
-        cnMode.put("Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL);
-        cnMode.put("SDXL Partial Inpainting (background)", CN_MODE_INPAINT_PARTIAL_XL);
-        cnMode.put("SDXL Partial Inpainting (sketch)", CN_MODE_INPAINT_SKETCH_PARTIAL_XL);
-        cnMode.put("Partial Refine with SDXL ", CN_MODE_INPAINT_PARTIAL_XL_REFINER);
+        cnMode.put("Refiner", CN_MODE_REFINER);
+        cnMode.put("Partial Inpainting (background)", CN_MODE_PARTIAL_INPAINT);
+        cnMode.put("Partial Inpainting (sketch)", CN_MODE_PARTIAL_INPAINT_SKETCH);
+        cnMode.put("Partial Refiner", CN_MODE_PARTIAL_REFINER);
         cnMode.put("Outpainting Horizontally", CN_MODE_OUTPAINT_H);
         cnMode.put("Outpainting on Left", CN_MODE_OUTPAINT_H_LEFT);
         cnMode.put("Outpainting on Right", CN_MODE_OUTPAINT_H_RIGHT);
@@ -121,9 +115,9 @@ public class Sketch implements Serializable {
     public static final Map<String, String> txt2imgModeMap;
     static {
         Map<String, String> mode = new LinkedHashMap<>();
-        mode.put("SDXL txt2img", CN_MODE_TXT_SDXL);
-        mode.put("SDXL Turbo/Lightning txt2img", CN_MODE_TXT_SDXL_TURBO);
-        mode.put("txt2img", CN_MODE_TXT);
+        mode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
+        mode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
+        mode.put("txt2img with v1.5 model", CN_MODE_TXT);
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }
 

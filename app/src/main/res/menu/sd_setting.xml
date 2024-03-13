@@ -62,6 +62,12 @@
                     <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
                     <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
                     <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
+                    <item android:id="@+id/mi_mode_inpaint" android:title="Inpainting on Background"/>
+                    <item android:id="@+id/mi_mode_inpaint_s" android:title="Inpainting with Sketch"/>
+                    <item android:id="@+id/mi_mode_refine" android:title="Refine"/>
+                    <item android:id="@+id/mi_mode_p_inpaint" android:title="Partial Inpainting on Background"/>
+                    <item android:id="@+id/mi_mode_p_inpaint_s" android:title="Partial Inpainting with Sketch"/>
+                    <item android:id="@+id/mi_mode_p_refine" android:title="Partial Refine"/>
                     <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
                     <item android:id="@+id/mi_mode_merge" android:title="Merge with Reference"/>
                 </menu>

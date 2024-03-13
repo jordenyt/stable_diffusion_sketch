@@ -187,6 +187,12 @@ public class SdApiHelper {
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT) ? sharedPreferences.getString("modeInpaint", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_INPAINT_SKETCH) ? sharedPreferences.getString("modeInpaintS", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_REFINER) ? sharedPreferences.getString("modeRefiner", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_PARTIAL_INPAINT) ? sharedPreferences.getString("modePInpaint", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_PARTIAL_INPAINT_SKETCH) ? sharedPreferences.getString("modePInpaintS", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_PARTIAL_REFINER) ? sharedPreferences.getString("modePRefiner", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.startsWith(Sketch.CN_MODE_CUSTOM) ? sharedPreferences.getString("modeCustom" + cnMode.substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM)) :
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT) ? sharedPreferences.getString("modeOutpaint", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_MERGE) ? sharedPreferences.getString("modeMerge", Sketch.defaultJSON.get(cnMode)) :
