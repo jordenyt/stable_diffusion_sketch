@@ -105,10 +105,20 @@
             android:layout_height="wrap_content"
             android:text="Batch count:"
             android:textAppearance="?android:textAppearanceMedium" />
-        <Spinner
+        <TextView
+            android:id="@+id/sd_num_generation_val"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textAppearance="?android:textAppearanceMedium" />
+        <SeekBar
             android:id="@+id/sd_num_generation"
+            android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:max="10"
+            android:min="1"
+            android:progress="1" />
+
 
     </LinearLayout>
 

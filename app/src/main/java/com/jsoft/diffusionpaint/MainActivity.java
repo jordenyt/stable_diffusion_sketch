@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -677,15 +678,18 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             }
         }
 
-        Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
-        List<String> sdNumGenList = new ArrayList<>();
-        for (int i=1;i<=10;i++) {
-            sdNumGenList.add(String.valueOf(i));
-        }
-        ArrayAdapter<String> sdNumGenAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdNumGenList);
-        sdNumGenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sdNumGen.setAdapter(sdNumGenAdapter);
-        sdNumGen.setSelection(0);
+        SeekBar sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
+        TextView sdNumGenVal = dialogView.findViewById(R.id.sd_num_generation_val);
+        sdNumGen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                sdNumGenVal.setText(String.valueOf(progress));
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
 
         Spinner sdStyle = dialogView.findViewById(R.id.sd_style);
         List<String> sdStyleList = new ArrayList<>();
@@ -719,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));
             intent.putExtra("style", selectStyle);
-            int numGen = sdNumGen.getSelectedItemPosition() + 1;
+            int numGen = sdNumGen.getProgress();
             intent.putExtra("numGen", numGen);
             gotoDrawingActivity(intent);
         });
