@@ -1,6 +1,6 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.3-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
-**NOTES: A1111 SD-webui 1.7.0 does not support SDXL Inpainiting model currently.  Please either use the [dev branch](https://github.com/AUTOMATIC1111/stable-diffusion-webui/tree/dev) or merge [this PR](https://github.com/AUTOMATIC1111/stable-diffusion-webui/pull/14390).**<br/>
+**NOTES: A1111 SD-webui 1.7.0 does not support SDXL Inpainiting model.  Please update to 1.8.0.**<br/>
 **NOTES: There are several SDXL Inpainting models on [Civitai](https://civitai.com/). For your instance, [JuggerXL_inpaint](https://civitai.com/models/245423/juggerxlinpaint) and [RealVisXL V3.0](https://civitai.com/models/139562?modelVersionId=297320) may be a good choice.**<br/>
 <br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
