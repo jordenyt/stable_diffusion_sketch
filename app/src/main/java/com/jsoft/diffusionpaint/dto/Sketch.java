@@ -313,7 +313,7 @@ public class Sketch implements Serializable {
     }
 
     private RectF getInpaintRect(int sdSize) {
-        int inpaintMargin = 64;
+        int inpaintMargin = max(imgBackground.getWidth(), imgBackground.getHeight()) / 20;
         int sdBlockSize = 64;
         if (imgBackground == null) {
             return null;
@@ -339,19 +339,19 @@ public class Sketch implements Serializable {
         }
 
         double scale = 1d;
-        int inpaintWidth = min(imgBackground.getWidth(), x2 - x1 + 1 + 2 * inpaintMargin);
-        int inpaintHeight = min(imgBackground.getHeight(), y2 - y1 + 1 + 2 * inpaintMargin);
+        int inpaintWidth = min(imgBackground.getWidth(), x2 - x1 + 2 * inpaintMargin);
+        int inpaintHeight = min(imgBackground.getHeight(), y2 - y1 + 2 * inpaintMargin);
         if (x2-x1 >= y2-y1) {
             if (inpaintWidth > sdSize) {
-                scale = (inpaintWidth - 1d) / (sdSize - 1d);
+                scale = (double) (inpaintWidth) / (sdSize);
             } else if (imgBackground.getWidth() < sdSize) {
-                scale = (imgBackground.getWidth() - 1d) / (sdSize - 1d);
+                scale = (double) (imgBackground.getWidth()) / (sdSize);
             }
         } else if (y2-y1 >= x2-x1) {
             if (inpaintHeight > sdSize) {
-                scale = (inpaintHeight - 1d) / (sdSize - 1d);
+                scale = (double) (inpaintHeight) / (sdSize);
             } else if (imgBackground.getHeight() < sdSize) {
-                scale = (imgBackground.getHeight() - 1d) / (sdSize - 1d);
+                scale = (double) (imgBackground.getHeight()) / (sdSize);
             }
         }
 
@@ -361,24 +361,28 @@ public class Sketch implements Serializable {
             if (inpaintHeight < (int)round(2d / 3d * inpaintWidth)) {
                 inpaintHeight = min(imgBackground.getHeight(), (int)round(2d / 3d * inpaintWidth));
             }
-            inpaintHeight = (int)round(blockWidth * ceil(inpaintHeight / blockWidth));
+            double heightBlock = ceil(inpaintHeight / blockWidth);
+            inpaintHeight = (int)round(blockWidth * heightBlock);
             if (inpaintHeight > imgBackground.getHeight()) {
-                inpaintHeight -= blockWidth;
+                inpaintHeight = imgBackground.getHeight();
+                inpaintWidth = (int)round(sdSize * inpaintHeight / heightBlock / sdBlockSize);
             }
         } else {
             inpaintHeight = (int)round(sdSize * scale);
             if (inpaintWidth < (int)round(2d / 3d * inpaintHeight)) {
                 inpaintWidth = min(imgBackground.getWidth(), (int)round(2d / 3d * inpaintHeight));
             }
-            inpaintWidth = (int)round(blockWidth * ceil(inpaintWidth / blockWidth));
+            double widthBlock = ceil(inpaintWidth / blockWidth);
+            inpaintWidth = (int)round(blockWidth * widthBlock);
             if (inpaintWidth > imgBackground.getWidth()) {
-                inpaintWidth -= blockWidth;
+                inpaintWidth = imgBackground.getWidth();
+                inpaintHeight = (int)round(sdSize * inpaintWidth / widthBlock / sdBlockSize);
             }
         }
 
-        double left = (x1 + (x2-x1)/2d) - (inpaintWidth-1)/2d;
+        double left = (x1 + (x2-x1)/2d) - (inpaintWidth)/2d;
         double right = left + inpaintWidth;
-        double top = (y1 + (y2-y1)/2d) - (inpaintHeight-1)/ 2d;
+        double top = (y1 + (y2-y1)/2d) - (inpaintHeight)/ 2d;
         double bottom = top + inpaintHeight;
 
         if (left < 0) {
