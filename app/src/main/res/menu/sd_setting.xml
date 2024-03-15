@@ -11,7 +11,7 @@
             <item android:id="@+id/mi_clip_skip" android:title="Clip skip" />
             <item android:id="@+id/mi_batch_size" android:title="Maximum batch size" />
             <item android:id="@+id/mi_upscaler" android:title="Upscaler"/>
-            <item android:id="@+id/mi_upscaler_gfpgan" android:title="GFPGAN Visibility"/>
+            <item android:id="@+id/mi_upscaler_gfpgan" android:title="Upscaler GFPGAN Visibility"/>
             <item android:id="@+id/mi_sd_refresh_loras" android:title="Refresh Loras"/>
             <item android:id="@+id/mi_sd_refresh_ckpt" android:title="Refresh Checkpoints"/>
         </menu>
@@ -61,10 +61,10 @@
                     <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
                     <item android:id="@+id/mi_mode_inpaint" android:title="Inpainting on Background"/>
                     <item android:id="@+id/mi_mode_inpaint_s" android:title="Inpainting with Sketch"/>
-                    <item android:id="@+id/mi_mode_refine" android:title="Refine"/>
+                    <item android:id="@+id/mi_mode_refine" android:title="Refiner"/>
                     <item android:id="@+id/mi_mode_p_inpaint" android:title="Partial Inpainting on Background"/>
                     <item android:id="@+id/mi_mode_p_inpaint_s" android:title="Partial Inpainting with Sketch"/>
-                    <item android:id="@+id/mi_mode_p_refine" android:title="Partial Refine"/>
+                    <item android:id="@+id/mi_mode_p_refine" android:title="Partial Refiner"/>
                     <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
                     <item android:id="@+id/mi_mode_merge" android:title="Merge with Reference"/>
                 </menu>
