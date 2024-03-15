@@ -451,15 +451,18 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdAspectRatioTxt.setVisibility(View.GONE);
         sdAspectRatio.setVisibility(View.GONE);
 
-        Spinner sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
-        List<String> sdNumGenList = new ArrayList<>();
-        for (int i=1;i<=10;i++) {
-            sdNumGenList.add(String.valueOf(i));
-        }
-        ArrayAdapter<String> sdNumGenAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdNumGenList);
-        sdNumGenAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sdNumGen.setAdapter(sdNumGenAdapter);
-        sdNumGen.setSelection(0);
+        SeekBar sdNumGen = dialogView.findViewById(R.id.sd_num_generation);
+        TextView sdNumGenVal = dialogView.findViewById(R.id.sd_num_generation_val);
+        sdNumGen.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                sdNumGenVal.setText(String.valueOf(progress));
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
 
         Spinner sdStyle = dialogView.findViewById(R.id.sd_style);
         List<String> sdStyleList = new ArrayList<>();
@@ -486,7 +489,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             String style = sdStyle.getSelectedItem().toString();
             mCurrentSketch.setStyle(style);
             saveSketch();
-            int numGen = sdNumGen.getSelectedItemPosition() + 1;
+            int numGen = sdNumGen.getProgress();
             if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
                 gotoViewSdImageActivity(mCurrentSketch.getId(), CN_MODE_ORIGIN, numGen);
             } else {
