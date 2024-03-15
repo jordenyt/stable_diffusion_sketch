@@ -313,7 +313,7 @@ public class Sketch implements Serializable {
     }
 
     private RectF getInpaintRect(int sdSize) {
-        int inpaintMargin = max(imgBackground.getWidth(), imgBackground.getHeight()) / 20;
+        int inpaintMargin = max(imgBackground.getWidth(), imgBackground.getHeight()) / 24;
         int sdBlockSize = 64;
         if (imgBackground == null) {
             return null;
@@ -339,15 +339,22 @@ public class Sketch implements Serializable {
         }
 
         double scale = 1d;
-        int inpaintWidth = min(imgBackground.getWidth(), x2 - x1 + 2 * inpaintMargin);
-        int inpaintHeight = min(imgBackground.getHeight(), y2 - y1 + 2 * inpaintMargin);
-        if (x2-x1 >= y2-y1) {
+        int inpaintWidth = x2 - x1;
+        if (x2 + inpaintMargin < imgBackground.getWidth()) inpaintWidth += inpaintMargin;
+        if (x1 - inpaintMargin > 0) inpaintWidth += inpaintMargin;
+        if (inpaintWidth > imgBackground.getWidth()) inpaintWidth = imgBackground.getWidth();
+        int inpaintHeight = y2 - y1;
+        if (y2 + inpaintMargin < imgBackground.getHeight()) inpaintHeight += inpaintMargin;
+        if (y1 - inpaintMargin > 0) inpaintHeight += inpaintMargin;
+        if (inpaintHeight > imgBackground.getHeight()) inpaintHeight = imgBackground.getHeight();
+
+        if (inpaintWidth >= inpaintHeight) {
             if (inpaintWidth > sdSize) {
                 scale = (double) (inpaintWidth) / (sdSize);
             } else if (imgBackground.getWidth() < sdSize) {
                 scale = (double) (imgBackground.getWidth()) / (sdSize);
             }
-        } else if (y2-y1 >= x2-x1) {
+        } else {
             if (inpaintHeight > sdSize) {
                 scale = (double) (inpaintHeight) / (sdSize);
             } else if (imgBackground.getHeight() < sdSize) {
@@ -356,7 +363,7 @@ public class Sketch implements Serializable {
         }
 
         double blockWidth = sdBlockSize * scale;
-        if (x2-x1 >= y2-y1) {
+        if (inpaintWidth >= inpaintHeight) {
             inpaintWidth = (int)round(sdSize * scale);
             if (inpaintHeight < (int)round(2d / 3d * inpaintWidth)) {
                 inpaintHeight = min(imgBackground.getHeight(), (int)round(2d / 3d * inpaintWidth));
