@@ -71,7 +71,7 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_TXT, "{\"type\":\"txt2img\"}");
         json.put(CN_MODE_TXT_SDXL, "{\"type\":\"txt2img\", \"sdSize\":1280}");
         json.put(CN_MODE_REFINER, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
-        json.put(CN_MODE_TXT_SDXL_TURBO, "{\"type\":\"txt2img\", \"sdSize\":768, \"cfgScale\":2.0, \"steps\":5, \"sampler\":\"DPM++ SDE Karras\"}");
+        json.put(CN_MODE_TXT_SDXL_TURBO, "{\"type\":\"txt2img\", \"sdSize\":1024, \"cfgScale\":2.0, \"steps\":6, \"sampler\":\"DPM++ SDE\"}");
         json.put(CN_MODE_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_PARTIAL_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
