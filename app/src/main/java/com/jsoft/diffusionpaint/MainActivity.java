@@ -306,7 +306,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         if (currentRootId != -1) {
             showGrid(-1);
         } else {
-            finish();
+            moveTaskToBack(true);
+            //finish();
         }
     }
 
