@@ -224,6 +224,9 @@ public class SdApiHelper {
         if (param.sampler == null) {
             param.sampler = sharedPreferences.getString("sdSampler", "Euler a");
         }
+        if (param.scheduler == null) {
+            param.scheduler = "Automatic";
+        }
         if (param.clipSkip < 1 || param.clipSkip > 12) {
             try {
                 param.clipSkip = Integer.parseInt(sharedPreferences.getString("defaultClipSkip", "1"));
@@ -338,6 +341,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_samples", true);
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("sampler_name", param.sampler);
+            jsonObject.put("scheduler", param.scheduler);
             jsonObject.put("save_images", false);
             jsonObject.put("override_settings", getConfig(param));
             jsonObject.put("override_settings_restore_afterwards", false);
@@ -429,6 +433,7 @@ public class SdApiHelper {
             jsonObject.put("do_not_save_grid", true);
             jsonObject.put("steps", param.steps);
             jsonObject.put("sampler_name", param.sampler);
+            jsonObject.put("scheduler", param.scheduler);
             jsonObject.put("save_images", false);
             jsonObject.put("denoising_strength", param.denoise);
             jsonObject.put("cfg_scale", param.cfgScale);

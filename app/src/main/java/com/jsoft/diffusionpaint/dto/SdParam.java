@@ -26,6 +26,7 @@ public class SdParam {
     public int clipSkip;
     public String model;
     public String sampler;
+    public String scheduler;
 
     public List<CnParam> cn;
     public static final String SD_MODEL_V1 = "v1Model";
@@ -109,6 +110,12 @@ public class SdParam {
             "\"model\":\"sdxlBase\"",
             "\"model\":\"sdxlTurbo\"",
             "\"model\":\"sdxlInpaint\"",
+            "\"scheduler\":\"Automatic\"",
+            "\"scheduler\":\"Uniform\"",
+            "\"scheduler\":\"Exponential\"",
+            "\"scheduler\":\"Karras\"",
+            "\"scheduler\":\"Polyexponential\"",
+            "\"scheduler\":\"SGM Uniform\"",
             "\"denoise\":0.75",
             "\"baseImage\":\"background\"",
             "\"baseImage\":\"sketch\"",
