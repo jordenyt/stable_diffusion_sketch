@@ -97,7 +97,7 @@ Custom mode can be defined in JSON format.<br/>
 | `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |
 | `model`          | O       | O       | O          | `v1Model` - Default for `type`=`txt2img` and `type`=`img2img` <br/> `v1Inpaint` - Default for `type`=`inpaint` <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlInpaint` <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode|
 | `sampler`        | O       | O       | O          | Can use all samplers available in your A1111 webui.                                                              |
-| `schedule`        | O       | O       | O          | `Automatic` - Default <br/> Possible values are `Uniform`, `Exponential`, `Karras`, `Polyexponential` and `SGM Uniform`|
+| `scheduler`      | O       | O       | O          | `Automatic` - Default <br/> Possible values are `Uniform`, `Exponential`, `Karras`, `Polyexponential` and `SGM Uniform`|
 | `denoise`        | -       | M       | M          | decimal from 0 to 1                                                                                              |
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
 | `inpaintFill`    | -       | -       | O          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
