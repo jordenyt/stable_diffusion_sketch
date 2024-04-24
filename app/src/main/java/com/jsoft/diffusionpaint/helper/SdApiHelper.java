@@ -354,10 +354,10 @@ public class SdApiHelper {
                     if (cnparam.cnInputImage != null) {
                         // ControlNet Args
                         JSONObject cnArgObject = new JSONObject();
-                        cnArgObject.put("input_image", Utils.jpg2Base64String(
+                        cnArgObject.put("image", Utils.jpg2Base64String(
                                 cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                                cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getImgReference() :
-                                mCurrentSketch.getImgBackground()));
+                                cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF) ? mCurrentSketch.getImgReference(param.sdSize) :
+                                mCurrentSketch.getImgBackground(param.sdSize)));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
                         cnArgObject.put("model",cnparam.cnModel);
@@ -365,7 +365,7 @@ public class SdApiHelper {
 
                         cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
                                 cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
-                        cnArgObject.put("lowvram", false);
+                        cnArgObject.put("low_vram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
                         if (!Double.isNaN(cnparam.cnModuleParamA)) cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
@@ -495,7 +495,7 @@ public class SdApiHelper {
                         JSONObject cnArgObject = new JSONObject();
                         Bitmap cnImage = null;
                         if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_REF)) {
-                            cnImage = mCurrentSketch.getImgReference();
+                            cnImage = mCurrentSketch.getImgReference(param.sdSize);
                         } else if (isInpaint && (param.inpaintPartial == SdParam.INPAINT_PARTIAL)) {
                             Bitmap bg = mCurrentSketch.getImgBackground();
                             if (cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
@@ -507,17 +507,17 @@ public class SdApiHelper {
                             }
                             cnImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
                         } else {
-                            cnImage = cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() : mCurrentSketch.getImgBackground();
+                            cnImage = cnparam.cnInputImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() : mCurrentSketch.getImgBackground(param.sdSize);
                         }
 
-                        cnArgObject.put("input_image", Utils.jpg2Base64String(cnImage));
+                        cnArgObject.put("image", Utils.jpg2Base64String(cnImage));
                         //cnArgObject.put("mask", "");
                         cnArgObject.put("module", cnparam.cnModule);
                         cnArgObject.put("model", cnparam.cnModel);
                         cnArgObject.put("weight", cnparam.cnWeight);
                         cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
                                 cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
-                        cnArgObject.put("lowvram", false);
+                        cnArgObject.put("low_vram", false);
                         //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
                         if (!Double.isNaN(cnparam.cnModuleParamA)) cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
@@ -526,7 +526,6 @@ public class SdApiHelper {
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
                         cnArgObject.put("control_mode", cnparam.cnControlMode);
-                        cnArgObject.put("processor_res", 512);
                         args.put(cnArgObject);
                     }
                 }
