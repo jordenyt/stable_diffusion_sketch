@@ -312,6 +312,26 @@ public class Sketch implements Serializable {
         }
     }
 
+    public Bitmap getImgReference(int sdSize) {
+        double scale = 1.0;
+        if (imgReference.getWidth() > imgReference.getHeight()) {
+            scale = (double)sdSize / imgReference.getWidth();
+        } else {
+            scale = (double)sdSize / imgReference.getHeight();
+        }
+        return Bitmap.createScaledBitmap(imgReference, (int)round(imgReference.getWidth() * scale), (int)round(imgReference.getHeight() * scale), true);
+    }
+
+    public Bitmap getImgBackground(int sdSize) {
+        double scale = 1.0;
+        if (imgBackground.getWidth() > imgBackground.getHeight()) {
+            scale = (double)sdSize / imgBackground.getWidth();
+        } else {
+            scale = (double)sdSize / imgBackground.getHeight();
+        }
+        return Bitmap.createScaledBitmap(imgBackground, (int)round(imgBackground.getWidth() * scale), (int)round(imgBackground.getHeight() * scale), true);
+    }
+
     private RectF getInpaintRect(int sdSize) {
         int inpaintMargin = max(imgBackground.getWidth(), imgBackground.getHeight()) / 24;
         int sdBlockSize = 64;
