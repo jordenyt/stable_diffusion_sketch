@@ -640,9 +640,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     String m = it.next();
                     double c = tagObject.getDouble(m);
                     if (c>=0.7) {
-                        tag += "(" + m + "), ";
+                        tag += "(" + m.replace("_", " ") + "), ";
                     } else {
-                        tag += m + ", ";
+                        tag += m.replace("_", " ") + ", ";
                     }
                 }
                 promptTextView.setText(tag);
