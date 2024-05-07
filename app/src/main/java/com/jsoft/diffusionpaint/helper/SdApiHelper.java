@@ -374,17 +374,24 @@ public class SdApiHelper {
                         cnArgObject.put("model",cnparam.cnModel);
                         cnArgObject.put("weight", cnparam.cnWeight);
 
-                        cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
-                                cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
+                        cnArgObject.put("resize_mode", CnParam.CN_RESIZE_MODE[cnparam.cnResizeMode]);
                         cnArgObject.put("low_vram", false);
-                        //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
-                        if (!Double.isNaN(cnparam.cnModuleParamA)) cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
-                        if (!Double.isNaN(cnparam.cnModuleParamB)) cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
+                        cnArgObject.put("processor_res", 512);
+                        if (!Double.isNaN(cnparam.cnModuleParamA)) {
+                            cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
+                        } else {
+                            cnArgObject.put("threshold_a", 0.5);
+                        }
+                        if (!Double.isNaN(cnparam.cnModuleParamB)) {
+                            cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
+                        } else {
+                            cnArgObject.put("threshold_b", 0.5);
+                        }
                         //cnArgObject.put("guidance", 1);
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
-                        cnArgObject.put("control_mode", cnparam.cnControlMode);
+                        cnArgObject.put("control_mode", CnParam.CN_CONTROL_MODE[cnparam.cnControlMode]);
                         args.put(cnArgObject);
                     }
                 }
@@ -526,17 +533,24 @@ public class SdApiHelper {
                         cnArgObject.put("module", cnparam.cnModule);
                         cnArgObject.put("model", cnparam.cnModel);
                         cnArgObject.put("weight", cnparam.cnWeight);
-                        cnArgObject.put("resize_mode", cnparam.cnResizeMode == 0 ? CnParam.CN_RESIZE_MODE_RESIZE :
-                                cnparam.cnResizeMode == 1 ? CnParam.CN_RESIZE_MODE_CROP : CnParam.CN_RESIZE_MODE_FILL);
+                        cnArgObject.put("resize_mode", CnParam.CN_RESIZE_MODE[cnparam.cnResizeMode]);
                         cnArgObject.put("low_vram", false);
-                        //cnArgObject.put("processor_res", param.sdSize);
                         cnArgObject.put("pixel_perfect", true);
-                        if (!Double.isNaN(cnparam.cnModuleParamA)) cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
-                        if (!Double.isNaN(cnparam.cnModuleParamB)) cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
+                        cnArgObject.put("processor_res", 512);
+                        if (!Double.isNaN(cnparam.cnModuleParamA)) {
+                            cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
+                        } else {
+                            cnArgObject.put("threshold_a", 0.5);
+                        }
+                        if (!Double.isNaN(cnparam.cnModuleParamB)) {
+                            cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
+                        } else {
+                            cnArgObject.put("threshold_b", 0.5);
+                        }
                         //cnArgObject.put("guidance", 1);
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
-                        cnArgObject.put("control_mode", cnparam.cnControlMode);
+                        cnArgObject.put("control_mode", CnParam.CN_CONTROL_MODE[cnparam.cnControlMode]);
                         args.put(cnArgObject);
                     }
                 }

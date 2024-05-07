@@ -13,7 +13,7 @@ public class CnParam {
     public double cnStart = 0.0;
     public double cnEnd = 1.0;
 
-    public static final String CN_RESIZE_MODE_RESIZE = "Just Resize";
-    public static final String CN_RESIZE_MODE_CROP = "Crop and Resize";
-    public static final String CN_RESIZE_MODE_FILL = "Resize and Fill";
+    public static final String[] CN_RESIZE_MODE = {"Just Resize", "Crop and Resize", "Resize and Fill"};
+
+    public static final String[] CN_CONTROL_MODE = {"Balanced", "My prompt is more important", "ControlNet is more important"};
 }
