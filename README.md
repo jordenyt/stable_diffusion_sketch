@@ -1,8 +1,8 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.4-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.5-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 ### Notes
-- A1111 SD-webui 1.8.0 and prior does not support separate sampler and scheduler. When you update your SD-webui to 1.9.0, please also update the custom mode JSON and default sampler in the app.
+- A1111 SD-webui 1.8.0 and prior does not support separate sampler and scheduler. When you update your SD-webui to 1.9.x, please also update the custom mode JSON and default sampler in the app.
 - A1111 SD-webui 1.7.0 and prior does not support SDXL Inpainiting model.  Please update to latest release.
 - There are several SDXL Inpainting models on [Civitai](https://civitai.com/). For your instance, [JuggerXL_inpaint](https://civitai.com/models/245423/juggerxlinpaint) and [RealVisXL V3.0](https://civitai.com/models/139562?modelVersionId=297320) may be a good choice.
 
@@ -16,9 +16,9 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
 
 ## Supported Features
 
-- Support ControlNet v1.1
+- Support ControlNet
 - Support SDXL
-- Support SDXL Turbo
+- Support SDXL Turbo / Lightning
 - Support SDXL Inpainting
 - Autocomplete LORA tag in prompt
 - Autocomplete Phrase setup
@@ -45,7 +45,7 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
     - Outpainting
     - Fill with Reference
     - Merge with Reference
-  - 10 Custom Modes
+  - 12 Custom Modes
 - Painting Tools:
   - Palette
   - Paintbrush
