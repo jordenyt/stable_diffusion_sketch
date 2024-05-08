@@ -366,18 +366,18 @@ public class SdApiHelper {
                         cnArgObject.put("resize_mode", CnParam.CN_RESIZE_MODE[cnparam.cnResizeMode]);
                         cnArgObject.put("low_vram", false);
                         cnArgObject.put("pixel_perfect", true);
-                        cnArgObject.put("processor_res", 512);
+                        cnArgObject.put("processor_res", -1);
                         if (!Double.isNaN(cnparam.cnModuleParamA)) {
                             cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
                         } else {
-                            cnArgObject.put("threshold_a", 0.5);
+                            cnArgObject.put("threshold_a", -1);
                         }
                         if (!Double.isNaN(cnparam.cnModuleParamB)) {
                             cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
                         } else {
-                            cnArgObject.put("threshold_b", 0.5);
+                            cnArgObject.put("threshold_b", -1);
                         }
-                        //cnArgObject.put("guidance", 1);
+                        cnArgObject.put("enabled", true);
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
                         cnArgObject.put("control_mode", CnParam.CN_CONTROL_MODE[cnparam.cnControlMode]);
@@ -525,18 +525,18 @@ public class SdApiHelper {
                         cnArgObject.put("resize_mode", CnParam.CN_RESIZE_MODE[cnparam.cnResizeMode]);
                         cnArgObject.put("low_vram", false);
                         cnArgObject.put("pixel_perfect", true);
-                        cnArgObject.put("processor_res", 512);
+                        cnArgObject.put("processor_res", -1);
                         if (!Double.isNaN(cnparam.cnModuleParamA)) {
                             cnArgObject.put("threshold_a", cnparam.cnModuleParamA);
                         } else {
-                            cnArgObject.put("threshold_a", 0.5);
+                            cnArgObject.put("threshold_a", -1);
                         }
                         if (!Double.isNaN(cnparam.cnModuleParamB)) {
                             cnArgObject.put("threshold_b", cnparam.cnModuleParamB);
                         } else {
-                            cnArgObject.put("threshold_b", 0.5);
+                            cnArgObject.put("threshold_b", -1);
                         }
-                        //cnArgObject.put("guidance", 1);
+                        cnArgObject.put("enabled", true);
                         cnArgObject.put("guidance_start", cnparam.cnStart);
                         cnArgObject.put("guidance_end", cnparam.cnEnd);
                         cnArgObject.put("control_mode", CnParam.CN_CONTROL_MODE[cnparam.cnControlMode]);
