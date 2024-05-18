@@ -330,6 +330,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_restart_a1111:
                 sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/restart_a1111", null, "GET");
                 break;
+            case R.id.mi_start_comfyui:
+                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/start_comfyui", null, "GET");
+                break;
+            case R.id.mi_stop_comfyui:
+                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/stop_comfyui", null, "GET");
+                break;
             case R.id.mi_dfl_api_address:
                 showTextInputDialog("dflApiAddress", "DFL API Address:", "http://192.168.1.101:7860", "");
                 break;
@@ -1008,7 +1014,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showAutoCompleteDialog();
             } else if ("restart_Server".equals(requestType)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Restart Command sent.")
+                builder.setTitle("Service Command sent.")
                         .setMessage("Please wait for a minute.")
                         .setPositiveButton("OK", (dialog, id) -> {
                         });

@@ -58,6 +58,8 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_INPAINT_MERGE = "mergeReference";
     public static final String CN_MODE_CUSTOM = "custom";
     public static final String CN_MODE_ORIGIN = "original";
+    public static final String CN_MODE_SUPIR = "supir";
+    public static final String CN_MODE_ICLIGHT_TEXT = "iclightText";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
     public static final String ASPECT_RATIO_SQUARE = "square";
@@ -106,6 +108,8 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
         cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
+        cnMode.put("SUPIR", CN_MODE_SUPIR);
+        cnMode.put("IC-Light Text", CN_MODE_ICLIGHT_TEXT);
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
         }

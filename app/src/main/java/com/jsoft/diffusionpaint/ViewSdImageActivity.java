@@ -500,7 +500,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private void hideSpinner() {
 
         spinner_bg.setVisibility(View.GONE);
-        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) ? View.GONE : View.VISIBLE);
+        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) || (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR))) ? View.GONE : View.VISIBLE);
 
         saveButton.setVisibility((savedImageName != null) || (apiResultList.size() == 0) ? View.GONE : View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
@@ -547,7 +547,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     batchSize = Math.min(remainGen, Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
                 }
             } catch (Exception ignored) {}
-            if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
+            if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR)) {
+                requestType = "supir";
+                jsonObject = sdApiHelper.getSupirJSON(mCurrentSketch.getImgBackground(), mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt());
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)) {
+                requestType = "iclightText";
+                jsonObject = sdApiHelper.getICLightTextJSON(mCurrentSketch);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 requestType = "txt2img";
                 jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch, batchSize);
             } else {
@@ -647,9 +655,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     public void processResultBitmap(String requestType, List<Bitmap> results, List<String> listInfotext) {
-        for (int i=0;i<results.size();i++) {
+        for (int i = 0; i<results.size(); i++) {
             mBitmap = results.get(i);
-            if (!"txt2img".equals(requestType)) {
+            if (!"txt2img".equals(requestType) && !"supir".equals(requestType) && !"iclightText".equals(requestType)) {
                 updateMBitmap();
             }
             savedImageName = null;
@@ -658,11 +666,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else {
                 addResult(requestType, null);
             }
-            if ("txt2img".equals(requestType) || "img2img".equals(requestType)) {
+            if ("txt2img".equals(requestType) || "img2img".equals(requestType) || "iclightText".equals(requestType)) {
                 remainGen--;
             }
         }
-        if (("txt2img".equals(requestType) || "img2img".equals(requestType)) && remainGen > 0) {
+        if (("txt2img".equals(requestType) || "img2img".equals(requestType) || "iclightText".equals(requestType)) && remainGen > 0) {
             callSD4Img();
         }
         updateScreen();

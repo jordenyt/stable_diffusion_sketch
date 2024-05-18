@@ -133,6 +133,32 @@ public class SdApiHelper {
         }
         return jsonObject;
     }
+
+    public JSONObject getSupirJSON(Bitmap bitmap, String positivePrompt, String negativePrompt) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("image", Utils.jpg2Base64String(bitmap));
+            jsonObject.put("positive", positivePrompt);
+            jsonObject.put("negative", negativePrompt);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getICLightTextJSON(Sketch mCurrentSketch) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("image", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
+            jsonObject.put("lightsource", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
