@@ -1013,9 +1013,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showAutoCompleteDialog();
             } else if ("restart_Server".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Service Command sent.")
-                        .setMessage("Please wait for a minute.")
+                        .setMessage(jsonObject.getString("message"))
                         .setPositiveButton("OK", (dialog, id) -> {
                         });
                 AlertDialog alert = builder.create();
