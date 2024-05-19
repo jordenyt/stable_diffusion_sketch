@@ -380,8 +380,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
             if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)
                     && !mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR)
-                    && !mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)
-                    && !mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_BG)
+                    && !mCurrentSketch.getCnMode().startsWith("iclight")
                     && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
                     JSONObject jsonExif = new JSONObject();
@@ -559,6 +558,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getICLightTextJSON(mCurrentSketch);
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_RELIGHT)) {
+                requestType = "comfyui";
+                jsonObject = sdApiHelper.getICLightRelightJSON(mCurrentSketch);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
             } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_BG)) {
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getICLightBGJSON(mCurrentSketch);
@@ -675,14 +678,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 addResult(requestType, null);
             }
             if ("txt2img".equals(requestType) || "img2img".equals(requestType)
-                    || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_BG)
-                    || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)) {
+                    || mCurrentSketch.getCnMode().startsWith("iclight")) {
                 remainGen--;
             }
         }
         if (("txt2img".equals(requestType) || "img2img".equals(requestType)
-                || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_BG)
-                || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)) && remainGen > 0) {
+                || mCurrentSketch.getCnMode().startsWith("iclight")) && remainGen > 0) {
             callSD4Img();
         }
         updateScreen();

@@ -161,6 +161,20 @@ public class SdApiHelper {
         return jsonObject;
     }
 
+    public JSONObject getICLightRelightJSON(Sketch mCurrentSketch) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
+            jsonObject.put("paint", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "iclight_relight");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public JSONObject getICLightBGJSON(Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {

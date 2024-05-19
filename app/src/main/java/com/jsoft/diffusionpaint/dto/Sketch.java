@@ -60,6 +60,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_ORIGIN = "original";
     public static final String CN_MODE_SUPIR = "supir";
     public static final String CN_MODE_ICLIGHT_TEXT = "iclightText";
+    public static final String CN_MODE_ICLIGHT_RELIGHT = "iclightRelight";
     public static final String CN_MODE_ICLIGHT_BG = "iclightBG";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
@@ -111,6 +112,7 @@ public class Sketch implements Serializable {
         cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
         cnMode.put("SUPIR", CN_MODE_SUPIR);
         cnMode.put("IC-Light Text", CN_MODE_ICLIGHT_TEXT);
+        cnMode.put("IC-Light Relight", CN_MODE_ICLIGHT_RELIGHT);
         cnMode.put("IC-Light Background", CN_MODE_ICLIGHT_BG);
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
