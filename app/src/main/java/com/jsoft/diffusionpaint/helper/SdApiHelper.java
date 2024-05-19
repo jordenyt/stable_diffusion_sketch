@@ -137,9 +137,10 @@ public class SdApiHelper {
     public JSONObject getSupirJSON(Bitmap bitmap, String positivePrompt, String negativePrompt) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("image", Utils.jpg2Base64String(bitmap));
+            jsonObject.put("background", Utils.jpg2Base64String(bitmap));
             jsonObject.put("positive", positivePrompt);
             jsonObject.put("negative", negativePrompt);
+            jsonObject.put("workflow", "supir");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -149,10 +150,26 @@ public class SdApiHelper {
     public JSONObject getICLightTextJSON(Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("image", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
-            jsonObject.put("lightsource", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
+            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
+            jsonObject.put("paint", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "iclight_text");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getICLightBGJSON(Sketch mCurrentSketch) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
+            jsonObject.put("paint", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
+            jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "iclight_bg");
         } catch (JSONException e) {
             e.printStackTrace();
         }

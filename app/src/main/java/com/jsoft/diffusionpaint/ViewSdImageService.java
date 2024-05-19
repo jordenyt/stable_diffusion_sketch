@@ -112,12 +112,9 @@ public class ViewSdImageService extends Service {
         } else if (requestType.equals("deepFaceLab")){
             ViewSdImageActivity.isCallingDFL = true;
             sendRequest("deepFaceLab", sdBaseUrl, "/processimage", requestJSON);
-        } else if (requestType.equals("supir")){
+        } else if (requestType.equals("comfyui")){
             ViewSdImageActivity.isCallingDFL = true;
-            sendRequest("supir", sdBaseUrl, "/supir_upscale", requestJSON);
-        } else if (requestType.equals("iclightText")){
-            ViewSdImageActivity.isCallingDFL = true;
-            sendRequest("iclightText", sdBaseUrl, "/iclight_text", requestJSON);
+            sendRequest("comfyui", sdBaseUrl, "/comfyui_workflow", requestJSON);
         } else {
             ViewSdImageActivity.isCallingAPI = true;
             sendRequest("extraSingleImage", sdBaseUrl, "/sdapi/v1/extra-single-image", requestJSON);
@@ -224,8 +221,7 @@ public class ViewSdImageService extends Service {
                     break;
                 }
                 case "deepFaceLab":
-                case "iclightText":
-                case "supir": {
+                case "comfyui": {
                     ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
                     String imageStr = jsonObject.getString("processed_image");
