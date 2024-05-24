@@ -379,7 +379,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (exif == null || exif.length() < 2) { exif = "{}"; }
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
             if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)
-                    && !mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR)
+                    && !mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)
                     && !mCurrentSketch.getCnMode().startsWith("iclight")
                     && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
@@ -503,7 +503,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private void hideSpinner() {
 
         spinner_bg.setVisibility(View.GONE);
-        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) || (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR))) ? View.GONE : View.VISIBLE);
+        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)
+                || (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR))) ? View.GONE : View.VISIBLE);
 
         saveButton.setVisibility((savedImageName != null) || (apiResultList.size() == 0) ? View.GONE : View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
@@ -550,9 +551,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     batchSize = Math.min(remainGen, Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
                 }
             } catch (Exception ignored) {}
-            if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR)) {
+            if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)) {
                 requestType = "comfyui";
-                jsonObject = sdApiHelper.getSupirJSON(mCurrentSketch.getImgBackground(), mCurrentSketch.getPrompt(), mCurrentSketch.getNegPrompt());
+                jsonObject = sdApiHelper.getSupirJSON(mCurrentSketch, mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL));
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
             } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)) {
                 requestType = "comfyui";
@@ -668,7 +669,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void processResultBitmap(String requestType, List<Bitmap> results, List<String> listInfotext) {
         for (int i = 0; i<results.size(); i++) {
             mBitmap = results.get(i);
-            if (!"txt2img".equals(requestType) && !"comfyui".equals(requestType)) {
+            if ((!"txt2img".equals(requestType)
+                    && !"comfyui".equals(requestType)) || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL)){
                 updateMBitmap();
             }
             savedImageName = null;

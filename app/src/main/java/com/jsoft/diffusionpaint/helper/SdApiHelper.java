@@ -134,12 +134,20 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getSupirJSON(Bitmap bitmap, String positivePrompt, String negativePrompt) {
+    public JSONObject getSupirJSON(Sketch mCurrentSketch, boolean isPartial) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("background", Utils.jpg2Base64String(bitmap));
-            jsonObject.put("positive", positivePrompt);
-            jsonObject.put("negative", negativePrompt);
+            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            if (isPartial) {
+                RectF inpaintArea = mCurrentSketch.getRectInpaint(768);
+                Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
+                jsonObject.put("background", Utils.jpg2Base64String(baseImage));
+                jsonObject.put("size", min(2560, max(inpaintArea.width(), inpaintArea.height())));
+            } else {
+                jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
+            }
             jsonObject.put("workflow", "supir");
         } catch (JSONException e) {
             e.printStackTrace();
