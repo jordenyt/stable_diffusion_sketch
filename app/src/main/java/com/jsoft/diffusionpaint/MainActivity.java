@@ -513,6 +513,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendPostRequest("refreshCheckpoints", "/sdapi/v1/refresh-checkpoints", new JSONObject());
                 break;
+            case R.id.mi_sd_unload_checkpoint:
+                if (!validateSettings()) break;
+                sdApiHelper.sendPostRequest("unloadCheckpoint", "/sdapi/v1/unload-checkpoint", new JSONObject());
+                break;
             default:
                 if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
@@ -1032,6 +1036,13 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("refreshCheckpoints".equals(requestType)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Refresh Checkpoints Command sent.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else if ("unloadCheckpoint".equals(requestType)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("All Checkpoint unloaded.")
                         .setPositiveButton("OK", (dialog, id) -> {
                         });
                 AlertDialog alert = builder.create();

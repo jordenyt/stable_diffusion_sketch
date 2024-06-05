@@ -15,6 +15,7 @@
             <item android:id="@+id/mi_upscaler_gfpgan" android:title="Upscaler GFPGAN Visibility"/>
             <item android:id="@+id/mi_sd_refresh_loras" android:title="Refresh Loras"/>
             <item android:id="@+id/mi_sd_refresh_ckpt" android:title="Refresh Checkpoints"/>
+            <item android:id="@+id/mi_sd_unload_checkpoint" android:title="Unload A1111 Checkpoint"/>
             <item android:title="Service Management">
                 <menu>
                     <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>

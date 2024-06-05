@@ -555,6 +555,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getSupirJSON(mCurrentSketch, mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL));
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_VTRON)) {
+                requestType = "comfyui";
+                jsonObject = sdApiHelper.getVtronJSON(mCurrentSketch);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
             } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)) {
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getICLightTextJSON(mCurrentSketch);
@@ -670,7 +674,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         for (int i = 0; i<results.size(); i++) {
             mBitmap = results.get(i);
             if ((!"txt2img".equals(requestType)
-                    && !"comfyui".equals(requestType)) || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL)){
+                    && !"comfyui".equals(requestType))
+                    || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_VTRON)
+                    || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL)){
                 updateMBitmap();
             }
             savedImageName = null;

@@ -137,7 +137,6 @@ public class SdApiHelper {
     public JSONObject getSupirJSON(Sketch mCurrentSketch, boolean isPartial) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
             if (isPartial) {
@@ -149,6 +148,24 @@ public class SdApiHelper {
                 jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
             }
             jsonObject.put("workflow", "supir");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getVtronJSON(Sketch mCurrentSketch) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            RectF inpaintArea = mCurrentSketch.getRectInpaint(768);
+            Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
+            jsonObject.put("background", Utils.jpg2Base64String(baseImage));
+            Bitmap paintImage = Utils.extractBitmap(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0), inpaintArea);
+            jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
+            jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
+            jsonObject.put("workflow", "vtron");
         } catch (JSONException e) {
             e.printStackTrace();
         }
