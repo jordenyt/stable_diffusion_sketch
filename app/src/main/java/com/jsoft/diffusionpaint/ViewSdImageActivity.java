@@ -135,10 +135,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch = dbSketch;
                     mCurrentSketch.setCnMode(cnMode);
                     mBitmap = mCurrentSketch.getImgPreview();
-                    SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-                    if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && param.inpaintPartial == 1) {
-                        mBitmap = partialInpaintPreview(mCurrentSketch);
-                    }
                 }
             } else if (sketchId == -3) {
                 mCurrentSketch = new Sketch();
@@ -192,13 +188,12 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef());
                     mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(32));
                     mCurrentSketch.setImgPreview(mCurrentSketch.getImgBgRefPreview());
-                    SdParam param = sdApiHelper.getSdCnParm(Sketch.CN_MODE_INPAINT_MERGE);
-                    if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && param.inpaintPartial == 1) {
-                        mBitmap = partialInpaintPreview(mCurrentSketch);
-                    } else {
-                        mBitmap = mCurrentSketch.getImgPreview();
-                    }
+                    mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
+                }
+                SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+                if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && param.inpaintPartial == 1) {
+                    mBitmap = partialInpaintPreview(mCurrentSketch);
                 }
                 getSdModel();
             }
