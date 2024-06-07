@@ -154,7 +154,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getVtronJSON(Sketch mCurrentSketch) {
+    public JSONObject getIdmVtonJSON(Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("positive", mCurrentSketch.getPrompt());

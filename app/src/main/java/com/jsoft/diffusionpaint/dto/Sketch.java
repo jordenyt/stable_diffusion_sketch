@@ -60,7 +60,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_ORIGIN = "original";
     public static final String CN_MODE_SUPIR = "supir";
     public static final String CN_MODE_SUPIR_PARTIAL = "supirPartial";
-    public static final String CN_MODE_VTRON = "vtron";
+    public static final String CN_MODE_IDMVTON = "vtron";
     public static final String CN_MODE_ICLIGHT_TEXT = "iclightText";
     public static final String CN_MODE_ICLIGHT_RELIGHT = "iclightRelight";
     public static final String CN_MODE_ICLIGHT_BG = "iclightBG";
@@ -87,7 +87,7 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.5, \"inpaintPartial\":1, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
         json.put(CN_MODE_SUPIR_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":768}");
-        json.put(CN_MODE_VTRON, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":1024}");
+        json.put(CN_MODE_IDMVTON, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":1024}");
         defaultJSON = Collections.unmodifiableMap(json);
     }
 
@@ -116,7 +116,7 @@ public class Sketch implements Serializable {
         cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
         cnMode.put("SupIR", CN_MODE_SUPIR);
         cnMode.put("Partial SupIR", CN_MODE_SUPIR_PARTIAL);
-        cnMode.put("Virtual Try-On (IDM-VTRON)", CN_MODE_VTRON);
+        cnMode.put("Virtual Try-On (IDM-VTON)", CN_MODE_IDMVTON);
         cnMode.put("IC-Light Text", CN_MODE_ICLIGHT_TEXT);
         cnMode.put("IC-Light Relight", CN_MODE_ICLIGHT_RELIGHT);
         cnMode.put("IC-Light Background", CN_MODE_ICLIGHT_BG);
