@@ -514,8 +514,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private void hideSpinner() {
 
         spinner_bg.setVisibility(View.GONE);
-        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)
-                || (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR))) ? View.GONE : View.VISIBLE);
+        sdButton.setVisibility((mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) ? View.GONE : View.VISIBLE);
 
         saveButton.setVisibility((savedImageName != null) || (apiResultList.size() == 0) ? View.GONE : View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
