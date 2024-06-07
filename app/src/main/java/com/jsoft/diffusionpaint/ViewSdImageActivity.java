@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -138,16 +139,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = mCurrentSketch.getImgPreview();
                     SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
                     if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && param.inpaintPartial == 1) {
-                        Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
-                        Canvas canvasEdit = new Canvas(bmEdit);
-                        canvasEdit.drawBitmap(mCurrentSketch.getImgPreview(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
-                        Paint paint = new Paint();
-                        paint.setColor(Color.RED);
-                        paint.setAlpha(128);
-                        paint.setStyle(Paint.Style.STROKE);
-                        paint.setStrokeWidth((float)(15d * (double)mCurrentSketch.getImgBackground().getHeight() / (double)mCurrentSketch.getImgPreview().getHeight()));
-                        canvasEdit.drawRect(mCurrentSketch.getRectInpaint(param.sdSize),paint);
-                        mBitmap = bmEdit;
+                        mBitmap = partialInpaintPreview(mCurrentSketch);
                     }
                 }
             } else if (sketchId == -3) {
@@ -202,13 +194,37 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef());
                     mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(32));
                     mCurrentSketch.setImgPreview(mCurrentSketch.getImgBgRefPreview());
-                    mBitmap = mCurrentSketch.getImgPreview();
+                    SdParam param = sdApiHelper.getSdCnParm(Sketch.CN_MODE_INPAINT_MERGE);
+                    if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && param.inpaintPartial == 1) {
+                        mBitmap = partialInpaintPreview(mCurrentSketch);
+                    } else {
+                        mBitmap = mCurrentSketch.getImgPreview();
+                    }
                     sdImage.setImageBitmap(mBitmap);
                 }
                 getSdModel();
             }
         }
         updateScreen();
+    }
+
+    private Bitmap partialInpaintPreview(Sketch mCurrentSketch) {
+        SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        this.getWindowManager()
+                .getDefaultDisplay()
+                .getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvasEdit = new Canvas(bmEdit);
+        canvasEdit.drawBitmap(mCurrentSketch.getImgPreview(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setAlpha(128);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth((float)(15d * (double)mCurrentSketch.getImgBackground().getWidth() / (double)screenWidth));
+        canvasEdit.drawRect(mCurrentSketch.getRectInpaint(param.sdSize),paint);
+        return bmEdit;
     }
 
     @SuppressLint("ClickableViewAccessibility")

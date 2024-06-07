@@ -84,7 +84,7 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_PARTIAL_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.6, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
         json.put(CN_MODE_PARTIAL_REFINER, "{\"baseImage\":\"background\", \"denoise\":0.6, \"inpaintFill\":1, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
         json.put(CN_MODE_OUTPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\", \"cfgScale\":10.0}");
-        json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.75, \"inpaintFill\":1, \"type\":\"inpaint\"}");
+        json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.5, \"inpaintPartial\":1, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
         json.put(CN_MODE_SUPIR_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":768}");
         json.put(CN_MODE_VTRON, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":1024}");
