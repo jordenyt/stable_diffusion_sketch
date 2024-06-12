@@ -704,7 +704,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
         if (("txt2img".equals(requestType) || "img2img".equals(requestType)
                 || mCurrentSketch.getCnMode().startsWith("iclight")) && remainGen > 0) {
-            callSD4Img();
+            Handler h = new Handler();
+            h.postDelayed(this::callSD4Img, 100);
         }
         updateScreen();
     }
