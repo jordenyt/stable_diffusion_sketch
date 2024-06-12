@@ -60,10 +60,10 @@ public class ViewSdImageService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        isRunning = true;
         try {
-            showForegroundNotification();
             String requestType = intent.getStringExtra("requestType");
+            isRunning = true;
+            showForegroundNotification();
             callSD4Img(requestType);
         } catch (Exception e) {
             isRunning = false;
@@ -181,6 +181,8 @@ public class ViewSdImageService extends Service {
                             listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
                         }
                         if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                            isRunning = false;
+                            stopForeground(true);
                             activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
                         } else {
                             ViewSdImageActivity.rtResultType = requestType;
@@ -202,6 +204,8 @@ public class ViewSdImageService extends Service {
                     List<Bitmap> listBitmap = new ArrayList<>();
                     listBitmap.add(Utils.base64String2Bitmap(imageStr));
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                        isRunning = false;
+                        stopForeground(true);
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
                     } else {
                         ViewSdImageActivity.rtResultType = requestType;
@@ -215,8 +219,6 @@ public class ViewSdImageService extends Service {
             e.printStackTrace();
             onSdApiFailure(requestType, "onSdApiResponse Exception: " + e.getMessage());
         }
-        isRunning = false;
-        stopForeground(true);
     }
 
     private void onSdApiFailure(String requestType, String errMsg) {
