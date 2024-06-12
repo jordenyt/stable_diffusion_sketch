@@ -63,10 +63,12 @@ public class ViewSdImageService extends Service {
         isRunning = true;
         try {
             showForegroundNotification();
-        } catch (Exception e) {}
-        String requestType = intent.getStringExtra("requestType");
-        callSD4Img(requestType);
-
+            String requestType = intent.getStringExtra("requestType");
+            callSD4Img(requestType);
+        } catch (Exception e) {
+            isRunning = false;
+            stopForeground(true);
+        }
         return START_STICKY;
     }
 
@@ -197,9 +199,6 @@ public class ViewSdImageService extends Service {
                             activity.runOnUiThread(() -> activity.updateScreen());
                         }
                     }
-
-                    isRunning = false;
-                    stopForeground(true);
                     break;
                 }
                 case "extraSingleImage": {
@@ -215,9 +214,6 @@ public class ViewSdImageService extends Service {
                         ViewSdImageActivity.rtBitmap = listBitmap;
                         ViewSdImageActivity.rtInfotext = null;
                     }
-
-                    isRunning = false;
-                    stopForeground(true);
                     break;
                 }
                 case "deepFaceLab":
@@ -243,6 +239,8 @@ public class ViewSdImageService extends Service {
             e.printStackTrace();
             onSdApiFailure(requestType, "onSdApiResponse Exception: " + e.getMessage());
         }
+        isRunning = false;
+        stopForeground(true);
     }
 
     private void onSdApiFailure(String requestType, String errMsg) {

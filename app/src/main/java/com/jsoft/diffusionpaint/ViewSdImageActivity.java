@@ -682,22 +682,24 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     public void processResultBitmap(String requestType, List<Bitmap> results, List<String> listInfotext) {
         for (int i = 0; i<results.size(); i++) {
-            mBitmap = results.get(i);
-            if ((!"txt2img".equals(requestType)
-                    && !"comfyui".equals(requestType))
-                    || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_IDMVTON)
-                    || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL)){
-                updateMBitmap();
-            }
-            savedImageName = null;
-            if (listInfotext != null) {
-                addResult(requestType, listInfotext.get(i));
-            } else {
-                addResult(requestType, null);
-            }
-            if ("txt2img".equals(requestType) || "img2img".equals(requestType)
-                    || mCurrentSketch.getCnMode().startsWith("iclight")) {
-                remainGen--;
+            if (results.get(i) != null) {
+                mBitmap = results.get(i);
+                if ((!"txt2img".equals(requestType)
+                        && !"comfyui".equals(requestType))
+                        || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_IDMVTON)
+                        || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL)) {
+                    updateMBitmap();
+                }
+                savedImageName = null;
+                if (listInfotext != null) {
+                    addResult(requestType, listInfotext.get(i));
+                } else {
+                    addResult(requestType, null);
+                }
+                if ("txt2img".equals(requestType) || "img2img".equals(requestType)
+                        || mCurrentSketch.getCnMode().startsWith("iclight")) {
+                    remainGen--;
+                }
             }
         }
         if (("txt2img".equals(requestType) || "img2img".equals(requestType)
