@@ -228,6 +228,8 @@ public class ViewSdImageService extends Service {
                     List<Bitmap> listBitmap = new ArrayList<>();
                     listBitmap.add(Utils.base64String2Bitmap(imageStr));
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                        isRunning = false;
+                        stopForeground(true);
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
                     } else {
                         ViewSdImageActivity.rtResultType = requestType;
