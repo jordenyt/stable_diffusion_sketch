@@ -159,7 +159,7 @@ public class SdApiHelper {
         try {
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            RectF inpaintArea = mCurrentSketch.getRectInpaint(1024);
+            RectF inpaintArea = mCurrentSketch.getRectInpaint(1280);
             Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
             jsonObject.put("background", Utils.jpg2Base64String(baseImage));
             Bitmap paintImage = Utils.extractBitmap(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0), inpaintArea);
