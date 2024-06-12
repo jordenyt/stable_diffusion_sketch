@@ -230,8 +230,6 @@ public class ViewSdImageService extends Service {
                         ViewSdImageActivity.rtBitmap = listBitmap;
                         ViewSdImageActivity.rtInfotext = null;
                     }
-                    isRunning = false;
-                    stopForeground(true);
                     break;
                 }
             }
