@@ -484,6 +484,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             mService.setActivity(ViewSdImageActivity.this);
             mBound = true;
         }
+
+        @Override
+        public void onBindingDied(ComponentName className) {
+            mBound = false;
+        }
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
@@ -595,7 +600,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 handler.postDelayed(() -> sdApiHelper.sendGetRequest("getProgress", "/sdapi/v1/progress?skip_current_image=false"), 2000);
         } else {
             Handler h = new Handler();
-            h.postDelayed(this::callSD4Img, 100);
+            h.postDelayed(this::callSD4Img, 200);
         }
     }
 
@@ -696,16 +701,15 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 } else {
                     addResult(requestType, null);
                 }
-                if ("txt2img".equals(requestType) || "img2img".equals(requestType)
-                        || mCurrentSketch.getCnMode().startsWith("iclight")) {
+
+                if (remainGen > 0) {
                     remainGen--;
                 }
             }
         }
-        if (("txt2img".equals(requestType) || "img2img".equals(requestType)
-                || mCurrentSketch.getCnMode().startsWith("iclight")) && remainGen > 0) {
-            Handler h = new Handler();
-            h.postDelayed(this::callSD4Img, 100);
+
+        if (remainGen > 0) {
+            callSD4Img();
         }
         updateScreen();
     }
