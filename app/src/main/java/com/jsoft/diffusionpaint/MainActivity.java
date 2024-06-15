@@ -93,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static boolean updateChecked = false;
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
     private String t_key, t_title, t_hint, t_defaultValue;
-
-    private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 1;
+    private static final String settingFileName = "SDSketch_settings.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -988,41 +987,83 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private boolean saveFileToDownloadsUsingMediaStore(String data) {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Downloads.DISPLAY_NAME, "SDSketch_settings.cfg");
-        values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+        Uri collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+        String[] projection = new String[]{
+                MediaStore.Downloads._ID,
+                MediaStore.Downloads.DISPLAY_NAME
+        };
+        String selection = MediaStore.Downloads.DISPLAY_NAME + " = ?";
+        String[] selectionArgs = new String[]{settingFileName};
 
-        Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+        try (Cursor cursor = getContentResolver().query(collection, projection, selection, selectionArgs, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID));
+                Uri uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id);
 
-        if (uri != null) {
-            try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
-                if (outputStream != null) {
-                    outputStream.write(data.getBytes());
-                    outputStream.flush();
-                    return true;
+                try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+                    if (outputStream != null) {
+                        outputStream.write(data.getBytes());
+                        outputStream.flush();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            } else {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Downloads.DISPLAY_NAME, settingFileName);
+                values.put(MediaStore.Downloads.MIME_TYPE, "application/json");
+                values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+                Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+
+                if (uri != null) {
+                    try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+                        if (outputStream != null) {
+                            outputStream.write(data.getBytes());
+                            outputStream.flush();
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
                 } else {
                     return false;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
             }
-        } else {
-            return false;
         }
     }
 
     private boolean saveFileToDownloadsPreQ(String data) {
         File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, "SDSketch_settings.cfg");
+        File file = new File(downloadFolder, settingFileName);
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(data.getBytes());
-            fos.flush();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        if (file.exists()) {
+            // File already exists, overwrite it
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(data.getBytes());
+                fos.flush();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            // File does not exist, create it
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(data.getBytes());
+                fos.flush();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
     }
 
@@ -1042,7 +1083,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 MediaStore.Downloads.DISPLAY_NAME
         };
         String selection = MediaStore.Downloads.DISPLAY_NAME + " = ?";
-        String[] selectionArgs = new String[]{"SDSketch_settings.cfg"};
+        String[] selectionArgs = new String[]{settingFileName};
 
         try (Cursor cursor = getContentResolver().query(collection, projection, selection, selectionArgs, null)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -1069,7 +1110,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     private boolean readFileFromDownloadsPreQ() {
         File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, "SDSketch_settings.cfg");
+        File file = new File(downloadFolder, "SDSketch_settings.json");
 
         try (FileInputStream fis = new FileInputStream(file)) {
             String jsonString = readStream(fis);
