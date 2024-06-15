@@ -689,10 +689,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         for (int i = 0; i<results.size(); i++) {
             if (results.get(i) != null) {
                 mBitmap = results.get(i);
-                if ((!"txt2img".equals(requestType)
-                        && !"comfyui".equals(requestType))
-                        || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_IDMVTON)
-                        || mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL)) {
+                if (!"txt2img".equals(requestType)) {
                     updateMBitmap();
                 }
                 savedImageName = null;
