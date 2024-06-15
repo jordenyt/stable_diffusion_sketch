@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.jsoft.diffusionpaint"
-        minSdk 28
+        minSdk 26
         targetSdk 34
         versionCode 55
         versionName "v0.16.6"

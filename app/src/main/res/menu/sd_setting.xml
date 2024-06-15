@@ -75,5 +75,7 @@
             </item>
         </menu>
     </item>
+    <item android:id="@+id/mi_export_setting" android:title="Export Settings"/>
+    <item android:id="@+id/mi_import_setting" android:title="import Settings"/>
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
 </menu>
