@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -13,6 +14,8 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,8 +23,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -54,9 +60,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static boolean updateChecked = false;
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
     private String t_key, t_title, t_hint, t_defaultValue;
+
+    private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -323,6 +339,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     public boolean menuItemClick(MenuItem item) {
         // Handle item selection
+        AlertDialog.Builder builder;
+        AlertDialog alert;
         switch (item.getItemId()) {
             case R.id.mi_sd_server_address:
                 showServerAddressInput();
@@ -504,6 +522,24 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://github.com/jordenyt/stable_diffusion_sketch"));
                 startActivity(intent);
+                break;
+            case R.id.mi_export_setting:
+                boolean saveSuccess = saveSharedPreferencesToFile();
+                builder = new AlertDialog.Builder(this);
+                builder.setTitle(saveSuccess ? "Settings has been exported to download folder." : "Failed to export.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                alert = builder.create();
+                alert.show();
+                break;
+            case R.id.mi_import_setting:
+                boolean loadSuccess = readSharedPreferencesFromFile();
+                builder = new AlertDialog.Builder(this);
+                builder.setTitle(loadSuccess ? "Settings has been imported from download folder." : "Import failed.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                alert = builder.create();
+                alert.show();
                 break;
             case R.id.mi_sd_refresh_loras:
                 if (!validateSettings()) break;
@@ -935,6 +971,153 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
             ActivityCompat.requestPermissions(this, permissions, 100);
+        }
+    }
+
+    private boolean saveSharedPreferencesToFile() {
+        //SharedPreferences sharedPreferences = getSharedPreferences("YOUR_PREF_NAME", Context.MODE_PRIVATE);
+        Map<String, ?> allEntries = sharedPreferences.getAll();
+        JSONObject jsonObject = new JSONObject(allEntries);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return saveFileToDownloadsUsingMediaStore(jsonObject.toString());
+        } else {
+            return saveFileToDownloadsPreQ(jsonObject.toString());
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private boolean saveFileToDownloadsUsingMediaStore(String data) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Downloads.DISPLAY_NAME, "SDSketch_settings.cfg");
+        values.put(MediaStore.Downloads.MIME_TYPE, "text/plain");
+        values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+        Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+
+        if (uri != null) {
+            try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+                if (outputStream != null) {
+                    outputStream.write(data.getBytes());
+                    outputStream.flush();
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean saveFileToDownloadsPreQ(String data) {
+        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File file = new File(downloadFolder, "SDSketch_settings.cfg");
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(data.getBytes());
+            fos.flush();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean readSharedPreferencesFromFile() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return readFileFromDownloadsUsingMediaStore();
+        } else {
+            return readFileFromDownloadsPreQ();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private boolean readFileFromDownloadsUsingMediaStore() {
+        Uri collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+        String[] projection = new String[]{
+                MediaStore.Downloads._ID,
+                MediaStore.Downloads.DISPLAY_NAME
+        };
+        String selection = MediaStore.Downloads.DISPLAY_NAME + " = ?";
+        String[] selectionArgs = new String[]{"SDSketch_settings.cfg"};
+
+        try (Cursor cursor = getContentResolver().query(collection, projection, selection, selectionArgs, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID));
+                Uri uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id);
+
+                try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
+                    if (inputStream != null) {
+                        String jsonString = readStream(inputStream);
+                        updateSharedPreferences(jsonString);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private boolean readFileFromDownloadsPreQ() {
+        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File file = new File(downloadFolder, "SDSketch_settings.cfg");
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            String jsonString = readStream(fis);
+            updateSharedPreferences(jsonString);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String readStream(InputStream inputStream) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private void updateSharedPreferences(String jsonString) {
+        //SharedPreferences sharedPreferences = getSharedPreferences("YOUR_PREF_NAME", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            Iterator<String> keys = jsonObject.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                Object value = jsonObject.get(key);
+                if (value instanceof Boolean) {
+                    editor.putBoolean(key, (Boolean) value);
+                } else if (value instanceof Float) {
+                    editor.putFloat(key, (Float) value);
+                } else if (value instanceof Integer) {
+                    editor.putInt(key, (Integer) value);
+                } else if (value instanceof Long) {
+                    editor.putLong(key, (Long) value);
+                } else {
+                    editor.putString(key, (String) value);
+                }
+            }
+            editor.apply();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
