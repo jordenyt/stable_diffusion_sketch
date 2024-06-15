@@ -971,7 +971,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private boolean saveFileToDownloadsUsingMediaStore(String data) {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Downloads.DISPLAY_NAME, "SDSketch_settings.cfg");
-        values.put(MediaStore.Downloads.MIME_TYPE, "text/plain");
         values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
 
         Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
