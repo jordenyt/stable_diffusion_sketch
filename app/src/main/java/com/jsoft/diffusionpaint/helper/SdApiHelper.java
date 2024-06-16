@@ -122,7 +122,7 @@ public class SdApiHelper {
             }
         });
     }
-
+    
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
@@ -476,7 +476,7 @@ public class SdApiHelper {
 
             if (isInpaint) {
                 if (mCurrentSketch.getImgInpaintMask() == null) {
-                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 20 : 0));
+                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 20 : 10, true));
                 }
                 Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
