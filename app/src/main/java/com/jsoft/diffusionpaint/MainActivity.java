@@ -532,9 +532,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 alert.show();
                 break;
             case R.id.mi_import_setting:
-                boolean loadSuccess = readSharedPreferencesFromFile();
+                String loadResult = readSharedPreferencesFromFile();
                 builder = new AlertDialog.Builder(this);
-                builder.setTitle(loadSuccess ? "Settings has been imported from download folder." : "Import failed.")
+                builder.setTitle(loadResult)
                         .setPositiveButton("OK", (dialog, id) -> {
                         });
                 alert = builder.create();
@@ -1067,7 +1067,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
     }
 
-    private boolean readSharedPreferencesFromFile() {
+    private String readSharedPreferencesFromFile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return readFileFromDownloadsUsingMediaStore();
         } else {
@@ -1076,7 +1076,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    private boolean readFileFromDownloadsUsingMediaStore() {
+    private String readFileFromDownloadsUsingMediaStore() {
         Uri collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
         String[] projection = new String[]{
                 MediaStore.Downloads._ID,
@@ -1094,31 +1094,50 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     if (inputStream != null) {
                         String jsonString = readStream(inputStream);
                         updateSharedPreferences(jsonString);
-                        return true;
+                        return "Import Success";
                     } else {
-                        return false;
+                        return "Cannot read the file " + settingFileName + " in device's download folder.";
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return false;
+                    return "Error while reading file " + settingFileName + " in device's download folder.";
                 }
             } else {
-                return false;
+                // File not found in MediaStore, try to add it manually
+                return readFileFromDownloadsDirectly();
             }
         }
     }
 
-    private boolean readFileFromDownloadsPreQ() {
+    private String readFileFromDownloadsDirectly() {
         File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, "SDSketch_settings.json");
+        File file = new File(downloadFolder, settingFileName);
+
+        if (file.exists()) {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                String jsonString = readStream(fis);
+                updateSharedPreferences(jsonString);
+                return "Import Success";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Error while reading file " + settingFileName + " in device's download folder.";
+            }
+        } else {
+            return "Cannot find file " + settingFileName + " in device's download folder.";
+        }
+    }
+
+    private String readFileFromDownloadsPreQ() {
+        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File file = new File(downloadFolder, settingFileName);
 
         try (FileInputStream fis = new FileInputStream(file)) {
             String jsonString = readStream(fis);
             updateSharedPreferences(jsonString);
-            return true;
+            return "Error while reading file " + settingFileName + " in device's download folder.";
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return "Cannot find file " + settingFileName + " in device's download folder.";
         }
     }
 
