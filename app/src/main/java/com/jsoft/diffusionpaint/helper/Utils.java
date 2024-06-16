@@ -162,7 +162,7 @@ public class Utils {
         }
     }
 
-    public static Bitmap getDilationMask(Bitmap sketchBitmap, int expandPixel) {
+    public static Bitmap getDilationMask(Bitmap sketchBitmap, int expandPixel, boolean blurBoundary) {
         // Create a new Bitmap with the same dimensions and a black background
 
         int[] maskPixels = new int[sketchBitmap.getWidth() * sketchBitmap.getHeight()];
@@ -177,10 +177,10 @@ public class Utils {
         Bitmap dilatedBitmap = Bitmap.createBitmap(sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas cvMask = new Canvas(dilatedBitmap);
 
-        Paint backgroundPaint = new Paint();
+        /*Paint backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.BLACK);
         backgroundPaint.setStyle(Paint.Style.FILL);
-        cvMask.drawRect(0, 0, dilatedBitmap.getWidth(), dilatedBitmap.getHeight(), backgroundPaint);
+        cvMask.drawRect(0, 0, dilatedBitmap.getWidth(), dilatedBitmap.getHeight(), backgroundPaint);*/
 
         cvMask.drawBitmap(maskBitmap, 0, 0, null);
 
@@ -209,13 +209,38 @@ public class Utils {
                     if (isBoundary) {
                         int x = i % sketchBitmap.getWidth();
                         int y = i / sketchBitmap.getWidth();
-                        cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
+                        if (blurBoundary) {
+                            for (int dx = -expandPixel; dx <= expandPixel; dx++) {
+                                for (int dy = -expandPixel; dy <= expandPixel; dy++) {
+                                    if (!(dx == 0 && dy == 0)) {
+                                        int bx = x + dx;
+                                        int by = y + dy;
+                                        double bd = sqrt((double) dx * dx + (double) dy * dy);
+                                        if (bx >= 0 && bx < sketchBitmap.getWidth() && by >= 0 && by < sketchBitmap.getHeight() && bd < expandPixel) {
+                                            int bAlpha = (int) Math.round(bd / expandPixel * 255);
+                                            if (Color.alpha(dilatedBitmap.getPixel(bx, by)) < bAlpha) {
+                                                dilatedBitmap.setPixel(bx, by, Color.argb(bAlpha, 255, 255, 255));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
+                        }
                     }
                 }
             }
         }
 
-        return dilatedBitmap;
+        Bitmap resultBitmap = Bitmap.createBitmap(sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas cvResult = new Canvas(resultBitmap);
+        Paint backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.BLACK);
+        backgroundPaint.setStyle(Paint.Style.FILL);
+        cvResult.drawRect(0, 0, dilatedBitmap.getWidth(), dilatedBitmap.getHeight(), backgroundPaint);
+        cvResult.drawBitmap(dilatedBitmap, 0, 0, null);
+        return resultBitmap;
     }
 
     public static Bitmap extractBitmap(Bitmap sourceBitmap, RectF r) {

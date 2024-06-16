@@ -162,7 +162,7 @@ public class SdApiHelper {
             RectF inpaintArea = mCurrentSketch.getRectInpaint(1280);
             Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
             jsonObject.put("background", Utils.jpg2Base64String(baseImage));
-            Bitmap paintImage = Utils.extractBitmap(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0), inpaintArea);
+            Bitmap paintImage = Utils.extractBitmap(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 20, true), inpaintArea);
             jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
             jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
             jsonObject.put("workflow", "vtron");
@@ -569,7 +569,7 @@ public class SdApiHelper {
 
             if (isInpaint) {
                 if (mCurrentSketch.getImgInpaintMask() == null) {
-                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 20 : 0));
+                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 20 : 10, true));
                 }
                 Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
