@@ -1077,11 +1077,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                         updateSharedPreferences(jsonString);
                         return "Import Success";
                     } else {
-                        return "Cannot read the file " + settingFileName + " in device's download folder.";
+                        return "Cannot read the file " + settingFileName + " in device's download folder via MediaStore.";
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return "Error while reading file " + settingFileName + " in device's download folder.";
+                    return "Error while reading file " + settingFileName + " in device's download folder via MediaStore.";
                 }
             } else {
                 // File not found in MediaStore, try to add it manually
@@ -1101,10 +1101,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 return "Import Success";
             } catch (IOException e) {
                 e.printStackTrace();
-                return "Error while reading file " + settingFileName + " in device's download folder.";
+                return "Error while reading file " + settingFileName + " in device's download folder directly.";
             }
         } else {
-            return "Cannot find file " + settingFileName + " in device's download folder.";
+            return "Cannot find file " + settingFileName + " in device's download folder directly.";
         }
     }
 
