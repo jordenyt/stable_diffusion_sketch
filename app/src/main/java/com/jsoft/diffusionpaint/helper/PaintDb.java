@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.CursorWindow;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,18 +77,28 @@ public class PaintDb {
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " WHERE " + SketchEntry._ID + " = " + sketchId;
         Cursor c = db.rawQuery(queryString, new String[] {});
-        CursorWindow cw = new CursorWindow("sketchBg", 5000000);
-        AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
-        ac.setWindow(cw);
-
         List<Sketch> sketches = new ArrayList<>();
-        while (ac.moveToNext()) {
-            Sketch sketch = new Sketch();
-            sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
-            sketch.setImgReference(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.REF))));
-            sketches.add(sketch);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            CursorWindow cw = new CursorWindow("sketchBg", 5000000);
+            AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
+            ac.setWindow(cw);
+
+            while (ac.moveToNext()) {
+                Sketch sketch = new Sketch();
+                sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
+                sketch.setImgReference(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.REF))));
+                sketches.add(sketch);
+            }
+            ac.close();
+        } else {
+            while (c.moveToNext()) {
+                Sketch sketch = new Sketch();
+                sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+                sketch.setImgReference(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.REF))));
+                sketches.add(sketch);
+            }
         }
-        ac.close();
+        c.close();
         if (sketches.size() > 0) {
             return sketches.get(0).getImgReference();
         } else {
@@ -102,18 +113,28 @@ public class PaintDb {
                         + " FROM " + SketchEntry.TABLE_NAME
                         + " WHERE " + SketchEntry._ID + " = " + sketchId;
         Cursor c = db.rawQuery(queryString, new String[] {});
-        CursorWindow cw = new CursorWindow("sketchBg", 5000000);
-        AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
-        ac.setWindow(cw);
-
         List<Sketch> sketches = new ArrayList<>();
-        while (ac.moveToNext()) {
-            Sketch sketch = new Sketch();
-            sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
-            sketch.setImgBackground(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
-            sketches.add(sketch);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            CursorWindow cw = new CursorWindow("sketchBg", 5000000);
+            AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
+            ac.setWindow(cw);
+
+            while (ac.moveToNext()) {
+                Sketch sketch = new Sketch();
+                sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
+                sketch.setImgBackground(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
+                sketches.add(sketch);
+            }
+            ac.close();
+        } else {
+            while (c.moveToNext()) {
+                Sketch sketch = new Sketch();
+                sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+                sketch.setImgBackground(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.BACKGROUND))));
+                sketches.add(sketch);
+            }
         }
-        ac.close();
+        c.close();
         if (sketches.size() > 0) {
             return sketches.get(0).getImgBackground();
         } else {
