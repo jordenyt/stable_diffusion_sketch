@@ -466,6 +466,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_cfg_scale:
                 showTextInputDialog("defaultCfgScale", "CFG Scale:", "Decimal from 1.0 to 30.0", "7.0");
                 break;
+            case R.id.mi_mask_blur:
+                showTextInputDialog("inpaintMaskBlur", "Inpaint Mask Blur Pixels:", "Integer from 1", "20");
+                break;
             case R.id.mi_sd_model:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");

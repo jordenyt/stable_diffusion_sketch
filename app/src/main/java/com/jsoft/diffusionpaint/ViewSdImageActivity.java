@@ -72,7 +72,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static Bitmap mBitmap = null;
     public static Bitmap inpaintBitmap = null;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.getDefault());
-    private SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
     //private String aspectRatio;
     @SuppressLint("StaticFieldLeak")
     private static SdApiHelper sdApiHelper;
@@ -664,17 +664,16 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     public static void updateMBitmap() {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20")) + (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvasEdit = new Canvas(bmEdit);
             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
-            int boundary = (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
             mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, boundary);
         } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
-            int boundary = (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
             mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, boundary);
         }
     }
