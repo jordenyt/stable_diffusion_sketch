@@ -163,83 +163,84 @@ public class Utils {
     }
 
     public static Bitmap getDilationMask(Bitmap sketchBitmap, int expandPixel, boolean blurBoundary) {
-        // Create a new Bitmap with the same dimensions and a black background
+        int width = sketchBitmap.getWidth();
+        int height = sketchBitmap.getHeight();
+        int[] maskPixels = new int[width * height];
+        int[] sketchPixels = new int[width * height];
+        sketchBitmap.getPixels(sketchPixels, 0, width, 0, 0, width, height);
 
-        int[] maskPixels = new int[sketchBitmap.getWidth() * sketchBitmap.getHeight()];
-        int[] sketchPixels = new int[sketchBitmap.getWidth() * sketchBitmap.getHeight()];
-        sketchBitmap.getPixels(sketchPixels, 0, sketchBitmap.getWidth(), 0, 0, sketchBitmap.getWidth(), sketchBitmap.getHeight());
-        // Iterate over each pixel in the original Bitmap and set the color value in the new Bitmap
+        // Create a mask bitmap
         for (int i = 0; i < sketchPixels.length; i++) {
             maskPixels[i] = (Color.alpha(sketchPixels[i]) != 0) ? Color.WHITE : Color.TRANSPARENT;
         }
-        Bitmap maskBitmap = Bitmap.createBitmap(maskPixels, sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmap = Bitmap.createBitmap(maskPixels, width, height, Bitmap.Config.ARGB_8888);
 
-        Bitmap dilatedBitmap = Bitmap.createBitmap(sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap dilatedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas cvMask = new Canvas(dilatedBitmap);
-
-        /*Paint backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.BLACK);
-        backgroundPaint.setStyle(Paint.Style.FILL);
-        cvMask.drawRect(0, 0, dilatedBitmap.getWidth(), dilatedBitmap.getHeight(), backgroundPaint);*/
-
         cvMask.drawBitmap(maskBitmap, 0, 0, null);
 
         if (expandPixel > 0) {
             Paint boundaryPaint = new Paint();
             boundaryPaint.setColor(Color.WHITE);
             boundaryPaint.setStyle(Paint.Style.FILL);
-            for (int i = 0; i < sketchPixels.length; i++) {
-                if (Color.alpha(sketchPixels[i]) != 0) {
-                    boolean isBoundary = false;
-                    for (int dx = -1; dx <= 1; dx++) {
-                        for (int dy = -1; dy <= 1; dy++) {
-                            if (!(dx == 0 && dy == 0)) {
-                                int x = i % sketchBitmap.getWidth() + dx;
-                                int y = i / sketchBitmap.getWidth() + dy;
-                                if (x >= 0 && x < sketchBitmap.getWidth() && y >= 0 && y < sketchBitmap.getHeight()) {
-                                    if (Color.alpha(sketchPixels[x + y * sketchBitmap.getWidth()]) == 0) {
+
+            // Iterate over each pixel to find boundaries and dilate
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int i = x + y * width;
+                    if (Color.alpha(sketchPixels[i]) != 0) {
+                        boolean isBoundary = false;
+
+                        // Check if the current pixel is a boundary pixel
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dy = -1; dy <= 1; dy++) {
+                                if (dx == 0 && dy == 0) continue;
+                                int nx = x + dx;
+                                int ny = y + dy;
+                                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                                    if (Color.alpha(sketchPixels[nx + ny * width]) == 0) {
                                         isBoundary = true;
                                         break;
                                     }
                                 }
                             }
+                            if (isBoundary) break;
                         }
-                        if (isBoundary) break;
-                    }
-                    if (isBoundary) {
-                        int x = i % sketchBitmap.getWidth();
-                        int y = i / sketchBitmap.getWidth();
-                        if (blurBoundary) {
-                            for (int dx = -expandPixel; dx <= expandPixel; dx++) {
-                                for (int dy = -expandPixel; dy <= expandPixel; dy++) {
-                                    if (!(dx == 0 && dy == 0)) {
+
+                        if (isBoundary) {
+                            if (blurBoundary) {
+                                for (int dx = -expandPixel; dx <= expandPixel; dx++) {
+                                    for (int dy = -expandPixel; dy <= expandPixel; dy++) {
                                         int bx = x + dx;
                                         int by = y + dy;
-                                        double bd = sqrt((double) dx * dx + (double) dy * dy);
-                                        if (bx >= 0 && bx < sketchBitmap.getWidth() && by >= 0 && by < sketchBitmap.getHeight() && bd < expandPixel) {
-                                            int bAlpha = (int) Math.round(bd / expandPixel * 255);
-                                            if (Color.alpha(dilatedBitmap.getPixel(bx, by)) < bAlpha) {
-                                                dilatedBitmap.setPixel(bx, by, Color.argb(bAlpha, 255, 255, 255));
+                                        double distance = Math.sqrt(dx * dx + dy * dy);
+                                        if (bx >= 0 && bx < width && by >= 0 && by < height && distance < expandPixel) {
+                                            int alphaValue = (int) (255 - (distance / expandPixel) * 255);
+                                            int currentAlpha = Color.alpha(dilatedBitmap.getPixel(bx, by));
+                                            if (currentAlpha < alphaValue) {
+                                                dilatedBitmap.setPixel(bx, by, Color.argb(alphaValue, 255, 255, 255));
                                             }
                                         }
                                     }
                                 }
+                            } else {
+                                cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
                             }
-                        } else {
-                            cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
                         }
                     }
                 }
             }
         }
 
-        Bitmap resultBitmap = Bitmap.createBitmap(sketchBitmap.getWidth(), sketchBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        // Create a result bitmap with a black background
+        Bitmap resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas cvResult = new Canvas(resultBitmap);
         Paint backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.BLACK);
         backgroundPaint.setStyle(Paint.Style.FILL);
-        cvResult.drawRect(0, 0, dilatedBitmap.getWidth(), dilatedBitmap.getHeight(), backgroundPaint);
+        cvResult.drawRect(0, 0, width, height, backgroundPaint);
         cvResult.drawBitmap(dilatedBitmap, 0, 0, null);
+
         return resultBitmap;
     }
 
