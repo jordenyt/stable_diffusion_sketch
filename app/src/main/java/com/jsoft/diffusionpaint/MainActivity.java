@@ -6,7 +6,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -14,7 +13,6 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +21,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +42,7 @@ import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
@@ -62,9 +60,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -93,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static boolean updateChecked = false;
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
     private String t_key, t_title, t_hint, t_defaultValue;
-    private static final String settingFileName = "SDSketch_settings.json";
+    private static final String settingFileName = "SDSketch.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -532,13 +527,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 alert.show();
                 break;
             case R.id.mi_import_setting:
-                String loadResult = readSharedPreferencesFromFile();
-                builder = new AlertDialog.Builder(this);
-                builder.setTitle(loadResult)
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                alert = builder.create();
-                alert.show();
+                pickJSONFile();
                 break;
             case R.id.mi_sd_refresh_loras:
                 if (!validateSettings()) break;
@@ -963,201 +952,47 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 }
             });
 
-
-    public void isPermissionGranted() {
-        if (!(checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-            String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-            ActivityCompat.requestPermissions(this, permissions, 100);
-        }
+    private void pickJSONFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        pickJSONLauncher.launch(intent);
     }
 
-    private boolean saveSharedPreferencesToFile() {
-        //SharedPreferences sharedPreferences = getSharedPreferences("YOUR_PREF_NAME", Context.MODE_PRIVATE);
-        Map<String, ?> allEntries = sharedPreferences.getAll();
-        JSONObject jsonObject = new JSONObject(allEntries);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return saveFileToDownloadsUsingMediaStore(jsonObject.toString());
-        } else {
-            return saveFileToDownloadsPreQ(jsonObject.toString());
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private boolean saveFileToDownloadsUsingMediaStore(String data) {
-        Uri collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
-        String[] projection = new String[]{
-                MediaStore.Downloads._ID,
-                MediaStore.Downloads.DISPLAY_NAME
-        };
-        String selection = MediaStore.Downloads.DISPLAY_NAME + " = ?";
-        String[] selectionArgs = new String[]{settingFileName};
-
-        try (Cursor cursor = getContentResolver().query(collection, projection, selection, selectionArgs, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID));
-                Uri uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id);
-
-                try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
-                    if (outputStream != null) {
-                        outputStream.write(data.getBytes());
-                        outputStream.flush();
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            } else {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Downloads.DISPLAY_NAME, settingFileName);
-                values.put(MediaStore.Downloads.MIME_TYPE, "application/json");
-                values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
-
-                Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
-
-                if (uri != null) {
-                    try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
-                        if (outputStream != null) {
-                            outputStream.write(data.getBytes());
-                            outputStream.flush();
-                            return true;
+    ActivityResultLauncher<Intent> pickJSONLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData()!= null && result.getData().getData() != null) {
+                    Uri uri = result.getData().getData();
+                    if (uri != null) {
+                        String uriString = uri.toString();
+                        if (uriString.endsWith(".json")) {
+                            boolean success = readSharedPreferencesFromUri(this, uri, "your_preferences_name");
+                            if (success) {
+                                Toast.makeText(this, "Settings imported successfully.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(this, "Failed to import settings.", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            return false;
+                            Toast.makeText(this, "Please select a .json file.", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return false;
                     }
-                } else {
-                    return false;
                 }
-            }
-        }
-    }
+            });
 
-    private boolean saveFileToDownloadsPreQ(String data) {
-        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, settingFileName);
-
-        if (file.exists()) {
-            // File already exists, overwrite it
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(data.getBytes());
-                fos.flush();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        } else {
-            // File does not exist, create it
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(data.getBytes());
-                fos.flush();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-    }
-
-    private String readSharedPreferencesFromFile() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return readFileFromDownloadsUsingMediaStore();
-        } else {
-            return readFileFromDownloadsPreQ();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private String readFileFromDownloadsUsingMediaStore() {
-        Uri collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
-        String[] projection = new String[]{
-                MediaStore.Downloads._ID,
-                MediaStore.Downloads.DISPLAY_NAME
-        };
-        String selection = MediaStore.Downloads.DISPLAY_NAME + " = ?";
-        String[] selectionArgs = new String[]{settingFileName};
-
-        try (Cursor cursor = getContentResolver().query(collection, projection, selection, selectionArgs, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID));
-                Uri uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id);
-
-                try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
-                    if (inputStream != null) {
-                        String jsonString = readStream(inputStream);
-                        updateSharedPreferences(jsonString);
-                        return "Import Success";
-                    } else {
-                        return "Cannot read the file " + settingFileName + " in device's download folder via MediaStore.";
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return "Error while reading file " + settingFileName + " in device's download folder via MediaStore.";
-                }
-            } else {
-                // File not found in MediaStore, try to add it manually
-                return readFileFromDownloadsDirectly();
-            }
-        }
-    }
-
-    private String readFileFromDownloadsDirectly() {
-        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, settingFileName);
-
-        if (file.exists()) {
-            try (FileInputStream fis = new FileInputStream(file)) {
-                String jsonString = readStream(fis);
-                updateSharedPreferences(jsonString);
-                return "Import Success";
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "Error while reading file " + settingFileName + " in device's download folder directly.";
-            }
-        } else {
-            return "Cannot find file " + settingFileName + " in device's download folder directly.";
-        }
-    }
-
-    private String readFileFromDownloadsPreQ() {
-        File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(downloadFolder, settingFileName);
-
-        try (FileInputStream fis = new FileInputStream(file)) {
-            String jsonString = readStream(fis);
-            updateSharedPreferences(jsonString);
-            return "Error while reading file " + settingFileName + " in device's download folder.";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Cannot find file " + settingFileName + " in device's download folder.";
-        }
-    }
-
-    private String readStream(InputStream inputStream) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+    public boolean readSharedPreferencesFromUri(Context context, Uri uri, String preferencesName) {
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            StringBuilder stringBuilder = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
             }
-        }
-        return stringBuilder.toString();
-    }
+            JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+            SharedPreferences sharedPreferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
 
-    private void updateSharedPreferences(String jsonString) {
-        //SharedPreferences sharedPreferences = getSharedPreferences("YOUR_PREF_NAME", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
             Iterator<String> keys = jsonObject.keys();
             while (keys.hasNext()) {
                 String key = keys.next();
@@ -1170,14 +1005,57 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     editor.putInt(key, (Integer) value);
                 } else if (value instanceof Long) {
                     editor.putLong(key, (Long) value);
-                } else {
+                } else if (value instanceof String) {
                     editor.putString(key, (String) value);
                 }
             }
             editor.apply();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    public void isPermissionGranted() {
+        if (!(checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+            ActivityCompat.requestPermissions(this, permissions, 100);
+        }
+    }
+
+    public boolean saveSharedPreferencesToFile() {
+        try {
+            JSONObject jsonObject = new JSONObject(sharedPreferences.getAll());
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, settingFileName);
+            //contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "application/json");
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+            Uri uri;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+            } else {
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), settingFileName);
+                uri = Uri.fromFile(file);
+            }
+
+            if (uri != null) {
+                try (OutputStream outputStream = getContentResolver().openOutputStream(uri)) {
+                    if (outputStream != null) {
+                        outputStream.write(jsonObject.toString().getBytes());
+                        outputStream.flush();
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
