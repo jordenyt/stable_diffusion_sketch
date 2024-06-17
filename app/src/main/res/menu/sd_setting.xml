@@ -12,6 +12,7 @@
                     <item android:id="@+id/mi_cfg_scale" android:title="Default CFG Scale" />
                     <item android:id="@+id/mi_sd_sampler" android:title="Default Sampling method"/>
                     <item android:id="@+id/mi_clip_skip" android:title="Clip skip" />
+                    <item android:id="@+id/mi_mask_blur" android:title="Inpaint Mask Blur Pixels" />
                     <item android:id="@+id/mi_batch_size" android:title="Maximum batch size" />
                 </menu>
             </item>
