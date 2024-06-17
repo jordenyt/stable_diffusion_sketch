@@ -967,7 +967,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     if (uri != null) {
                         String uriString = uri.toString();
                         if (uriString.endsWith(".json")) {
-                            boolean success = readSharedPreferencesFromUri(this, uri, "your_preferences_name");
+                            boolean success = readSharedPreferencesFromUri(this, uri);
                             if (success) {
                                 Toast.makeText(this, "Settings imported successfully.", Toast.LENGTH_SHORT).show();
                             } else {
@@ -980,7 +980,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 }
             });
 
-    public boolean readSharedPreferencesFromUri(Context context, Uri uri, String preferencesName) {
+    public boolean readSharedPreferencesFromUri(Context context, Uri uri) {
         try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             StringBuilder stringBuilder = new StringBuilder();
@@ -989,7 +989,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 stringBuilder.append(line);
             }
             JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-            SharedPreferences sharedPreferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.clear();
 
