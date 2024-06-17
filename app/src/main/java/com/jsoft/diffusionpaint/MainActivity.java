@@ -482,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("defaultCfgScale", "CFG Scale:", "Decimal from 1.0 to 30.0", "7.0");
                 break;
             case R.id.mi_mask_blur:
-                showTextInputDialog("inpaintMaskBlur", "Inpaint Mask Blur Pixels:", "Integer from 1", "20");
+                showTextInputDialog("inpaintMaskBlur", "Inpaint Mask Blur Pixels:", "Integer from 0 to 40", "20");
                 break;
             case R.id.mi_sd_model:
                 if (!validateSettings()) break;

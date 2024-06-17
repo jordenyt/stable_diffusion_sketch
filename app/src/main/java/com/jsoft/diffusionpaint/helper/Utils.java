@@ -36,7 +36,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class Utils {
 
@@ -184,14 +188,17 @@ public class Utils {
             boundaryPaint.setColor(Color.WHITE);
             boundaryPaint.setStyle(Paint.Style.FILL);
 
-            // Iterate over each pixel to find boundaries and dilate
+            // Queue for processing boundary pixels
+            Queue<int[]> boundaryQueue = new LinkedList<>();
+
+            // Set of processed boundary pixels
+            Set<Integer> processedPixels = new HashSet<>();
+
+            // Find initial boundary pixels and add them to the queue
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     int i = x + y * width;
                     if (Color.alpha(sketchPixels[i]) != 0) {
-                        boolean isBoundary = false;
-
-                        // Check if the current pixel is a boundary pixel
                         for (int dx = -1; dx <= 1; dx++) {
                             for (int dy = -1; dy <= 1; dy++) {
                                 if (dx == 0 && dy == 0) continue;
@@ -199,35 +206,61 @@ public class Utils {
                                 int ny = y + dy;
                                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                                     if (Color.alpha(sketchPixels[nx + ny * width]) == 0) {
-                                        isBoundary = true;
+                                        boundaryQueue.add(new int[]{x, y});
+                                        processedPixels.add(x + y * width);
                                         break;
                                     }
                                 }
                             }
-                            if (isBoundary) break;
                         }
+                    }
+                }
+            }
 
-                        if (isBoundary) {
-                            if (blurBoundary) {
-                                for (int dx = -expandPixel; dx <= expandPixel; dx++) {
-                                    for (int dy = -expandPixel; dy <= expandPixel; dy++) {
-                                        int bx = x + dx;
-                                        int by = y + dy;
-                                        double distance = Math.sqrt(dx * dx + dy * dy);
-                                        if (bx >= 0 && bx < width && by >= 0 && by < height && distance < expandPixel) {
-                                            int alphaValue = (int) (255 - (distance / expandPixel) * 255);
-                                            int currentAlpha = Color.alpha(dilatedBitmap.getPixel(bx, by));
-                                            if (currentAlpha < alphaValue) {
-                                                dilatedBitmap.setPixel(bx, by, Color.argb(alphaValue, 255, 255, 255));
-                                            }
-                                        }
-                                    }
+            // Process the boundary pixels from the queue
+            if (blurBoundary) {
+                int[] maxAlphaValues = new int[width * height];
+                // Initialize maxAlphaValues with the alpha values from the mask
+                for (int i = 0; i < maskPixels.length; i++) {
+                    maxAlphaValues[i] = Color.alpha(maskPixels[i]);
+                }
+
+                while (!boundaryQueue.isEmpty()) {
+                    int[] boundaryPixel = boundaryQueue.poll();
+                    int x = boundaryPixel[0];
+                    int y = boundaryPixel[1];
+                    for (int dx = -expandPixel; dx <= expandPixel; dx++) {
+                        for (int dy = -expandPixel; dy <= expandPixel; dy++) {
+                            int bx = x + dx;
+                            int by = y + dy;
+                            double distance = Math.sqrt(dx * dx + dy * dy);
+                            if (bx >= 0 && bx < width && by >= 0 && by < height && distance < expandPixel) {
+                                int alphaValue = (int) (255 - (distance / expandPixel) * 255);
+                                int index = bx + by * width;
+                                if (maxAlphaValues[index] < alphaValue) {
+                                    maxAlphaValues[index] = alphaValue;
                                 }
-                            } else {
-                                cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
+                                processedPixels.add(index);
                             }
                         }
                     }
+                }
+
+                // Apply the calculated max alpha values to the dilated bitmap
+                for (int index : processedPixels) {
+                    int alphaValue = maxAlphaValues[index];
+                    if (alphaValue > 0) {
+                        int x = index % width;
+                        int y = index / width;
+                        dilatedBitmap.setPixel(x, y, Color.argb(alphaValue, 255, 255, 255));
+                    }
+                }
+            } else {
+                while (!boundaryQueue.isEmpty()) {
+                    int[] boundaryPixel = boundaryQueue.poll();
+                    int x = boundaryPixel[0];
+                    int y = boundaryPixel[1];
+                    cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
                 }
             }
         }
