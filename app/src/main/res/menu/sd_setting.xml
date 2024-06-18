@@ -28,6 +28,7 @@
                     <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>
                     <item android:id="@+id/mi_start_comfyui" android:title="Start ComfyUI"/>
                     <item android:id="@+id/mi_stop_comfyui" android:title="Stop ComfyUI"/>
+                    <item android:id="@+id/mi_vram" android:title="Check Memory Usage"/>
                 </menu>
             </item>
         </menu>

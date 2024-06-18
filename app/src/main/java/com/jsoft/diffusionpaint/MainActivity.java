@@ -544,6 +544,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendPostRequest("unloadCheckpoint", "/sdapi/v1/unload-checkpoint", new JSONObject());
                 break;
+            case R.id.mi_vram:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("checkVRAM", "/sdapi/v1/memory");
+                break;
             default:
                 if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
@@ -1165,6 +1169,22 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("unloadCheckpoint".equals(requestType)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("All Checkpoint unloaded.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else if ("checkVRAM".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                String message = "RAM: ";
+                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
+                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
+                message += "VRAM: ";
+                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
+                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Memory Usage")
+                        .setMessage(message)
                         .setPositiveButton("OK", (dialog, id) -> {
                         });
                 AlertDialog alert = builder.create();
