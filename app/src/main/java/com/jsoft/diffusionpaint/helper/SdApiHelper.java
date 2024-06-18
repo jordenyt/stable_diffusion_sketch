@@ -569,9 +569,9 @@ public class SdApiHelper {
             jsonObject.put("resize_mode", 1);
 
             if (isInpaint) {
+                int maskBlur = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20"));
                 if (mCurrentSketch.getImgInpaintMask() == null) {
-                    int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20"));
-                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, true));
+                    mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)? maskBlur * 2 : maskBlur, false));
                 }
                 Bitmap imgInpaintMask = mCurrentSketch.getImgInpaintMask();
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
@@ -579,7 +579,7 @@ public class SdApiHelper {
                     imgInpaintMask = Utils.extractBitmap(resizedBm, mCurrentSketch.getRectInpaint(param.sdSize));
                 }
                 jsonObject.put("mask", Utils.png2Base64String(imgInpaintMask));
-                jsonObject.put("mask_blur", 10);
+                jsonObject.put("mask_blur", maskBlur);
                 jsonObject.put("inpainting_fill", param.inpaintFill);
                 jsonObject.put("inpaint_full_res", false);
                 jsonObject.put("inpaint_full_res_padding", 32);
