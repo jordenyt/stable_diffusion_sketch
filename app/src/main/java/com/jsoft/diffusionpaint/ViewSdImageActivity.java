@@ -664,8 +664,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     public static void updateMBitmap() {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+        int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20"));
+        if (SdParam.SD_INPUT_IMAGE_SKETCH.equals(param.baseImage)) {
+            boundary *= 2;
+        }
+        if (mCurrentSketch.getImgPaint() != null) {
+            boundary += (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
+        }
         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
-            int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20")) + (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvasEdit = new Canvas(bmEdit);
@@ -673,7 +679,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
             mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, boundary);
         } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
-            int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20")) + (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
             mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, boundary);
         }
