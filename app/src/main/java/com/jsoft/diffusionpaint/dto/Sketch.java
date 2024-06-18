@@ -223,7 +223,8 @@ public class Sketch implements Serializable {
     public void setChildren(List<Sketch> children) { this.children = children; }
 
     public static Bitmap getInpaintMaskFromPaint(Sketch s, int expandPixel, boolean blurBoundary) {
-        return Utils.getDilationMask(s.getImgPaint(), expandPixel, blurBoundary);
+        Bitmap resizedBm = Bitmap.createScaledBitmap(s.getImgPaint(), s.getImgBackground().getWidth(), s.getImgBackground().getHeight(), false);
+        return Utils.getDilationMask(resizedBm, expandPixel, blurBoundary);
     }
 
     public Bitmap getImgBgRefPreview() {
@@ -289,7 +290,7 @@ public class Sketch implements Serializable {
             Bitmap bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int)round(bmMerge.getWidth() * ratio), (int)round(bmMerge.getHeight() * ratio), true);
             cvMerge.drawBitmap(bmMergeScaled, (imgBackground.getWidth() - bmMergeScaled.getWidth()) / 2f, (imgBackground.getHeight() - bmMergeScaled.getHeight()) / 2f, null);
 
-            Bitmap imgDilatedMask = Utils.getDilationMask(imgPaint, boundary, false);
+            Bitmap imgDilatedMask = Utils.getDilationMask(imgInpaintMask, boundary, false);
             Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), false);
 
             int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];
