@@ -258,7 +258,7 @@ public class Sketch implements Serializable {
         Canvas cvPaint = new Canvas(paintBitmap);
 
         Paint boundaryPaint = new Paint();
-        boundaryPaint.setColor(Color.BLUE);
+        boundaryPaint.setColor(Color.argb(127,0,0,255));
         boundaryPaint.setStyle(Paint.Style.FILL);
         for (int i = 0; i < sketchPixels.length; i++) {
             if (Color.alpha(sketchPixels[i]) != 0) {
@@ -295,8 +295,6 @@ public class Sketch implements Serializable {
 
     public Bitmap getImgBgMerge(Bitmap bmMerge, int boundary) {
         if (bmMerge != null) {
-
-
             Bitmap imgMerge = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas cvMerge = new Canvas(imgMerge);
             cvMerge.drawBitmap(imgBackground, 0, 0, null);
@@ -304,7 +302,7 @@ public class Sketch implements Serializable {
             Bitmap bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int)round(bmMerge.getWidth() * ratio), (int)round(bmMerge.getHeight() * ratio), true);
             cvMerge.drawBitmap(bmMergeScaled, (imgBackground.getWidth() - bmMergeScaled.getWidth()) / 2f, (imgBackground.getHeight() - bmMergeScaled.getHeight()) / 2f, null);
 
-            Bitmap imgDilatedMask = Utils.getDilationMask(imgInpaintMask, boundary, false);
+            Bitmap imgDilatedMask = Utils.getDilationMask((imgInpaintMask != null)? imgInpaintMask : imgPaint, boundary, false);
             Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), false);
 
             int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];

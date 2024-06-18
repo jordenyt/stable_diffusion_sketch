@@ -195,7 +195,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mDrawingView.setCanvasSize(canvasDim);
         } catch (Exception ignored) {}
         mDrawingView.setAspectRatio(aspectRatio);
-        mCurrentColor = Color.BLUE;
+        mCurrentColor = Color.argb(127, 0, 0, 255);
         mDrawingView.setPaintColor(mCurrentColor);
         mDrawingView.setListener(this);
         seekWidth = findViewById(R.id.seek_width);
