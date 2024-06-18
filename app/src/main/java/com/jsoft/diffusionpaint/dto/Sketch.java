@@ -284,27 +284,29 @@ public class Sketch implements Serializable {
             Bitmap imgMerge = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas cvMerge = new Canvas(imgMerge);
             cvMerge.drawBitmap(imgBackground, 0, 0, null);
-            double ratio = min((double)imgBackground.getWidth() / (double) bmMerge.getWidth(), (double)imgBackground.getHeight() / (double) bmMerge.getHeight());
-            Bitmap bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int)round(bmMerge.getWidth() * ratio), (int)round(bmMerge.getHeight() * ratio), true);
-            cvMerge.drawBitmap(bmMergeScaled, (imgBackground.getWidth() - bmMergeScaled.getWidth()) / 2f, (imgBackground.getHeight() - bmMergeScaled.getHeight()) / 2f, null);
 
-            Bitmap imgDilatedMask = Utils.getDilationMask((imgInpaintMask != null)? imgInpaintMask : imgPaint, boundary, false);
+            double ratio = min((double)imgBackground.getWidth() / (double) bmMerge.getWidth(), (double)imgBackground.getHeight() / (double) bmMerge.getHeight());
+            Bitmap bmMergeScaled = bmMerge;
+            if (round(ratio * 10d) != 10L) {
+                bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int) round(bmMerge.getWidth() * ratio), (int) round(bmMerge.getHeight() * ratio), true);
+            }
+
+            Bitmap imgDilatedMask = Utils.getDilationMask(imgPaint, boundary, false);
             Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), false);
 
             int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];
             int[] paintPixels = new int[imgPaintR.getWidth() * imgPaintR.getHeight()];
-            int[] backgroundPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
+            int[] drawPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
 
             imgMerge.getPixels(mergePixels, 0, imgMerge.getWidth(), 0, 0, imgMerge.getWidth(), imgMerge.getHeight());
             imgPaintR.getPixels(paintPixels, 0, imgPaintR.getWidth(), 0, 0, imgPaintR.getWidth(), imgPaintR.getHeight());
-            imgBackground.getPixels(backgroundPixels, 0, imgBackground.getWidth(), 0, 0, imgBackground.getWidth(), imgBackground.getHeight());
+            bmMergeScaled.getPixels(drawPixels, 0, imgBackground.getWidth(), 0, 0, imgBackground.getWidth(), imgBackground.getHeight());
 
             for (int i = 0; i < mergePixels.length; i++) {
-                if (paintPixels[i] == Color.BLACK) {
-                    mergePixels[i] = backgroundPixels[i];
+                if (paintPixels[i] != Color.BLACK) {
+                    mergePixels[i] = drawPixels[i];
                 }
             }
-
             return Bitmap.createBitmap(mergePixels, imgMerge.getWidth(), imgMerge.getHeight(), Bitmap.Config.ARGB_8888);
         } else {
             return imgBackground;
