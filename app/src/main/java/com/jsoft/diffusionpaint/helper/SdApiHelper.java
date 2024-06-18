@@ -136,12 +136,14 @@ public class SdApiHelper {
 
     public JSONObject getSupirJSON(Sketch mCurrentSketch, boolean isPartial) {
         JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
         try {
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
             if (isPartial) {
-                RectF inpaintArea = mCurrentSketch.getRectInpaint(768);
+                RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
                 Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
+                mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0, false));
                 jsonObject.put("background", Utils.jpg2Base64String(baseImage));
                 jsonObject.put("size", min(2560, max(inpaintArea.width(), inpaintArea.height())));
             } else {
@@ -156,14 +158,16 @@ public class SdApiHelper {
 
     public JSONObject getIdmVtonJSON(Sketch mCurrentSketch) {
         JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
         try {
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            RectF inpaintArea = mCurrentSketch.getRectInpaint(1280);
+            RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
             Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
             jsonObject.put("background", Utils.jpg2Base64String(baseImage));
-            int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20"));
-            Bitmap paintImage = Utils.extractBitmap(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, true), inpaintArea);
+            int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "10"));
+            mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, true));
+            Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
             jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
             jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
             jsonObject.put("workflow", "vtron");
