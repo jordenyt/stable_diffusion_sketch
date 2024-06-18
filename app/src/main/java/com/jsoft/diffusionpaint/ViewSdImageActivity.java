@@ -1,5 +1,8 @@
 package com.jsoft.diffusionpaint;
 
+import static java.lang.Math.max;
+import static java.lang.Math.round;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -713,23 +716,21 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
 
     public static void updateMBitmap() {
         SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-        int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "20"));
-        if (SdParam.SD_INPUT_IMAGE_SKETCH.equals(param.baseImage)) {
-            boundary *= 2;
-        }
-        if (mCurrentSketch.getImgPaint() != null) {
-            boundary += (int)Math.round(Math.max(mCurrentSketch.getImgPaint().getWidth(), mCurrentSketch.getImgPaint().getHeight()) / 100d);
-        }
+
+        int maskBlur = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "10"));
         if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
             Bitmap bmEdit = Bitmap.createBitmap(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvasEdit = new Canvas(bmEdit);
             canvasEdit.drawBitmap(mCurrentSketch.getImgBackground(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
-            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, boundary);
+            RectF partialRect = mCurrentSketch.getRectInpaint(param.sdSize);
+            double ratio = (double)max(partialRect.width(), partialRect.height()) / param.sdSize;
+            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, (int) round((maskBlur + 10) * ratio));
         } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
-            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, boundary);
+            double ratio = (double)max(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight()) / param.sdSize;
+            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, (int) round((maskBlur + 10) * ratio));
         }
     }
 }
