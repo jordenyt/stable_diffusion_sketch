@@ -555,13 +555,13 @@ public class SdApiHelper {
                     canvasEdit.drawBitmap(mCurrentSketch.getImgPaint(), null, new RectF(0, 0, bmEdit.getWidth(), bmEdit.getHeight()), null);
                     bg = bmEdit;
                 } else if (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF)) {
-                    bg = mCurrentSketch.getImgBgRef();
+                    bg = mCurrentSketch.getImgBgRef(0);
                 }
                 baseImage = Utils.extractBitmap(bg, mCurrentSketch.getRectInpaint(param.sdSize));
 
             } else {
                 baseImage = param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? mCurrentSketch.getImgPreview() :
-                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getImgBgRef() : mCurrentSketch.getImgBackground();
+                        param.baseImage.equals(SdParam.SD_INPUT_IMAGE_BG_REF) ? mCurrentSketch.getImgBgRef(0) : mCurrentSketch.getImgBackground();
                 if (baseImage.getHeight() < jsonObject.getInt("height") || baseImage.getWidth() < jsonObject.getInt("width")) {
                     double scale = max((double)jsonObject.getInt("height") / baseImage.getHeight(), (double)jsonObject.getInt("width") / baseImage.getWidth());
                     baseImage = Bitmap.createScaledBitmap(baseImage, (int) round(baseImage.getWidth() * scale), (int) round(baseImage.getHeight() * scale), true);

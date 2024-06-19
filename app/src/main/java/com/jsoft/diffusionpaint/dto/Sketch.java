@@ -289,8 +289,8 @@ public class Sketch implements Serializable {
         return paintBitmap;
     }
 
-    public Bitmap getImgBgRef() {
-        return getImgBgMerge(Utils.outerFit(imgReference, imgBackground), 0, 0);
+    public Bitmap getImgBgRef(int blurBoundary) {
+        return getImgBgMerge(Utils.outerFit(imgReference, imgBackground), 0, blurBoundary);
     }
 
     public Bitmap getImgBgMerge(Bitmap bmMerge, int boundary, int blurBoundary) {
