@@ -446,4 +446,103 @@ public class Utils {
         }
         return null;
     }
+
+    public static Bitmap mergeBitmaps(Bitmap blackImg, Bitmap whiteImg, Bitmap maskImg) {
+        int width = blackImg.getWidth();
+        int height = blackImg.getHeight();
+
+        if (width != whiteImg.getWidth() || width != maskImg.getWidth() || height != whiteImg.getHeight() || height != maskImg.getHeight()) {
+            throw new IllegalArgumentException("All bitmaps must have the same dimensions");
+        }
+
+        int[] blackPixels = new int[width * height];
+        int[] whitePixels = new int[width * height];
+        int[] maskPixels = new int[width * height];
+        int[] mergedPixels = new int[width * height];
+
+        blackImg.getPixels(blackPixels, 0, width, 0, 0, width, height);
+        whiteImg.getPixels(whitePixels, 0, width, 0, 0, width, height);
+        maskImg.getPixels(maskPixels, 0, width, 0, 0, width, height);
+
+        for (int i = 0; i < width * height; i++) {
+            int maskPixel = maskPixels[i];
+            int alpha = (int)round(0.299d * Color.red(maskPixel) + 0.587d * Color.green(maskPixel) + 0.114d * Color.blue(maskPixel));
+
+            if (alpha == 255) {
+                // White mask pixel, take image B
+                mergedPixels[i] = whitePixels[i];
+            } else if (alpha == 0) {
+                // Black mask pixel, take image A
+                mergedPixels[i] = blackPixels[i];
+            } else {
+                // Gray mask pixel, blend A and B based on the mask's alpha value
+                int redA = Color.red(blackPixels[i]);
+                int greenA = Color.green(blackPixels[i]);
+                int blueA = Color.blue(blackPixels[i]);
+
+                int redB = Color.red(whitePixels[i]);
+                int greenB = Color.green(whitePixels[i]);
+                int blueB = Color.blue(whitePixels[i]);
+
+                int red = (redA * (255 - alpha) + redB * alpha) / 255;
+                int green = (greenA * (255 - alpha) + greenB * alpha) / 255;
+                int blue = (blueA * (255 - alpha) + blueB * alpha) / 255;
+
+                mergedPixels[i] = Color.argb(255, red, green, blue);
+            }
+        }
+
+        return Bitmap.createBitmap(mergedPixels, width, height, Bitmap.Config.ARGB_8888);
+    }
+
+    public static Bitmap changeBlackPixelsToTransparent(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        for (int i = 0; i < width * height; i++) {
+            if (pixels[i] == Color.BLACK) {
+                pixels[i] = Color.argb(0, 0, 0, 0); // Set pixel to transparent black
+            }
+        }
+
+        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+    }
+
+    //Outer Fit Image A onto Image B
+    public static Bitmap outerFit(Bitmap imageA, Bitmap imageB) {
+        int widthB = imageB.getWidth();
+        int heightB = imageB.getHeight();
+
+        float aspectRatioA = (float) imageA.getWidth() / imageA.getHeight();
+        float aspectRatioB = (float) widthB / heightB;
+
+        int newWidth, newHeight;
+
+        if (aspectRatioA > aspectRatioB) {
+            // Image A is wider than Image B
+            newWidth = Math.round(heightB * aspectRatioA);
+            newHeight = heightB;
+        } else {
+            // Image A is taller than Image B
+            newWidth = widthB;
+            newHeight = Math.round(widthB / aspectRatioA);
+        }
+
+        Bitmap scaledImageA = Bitmap.createScaledBitmap(imageA, newWidth, newHeight, true);
+
+        Bitmap resultBitmap = Bitmap.createBitmap(widthB, heightB, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(resultBitmap);
+
+        // Center the scaled imageA onto imageB
+        int offsetX = (widthB - newWidth) / 2;
+        int offsetY = (heightB - newHeight) / 2;
+
+        canvas.drawBitmap(imageB, new Matrix(), null);
+        canvas.drawBitmap(scaledImageA, offsetX, offsetY, null);
+
+        return resultBitmap;
+    }
 }
