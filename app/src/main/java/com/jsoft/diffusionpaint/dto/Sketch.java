@@ -236,7 +236,7 @@ public class Sketch implements Serializable {
     }
 
     public Bitmap getImgBgRefPaint(int boundaryWidth) {
-        Bitmap sketchBitmap = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), true);
+        Bitmap sketchBitmap = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), false);
         int[] sketchPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
         sketchBitmap.getPixels(sketchPixels, 0, sketchBitmap.getWidth(), 0, 0, sketchBitmap.getWidth(), sketchBitmap.getHeight());
 
