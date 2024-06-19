@@ -169,24 +169,36 @@ public class Utils {
     public static Bitmap getDilationMask(Bitmap sketchBitmap, int expandPixel, boolean blurBoundary) {
         int width = sketchBitmap.getWidth();
         int height = sketchBitmap.getHeight();
-        int[] maskPixels = new int[width * height];
-        int[] sketchPixels = new int[width * height];
-        sketchBitmap.getPixels(sketchPixels, 0, width, 0, 0, width, height);
+
+        // Reduce the resolution for processing
+        int scaleFactor = Math.max(1, expandPixel / 5); // Adjust this factor for more or less approximation
+        int scaledWidth = width / scaleFactor;
+        int scaledHeight = height / scaleFactor;
+
+        Bitmap scaledSketchBitmap = Bitmap.createScaledBitmap(sketchBitmap, scaledWidth, scaledHeight, true);
+
+        int[] scaledSketchPixels = new int[scaledWidth * scaledHeight];
+        scaledSketchBitmap.getPixels(scaledSketchPixels, 0, scaledWidth, 0, 0, scaledWidth, scaledHeight);
 
         // Create a mask bitmap
-        for (int i = 0; i < sketchPixels.length; i++) {
-            maskPixels[i] = (Color.alpha(sketchPixels[i]) != 0) ? Color.WHITE : Color.TRANSPARENT;
+        int[] scaledMaskPixels = new int[scaledWidth * scaledHeight];
+        for (int i = 0; i < scaledSketchPixels.length; i++) {
+            scaledMaskPixels[i] = (Color.alpha(scaledSketchPixels[i]) != 0) ? Color.WHITE : Color.TRANSPARENT;
         }
-        Bitmap maskBitmap = Bitmap.createBitmap(maskPixels, width, height, Bitmap.Config.ARGB_8888);
 
-        Bitmap dilatedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas cvMask = new Canvas(dilatedBitmap);
-        cvMask.drawBitmap(maskBitmap, 0, 0, null);
+        Bitmap scaledMaskBitmap = Bitmap.createBitmap(scaledMaskPixels, scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888);
+
+        Bitmap scaledDilatedBitmap = Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888);
+        Canvas cvMask = new Canvas(scaledDilatedBitmap);
+        cvMask.drawBitmap(scaledMaskBitmap, 0, 0, null);
 
         if (expandPixel > 0) {
             Paint boundaryPaint = new Paint();
             boundaryPaint.setColor(Color.WHITE);
             boundaryPaint.setStyle(Paint.Style.FILL);
+
+            // Scale the expandPixel value
+            int scaledExpandPixel = expandPixel / scaleFactor;
 
             // Queue for processing boundary pixels
             Queue<int[]> boundaryQueue = new LinkedList<>();
@@ -195,19 +207,19 @@ public class Utils {
             Set<Integer> processedPixels = new HashSet<>();
 
             // Find initial boundary pixels and add them to the queue
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int i = x + y * width;
-                    if (Color.alpha(sketchPixels[i]) != 0) {
+            for (int y = 0; y < scaledHeight; y++) {
+                for (int x = 0; x < scaledWidth; x++) {
+                    int i = x + y * scaledWidth;
+                    if (Color.alpha(scaledSketchPixels[i]) != 0) {
                         for (int dx = -1; dx <= 1; dx++) {
                             for (int dy = -1; dy <= 1; dy++) {
                                 if (dx == 0 && dy == 0) continue;
                                 int nx = x + dx;
                                 int ny = y + dy;
-                                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                                    if (Color.alpha(sketchPixels[nx + ny * width]) == 0) {
+                                if (nx >= 0 && nx < scaledWidth && ny >= 0 && ny < scaledHeight) {
+                                    if (Color.alpha(scaledSketchPixels[nx + ny * scaledWidth]) == 0) {
                                         boundaryQueue.add(new int[]{x, y});
-                                        processedPixels.add(x + y * width);
+                                        processedPixels.add(x + y * scaledWidth);
                                         break;
                                     }
                                 }
@@ -219,24 +231,24 @@ public class Utils {
 
             // Process the boundary pixels from the queue
             if (blurBoundary) {
-                int[] maxAlphaValues = new int[width * height];
+                int[] maxAlphaValues = new int[scaledWidth * scaledHeight];
                 // Initialize maxAlphaValues with the alpha values from the mask
-                for (int i = 0; i < maskPixels.length; i++) {
-                    maxAlphaValues[i] = Color.alpha(maskPixels[i]);
+                for (int i = 0; i < scaledMaskPixels.length; i++) {
+                    maxAlphaValues[i] = Color.alpha(scaledMaskPixels[i]);
                 }
 
                 while (!boundaryQueue.isEmpty()) {
                     int[] boundaryPixel = boundaryQueue.poll();
                     int x = boundaryPixel[0];
                     int y = boundaryPixel[1];
-                    for (int dx = -expandPixel; dx <= expandPixel; dx++) {
-                        for (int dy = -expandPixel; dy <= expandPixel; dy++) {
+                    for (int dx = -scaledExpandPixel; dx <= scaledExpandPixel; dx++) {
+                        for (int dy = -scaledExpandPixel; dy <= scaledExpandPixel; dy++) {
                             int bx = x + dx;
                             int by = y + dy;
                             double distance = Math.sqrt(dx * dx + dy * dy);
-                            if (bx >= 0 && bx < width && by >= 0 && by < height && distance < expandPixel) {
-                                int alphaValue = (int) (255 - (distance / expandPixel) * 255);
-                                int index = bx + by * width;
+                            if (bx >= 0 && bx < scaledWidth && by >= 0 && by < scaledHeight && distance < scaledExpandPixel) {
+                                int alphaValue = (int) (255 - (distance / scaledExpandPixel) * 255);
+                                int index = bx + by * scaledWidth;
                                 if (maxAlphaValues[index] < alphaValue) {
                                     maxAlphaValues[index] = alphaValue;
                                 }
@@ -250,9 +262,9 @@ public class Utils {
                 for (int index : processedPixels) {
                     int alphaValue = maxAlphaValues[index];
                     if (alphaValue > 0) {
-                        int x = index % width;
-                        int y = index / width;
-                        dilatedBitmap.setPixel(x, y, Color.argb(alphaValue, 255, 255, 255));
+                        int x = index % scaledWidth;
+                        int y = index / scaledWidth;
+                        scaledDilatedBitmap.setPixel(x, y, Color.argb(alphaValue, 255, 255, 255));
                     }
                 }
             } else {
@@ -260,10 +272,13 @@ public class Utils {
                     int[] boundaryPixel = boundaryQueue.poll();
                     int x = boundaryPixel[0];
                     int y = boundaryPixel[1];
-                    cvMask.drawCircle(x, y, expandPixel, boundaryPaint);
+                    cvMask.drawCircle(x, y, scaledExpandPixel, boundaryPaint);
                 }
             }
         }
+
+        // Scale back to original size
+        Bitmap dilatedBitmap = Bitmap.createScaledBitmap(scaledDilatedBitmap, width, height, true);
 
         // Create a result bitmap with a black background
         Bitmap resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
