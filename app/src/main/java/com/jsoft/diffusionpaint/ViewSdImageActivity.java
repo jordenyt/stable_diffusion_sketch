@@ -175,7 +175,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             currentResult = 0;
             savedImageName = null;
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-                mBitmap = mCurrentSketch.getImgBgRef();
+                mBitmap = mCurrentSketch.getImgBgRef(10);
                 sdImage.setImageBitmap(mBitmap);
                 addResult("original", null);
                 remainGen = 0;
@@ -188,8 +188,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
                 } else if (cnMode.equals(Sketch.CN_MODE_INPAINT_MERGE)) {
-                    mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef());
-                    mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(32));
+                    mCurrentSketch.setImgBackground(mCurrentSketch.getImgBgRef(10));
+                    mCurrentSketch.setImgPaint(mCurrentSketch.getImgBgRefPaint(10));
                     mCurrentSketch.setImgPreview(mCurrentSketch.getImgBgRefPreview());
                     mBitmap = mCurrentSketch.getImgPreview();
                     sdImage.setImageBitmap(mBitmap);
