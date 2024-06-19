@@ -276,38 +276,22 @@ public class Sketch implements Serializable {
     }
 
     public Bitmap getImgBgRef() {
-        return getImgBgMerge(imgReference, 0);
+        return getImgBgMerge(Utils.outerFit(imgReference, imgBackground), 0, 0);
     }
 
-    public Bitmap getImgBgMerge(Bitmap bmMerge, int boundary) {
+    public Bitmap getImgBgMerge(Bitmap bmMerge, int boundary, int blurBoundary) {
         if (bmMerge != null) {
-            Bitmap imgMerge = Bitmap.createBitmap(imgBackground.getWidth(), imgBackground.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas cvMerge = new Canvas(imgMerge);
-            cvMerge.drawBitmap(imgBackground, 0, 0, null);
-
-            double ratio = min((double)imgBackground.getWidth() / (double) bmMerge.getWidth(), (double)imgBackground.getHeight() / (double) bmMerge.getHeight());
-            Bitmap bmMergeScaled = bmMerge;
-            if (round(ratio * 10d) != 10L) {
-                bmMergeScaled = Bitmap.createScaledBitmap(bmMerge, (int) round(bmMerge.getWidth() * ratio), (int) round(bmMerge.getHeight() * ratio), true);
+            Bitmap resizedImgPaint = Bitmap.createScaledBitmap(imgPaint, imgBackground.getWidth(), imgBackground.getHeight(), false);
+            Bitmap imgDilatedMask = Utils.getDilationMask(resizedImgPaint, boundary, false);
+            if (blurBoundary > 0) {
+                imgDilatedMask = Utils.getDilationMask(Utils.changeBlackPixelsToTransparent(imgDilatedMask), blurBoundary, true);
             }
 
-            Bitmap imgDilatedMask = Utils.getDilationMask(imgPaint, boundary, false);
-            Bitmap imgPaintR = Bitmap.createScaledBitmap(imgDilatedMask, imgBackground.getWidth(), imgBackground.getHeight(), false);
-
-            int[] mergePixels = new int[imgMerge.getWidth() * imgMerge.getHeight()];
-            int[] paintPixels = new int[imgPaintR.getWidth() * imgPaintR.getHeight()];
-            int[] drawPixels = new int[imgBackground.getWidth() * imgBackground.getHeight()];
-
-            imgMerge.getPixels(mergePixels, 0, imgMerge.getWidth(), 0, 0, imgMerge.getWidth(), imgMerge.getHeight());
-            imgPaintR.getPixels(paintPixels, 0, imgPaintR.getWidth(), 0, 0, imgPaintR.getWidth(), imgPaintR.getHeight());
-            bmMergeScaled.getPixels(drawPixels, 0, imgBackground.getWidth(), 0, 0, imgBackground.getWidth(), imgBackground.getHeight());
-
-            for (int i = 0; i < mergePixels.length; i++) {
-                if (paintPixels[i] != Color.BLACK) {
-                    mergePixels[i] = drawPixels[i];
-                }
+            try {
+                return Utils.mergeBitmaps(imgBackground, bmMerge, imgDilatedMask);
+            } catch  (IllegalArgumentException e) {
+                return bmMerge;
             }
-            return Bitmap.createBitmap(mergePixels, imgMerge.getWidth(), imgMerge.getHeight(), Bitmap.Config.ARGB_8888);
         } else {
             return imgBackground;
         }
