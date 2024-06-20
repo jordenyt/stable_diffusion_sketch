@@ -240,6 +240,8 @@ public class DrawingView extends View
 					if (!isEyedropper) {
 						mDrawPath.moveTo(realX, realY);
 						mDrawPaint.setStrokeWidth((int) round((double)mStrokeWidth / curScale));
+						DrawingActivity.mUndonePaths.clear();
+						DrawingActivity.mUndonePaints.clear();
 					}
 					//mDrawPath.addCircle(touchX, touchY, mStrokeWidth/10, Path.Direction.CW);
 					break;
