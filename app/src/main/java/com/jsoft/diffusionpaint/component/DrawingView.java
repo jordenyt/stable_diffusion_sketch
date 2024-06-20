@@ -28,6 +28,7 @@ public class DrawingView extends View
 	private Bitmap mViewBitmap; //member of mDrawCanvas
 	private Bitmap mBaseBitmap; //Input Background
 	private Bitmap mPaintBitmap; //Input Paint from save data
+	private Bitmap mLastPathBitmap;
 	private Bitmap mTranslateBitmap;
 
 	// Set default values
@@ -178,11 +179,17 @@ public class DrawingView extends View
 		if (width == 0) return;
 		Bitmap pathBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas pathCanvas = new Canvas(pathBitmap);
-		if (mPaintBitmap != null) { pathCanvas.drawBitmap(mPaintBitmap, null, new RectF(0,0,width, height), null); }
-		int i = 0;
-		for (Path p : DrawingActivity.mPaths) {
-			pathCanvas.drawPath(p, DrawingActivity.mPaints.get(i));
-			i++;
+		if (mLastPathBitmap == null) {
+			if (mPaintBitmap != null) {
+				pathCanvas.drawBitmap(mPaintBitmap, null, new RectF(0,0,width, height), null);
+			}
+			for (int i=0;i< DrawingActivity.mPaths.size();i++) {
+				Path p = DrawingActivity.mPaths.get(i);
+				pathCanvas.drawPath(p, DrawingActivity.mPaints.get(i));
+			}
+			mLastPathBitmap = pathBitmap.copy(pathBitmap.getConfig(), true);
+		} else {
+			pathCanvas.drawBitmap(mLastPathBitmap, null, new RectF(0,0,width, height), null);
 		}
 		if (path != null && paint != null) {
 			pathCanvas.drawPath(path, paint);
@@ -257,6 +264,8 @@ public class DrawingView extends View
 						DrawingActivity.mPaints.add(mDrawPaint);
 						mDrawPath = new Path();
 						initPaint();
+						mLastPathBitmap = null;
+						invalidate();
 					} else {
 						Bitmap viewBM = getViewBitmap();
 						int eyedropperColor = viewBM.getPixel((int) touchX, (int) touchY);
@@ -379,6 +388,7 @@ public class DrawingView extends View
 		if (DrawingActivity.mPaths.size() > 0) {
 			DrawingActivity.mUndonePaths.add(DrawingActivity.mPaths.remove(DrawingActivity.mPaths.size() - 1));
 			DrawingActivity.mUndonePaints.add(DrawingActivity.mPaints.remove(DrawingActivity.mPaints.size() - 1));
+			mLastPathBitmap = null;
 			invalidate();
 		}
 	}
@@ -388,6 +398,7 @@ public class DrawingView extends View
 		{
 			DrawingActivity.mPaths.add(DrawingActivity.mUndonePaths.remove(DrawingActivity.mUndonePaths.size() - 1));
 			DrawingActivity.mPaints.add(DrawingActivity.mUndonePaints.remove(DrawingActivity.mUndonePaints.size() - 1));
+			mLastPathBitmap = null;
 			invalidate();
 		}
 	}
