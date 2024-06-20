@@ -165,8 +165,9 @@ public class SdApiHelper {
             RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
             Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
             jsonObject.put("background", Utils.jpg2Base64String(baseImage));
+            float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
             int boundary = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "10"));
-            mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, true));
+            mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(boundary * ratio), true));
             Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
             jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
             jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));

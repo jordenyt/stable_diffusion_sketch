@@ -22,15 +22,6 @@
             <item android:id="@+id/mi_sd_refresh_ckpt" android:title="Refresh Checkpoints"/>
             <item android:id="@+id/mi_export_setting" android:title="Export Settings"/>
             <item android:id="@+id/mi_import_setting" android:title="Import Settings"/>
-            <item android:title="Service Management">
-                <menu>
-                    <item android:id="@+id/mi_sd_unload_checkpoint" android:title="Unload A1111 Checkpoint"/>
-                    <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>
-                    <item android:id="@+id/mi_start_comfyui" android:title="Start ComfyUI"/>
-                    <item android:id="@+id/mi_stop_comfyui" android:title="Stop ComfyUI"/>
-                    <item android:id="@+id/mi_vram" android:title="Check Memory Usage"/>
-                </menu>
-            </item>
         </menu>
     </item>
     <item android:title="Prompt">
@@ -94,4 +85,13 @@
         </menu>
     </item>
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
+    <item android:title="Service Management">
+        <menu>
+            <item android:id="@+id/mi_sd_unload_checkpoint" android:title="Unload A1111 Checkpoint"/>
+            <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>
+            <item android:id="@+id/mi_start_comfyui" android:title="Start ComfyUI"/>
+            <item android:id="@+id/mi_stop_comfyui" android:title="Stop ComfyUI"/>
+            <item android:id="@+id/mi_vram" android:title="Check Memory Usage"/>
+        </menu>
+    </item>
 </menu>
