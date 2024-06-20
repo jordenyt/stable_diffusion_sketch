@@ -177,7 +177,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getICLightTextJSON(Sketch mCurrentSketch) {
+    public JSONObject getICLightTextJSON(Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
@@ -185,6 +185,7 @@ public class SdApiHelper {
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
             jsonObject.put("workflow", "iclight_text");
+            jsonObject.put("batch_size", batchSize);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -214,6 +215,33 @@ public class SdApiHelper {
             jsonObject.put("positive", mCurrentSketch.getPrompt());
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
             jsonObject.put("workflow", "iclight_bg");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getSD3Text(Sketch mCurrentSketch, int batchSize) {
+        JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
+        try {
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "sd3_txt2img");
+            jsonObject.put("batch_size", batchSize);
+
+            if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
+                jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
+            } else {
+                jsonObject.put("width", sdParam.sdSize);
+            }
+            if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
+                jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
+            } else {
+                jsonObject.put("height", sdParam.sdSize);
+            }
+            jsonObject.put("steps", sdParam.steps);
+            jsonObject.put("cfg", sdParam.cfgScale);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -274,6 +302,7 @@ public class SdApiHelper {
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_TXT_SD3_COMFYUI) ? sharedPreferences.getString("modeSD3ComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? sharedPreferences.getString("modeInpaint", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_SKETCH) ? sharedPreferences.getString("modeInpaintS", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_REFINER) ? sharedPreferences.getString("modeRefiner", Sketch.defaultJSON.get(cnMode)) :

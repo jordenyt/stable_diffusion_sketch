@@ -224,9 +224,15 @@ public class ViewSdImageService extends Service {
                 case "comfyui": {
                     ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
-                    String imageStr = jsonObject.getString("processed_image");
                     List<Bitmap> listBitmap = new ArrayList<>();
-                    listBitmap.add(Utils.base64String2Bitmap(imageStr));
+
+                    JSONArray images = jsonObject.getJSONArray("processed_image");
+                    if (images.length() > 0) {
+                        for (int i=0;i<images.length();i++) {
+                            listBitmap.add(Utils.base64String2Bitmap(images.getString(i)));
+                        }
+                    }
+
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                         isRunning = false;
                         stopForeground(true);
