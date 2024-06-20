@@ -326,6 +326,9 @@ public class SdApiHelper {
         if (param.scheduler == null) {
             param.scheduler = "Automatic";
         }
+        if (param.maskBlur == -1) {
+            param.maskBlur = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "10"));
+        }
         if (param.clipSkip < 1 || param.clipSkip > 12) {
             try {
                 param.clipSkip = Integer.parseInt(sharedPreferences.getString("defaultClipSkip", "1"));
@@ -574,22 +577,20 @@ public class SdApiHelper {
             jsonObject.put("resize_mode", 1);
 
             if (isInpaint) {
-                int maskBlur = Integer.parseInt(sharedPreferences.getString("inpaintMaskBlur", "10"));
-
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
                     RectF partialRect = mCurrentSketch.getRectInpaint(param.sdSize);
                     double ratio = (double)max(partialRect.width(), partialRect.height()) / param.sdSize;
-                    int boundary = SdParam.SD_INPUT_IMAGE_SKETCH.equals(param.baseImage) ? (int) round(maskBlur * ratio) : 0;
+                    int boundary = SdParam.SD_INPUT_IMAGE_SKETCH.equals(param.baseImage) ? (int) round(param.maskBlur * ratio) : 0;
                     mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, false));
                     Bitmap imgInpaintMask = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), partialRect);
                     jsonObject.put("mask", Utils.png2Base64String(imgInpaintMask));
                 } else {
                     double ratio = (double)max(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight()) / param.sdSize;
-                    int boundary = SdParam.SD_INPUT_IMAGE_SKETCH.equals(param.baseImage) ? (int) round(maskBlur * ratio) : 0;
+                    int boundary = SdParam.SD_INPUT_IMAGE_SKETCH.equals(param.baseImage) ? (int) round(param.maskBlur * ratio) : 0;
                     mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, false));
                     jsonObject.put("mask", Utils.png2Base64String(mCurrentSketch.getImgInpaintMask()));
                 }
-                jsonObject.put("mask_blur", maskBlur);
+                jsonObject.put("mask_blur", param.maskBlur);
                 jsonObject.put("inpainting_fill", param.inpaintFill);
                 jsonObject.put("inpaint_full_res", false);
                 jsonObject.put("inpaint_full_res_padding", 32);

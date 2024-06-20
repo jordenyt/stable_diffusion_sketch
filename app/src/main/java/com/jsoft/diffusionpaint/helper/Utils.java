@@ -171,7 +171,7 @@ public class Utils {
         int height = sketchBitmap.getHeight();
 
         // Reduce the resolution for processing
-        int scaleFactor = Math.max(1, expandPixel / 5); // Adjust this factor for more or less approximation
+        int scaleFactor = max(max(1, expandPixel / 5), max(width, height) / 750); // Adjust this factor for more or less approximation
         int scaledWidth = width / scaleFactor;
         int scaledHeight = height / scaleFactor;
 
