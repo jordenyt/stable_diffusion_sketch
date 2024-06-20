@@ -4,6 +4,7 @@ import static java.lang.Math.*;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -20,6 +21,9 @@ import android.view.View;
 import com.jsoft.diffusionpaint.DrawingActivity;
 import com.jsoft.diffusionpaint.dto.Sketch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DrawingView extends View
 {
 	private Path mDrawPath;
@@ -27,7 +31,7 @@ public class DrawingView extends View
 	private Canvas mViewCanvas;
 	private Bitmap mViewBitmap; //member of mDrawCanvas
 	private Bitmap mBaseBitmap; //Input Background
-	private Bitmap mPaintBitmap; //Input Paint from save data
+	private List<Bitmap> mBasePathBitmap; //Input Paint from save data
 	private Bitmap mLastPathBitmap;
 	private Bitmap mTranslateBitmap;
 
@@ -35,6 +39,7 @@ public class DrawingView extends View
 	private int mBackgroundColor = 0xFFFFFFFF;
 	private int mPaintColor = 0xFF666666;
 	private int mStrokeWidth = 10;
+	private final int pathCacheSize = 10;
 	private boolean isEyedropper = false;
 	private boolean isEraser = false;
 	private DrawingViewListener listener;
@@ -58,6 +63,7 @@ public class DrawingView extends View
 		super.setClickable(true);
 		mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 		mGestureDetector = new GestureDetector(context, new DrawingView.GestureListener());
+		mBasePathBitmap = new ArrayList<>();
 		init();
 	}
 
@@ -180,10 +186,23 @@ public class DrawingView extends View
 		Bitmap pathBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas pathCanvas = new Canvas(pathBitmap);
 		if (mLastPathBitmap == null) {
-			if (mPaintBitmap != null) {
-				pathCanvas.drawBitmap(mPaintBitmap, null, new RectF(0,0,width, height), null);
+			int basePathIndex = min(mBasePathBitmap.size() - 1, (DrawingActivity.mPaths.size() - 1) / pathCacheSize);
+			if (mBasePathBitmap.isEmpty()) {
+				mBasePathBitmap.add(pathBitmap.copy(pathBitmap.getConfig(), true));
+				basePathIndex = 0;
 			}
-			for (int i=0;i< DrawingActivity.mPaths.size();i++) {
+			if (mBasePathBitmap.size() - 1 > basePathIndex) {
+				for (int i=mBasePathBitmap.size() - 1; i > basePathIndex; i--) {
+					mBasePathBitmap.remove(i);
+				}
+			}
+			if (mBasePathBitmap.size() > basePathIndex) {
+				pathCanvas.drawBitmap(mBasePathBitmap.get(basePathIndex), null, new RectF(0,0,width, height), null);
+			}
+			for (int i=basePathIndex * pathCacheSize;i< DrawingActivity.mPaths.size();i++) {
+				if ((i % pathCacheSize == 0) && (mBasePathBitmap.size() <= i / pathCacheSize)) {
+					mBasePathBitmap.add(pathBitmap.copy(pathBitmap.getConfig(), true));
+				}
 				Path p = DrawingActivity.mPaths.get(i);
 				pathCanvas.drawPath(p, DrawingActivity.mPaints.get(i));
 			}
@@ -247,6 +266,7 @@ public class DrawingView extends View
 					if (!isEyedropper) {
 						mDrawPath.moveTo(realX, realY);
 						mDrawPaint.setStrokeWidth((int) round((double)mStrokeWidth / curScale));
+						mDrawPaint.setMaskFilter(new BlurMaskFilter((float)(mStrokeWidth / curScale), BlurMaskFilter.Blur.NORMAL));
 						DrawingActivity.mUndonePaths.clear();
 						DrawingActivity.mUndonePaints.clear();
 					}
@@ -452,8 +472,9 @@ public class DrawingView extends View
 		this.mBaseBitmap = getCroppedBitmap(bitmap);
 	}
 
-	public void setmPaintBitmap(Bitmap mPaintBitmap) {
-		this.mPaintBitmap = getCroppedBitmap(mPaintBitmap);
+	public void setmBasePathBitmap(Bitmap mBasePathBitmap) {
+		this.mBasePathBitmap.clear();
+		this.mBasePathBitmap.add(getCroppedBitmap(mBasePathBitmap));
 	}
 
 	public boolean isEmpty() {
