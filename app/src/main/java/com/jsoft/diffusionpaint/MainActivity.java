@@ -46,6 +46,7 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
+import com.jaredrummler.android.colorpicker.BuildConfig;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.helper.PaintDb;
