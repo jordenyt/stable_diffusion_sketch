@@ -190,12 +190,14 @@ public class DrawingView extends View
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		mViewCanvas = canvas;
-		if (!isTranslate) {
-			drawBackground(canvas);
-			drawPaths(canvas, mDrawPath, mDrawPaint);
-		} else {
-			drawBitmapOnCanvas(mTranslateBitmap,canvas,curLeft,curTop,curScale);
+		if (mBaseBitmap != null) {
+			mViewCanvas = canvas;
+			if (!isTranslate) {
+				drawBackground(canvas);
+				drawPaths(canvas, mDrawPath, mDrawPaint);
+			} else {
+				drawBitmapOnCanvas(mTranslateBitmap, canvas, curLeft, curTop, curScale);
+			}
 		}
 	}
 
