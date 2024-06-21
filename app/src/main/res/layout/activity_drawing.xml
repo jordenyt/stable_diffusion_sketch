@@ -8,15 +8,42 @@
     android:foregroundTint="@color/white"
     tools:context=".DrawingActivity">
 
+    <TextView
+        android:id="@+id/txt_width"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/seek_width"
+        app:layout_constraintEnd_toStartOf="@id/seek_width"
+        android:text="W:" />
     <SeekBar
         android:id="@+id/seek_width"
-        android:layout_width="141dp"
-        android:layout_height="23dp"
+        android:layout_width="115dp"
+        android:layout_height="25dp"
         android:max="200"
         android:min="10"
         android:progress="50"
         android:progressBackgroundTint="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/fab_color"
+        app:layout_constraintBottom_toTopOf="@id/fab_color"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_blur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/seek_blur"
+        app:layout_constraintEnd_toStartOf="@id/seek_blur"
+        android:text="B:" />
+    <SeekBar
+        android:id="@+id/seek_blur"
+        android:layout_width="115dp"
+        android:layout_height="25dp"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
+        android:progressBackgroundTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/seek_width"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.jsoft.diffusionpaint.component.DrawingView
@@ -26,7 +53,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="75dp"
         android:layout_marginEnd="0dp"
-        android:layout_marginBottom="95dp"
+        android:layout_marginBottom="113dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,6 +124,7 @@
         android:contentDescription="@string/stroke_color"
         android:src="@drawable/ic_palette_white_24dp"
         app:backgroundTint="@color/purple_500"
+        app:fabCustomSize="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
@@ -110,21 +138,20 @@
         android:contentDescription="@string/eraser"
         android:src="@drawable/ic_eraser"
         app:backgroundTint="@color/purple_500"
+        app:fabCustomSize="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fab_color"
+        app:layout_constraintEnd_toStartOf="@id/fab_color"
         app:tint="@android:color/white" />
-
-
 
     <com.jsoft.diffusionpaint.component.CircleView
         android:id="@+id/circle_pen"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
         android:background="#00000000"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fab_eraser" />
+        app:layout_constraintEnd_toStartOf="@id/fab_eraser" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_stable_diffusion"
@@ -154,8 +181,8 @@
 
     <ImageView
         android:id="@+id/img_reference"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="85dp"
+        android:layout_height="94dp"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         android:background="#222222"

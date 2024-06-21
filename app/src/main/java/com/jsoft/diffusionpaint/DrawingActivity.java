@@ -60,9 +60,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private CircleView circleView;
     private int mCurrentColor;
     private int mCurrentStroke;
+    private int mCurrentBlur;
     private PaintDb db;
     private Sketch mCurrentSketch;
     private SeekBar seekWidth;
+    private SeekBar seekBlur;
+    private TextView tvWidth;
+    private TextView tvBlur;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
     FloatingActionButton paletteButton;
@@ -199,12 +203,18 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         mDrawingView.setPaintColor(mCurrentColor);
         mDrawingView.setListener(this);
         seekWidth = findViewById(R.id.seek_width);
+        seekBlur = findViewById(R.id.seek_blur);
+        tvWidth = findViewById(R.id.txt_width);
+        tvBlur = findViewById(R.id.txt_blur);
         mCurrentStroke = seekWidth.getProgress();
+        mCurrentBlur = seekBlur.getProgress();
         mDrawingView.setPaintStrokeWidth(mCurrentStroke);
+        mDrawingView.setPaintStrokeBlur(mCurrentBlur);
 
         circleView = findViewById(R.id.circle_pen);
         circleView.setColor(mCurrentColor);
-        circleView.setRadius(mCurrentStroke/2f);
+        circleView.setRadius((float)mCurrentStroke);
+        circleView.setBlur((float)mCurrentBlur);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -248,7 +258,18 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 mCurrentStroke = i;
                 mDrawingView.setPaintStrokeWidth(mCurrentStroke);
-                circleView.setRadius(mCurrentStroke/2f);
+                circleView.setRadius((float)mCurrentStroke);
+            }
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        seekBlur.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                mCurrentBlur = i;
+                mDrawingView.setPaintStrokeBlur(mCurrentBlur);
+                circleView.setBlur((float)mCurrentBlur);
             }
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
@@ -348,6 +369,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         redoButton.setVisibility(View.GONE);
         paletteButton.setVisibility(View.GONE);
         seekWidth.setVisibility(View.GONE);
+        seekBlur.setVisibility(View.GONE);
+        tvWidth.setVisibility(View.GONE);
+        tvBlur.setVisibility(View.GONE);
         circleView.setVisibility(View.GONE);
         imgRef.setVisibility(View.GONE);
         refButton.setVisibility(View.GONE);
@@ -359,6 +383,9 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         redoButton.setVisibility(View.VISIBLE);
         paletteButton.setVisibility(View.VISIBLE);
         seekWidth.setVisibility(View.VISIBLE);
+        seekBlur.setVisibility(View.VISIBLE);
+        tvWidth.setVisibility(View.VISIBLE);
+        tvBlur.setVisibility(View.VISIBLE);
         circleView.setVisibility(View.VISIBLE);
         if (bmRef != null) {
             imgRef.setVisibility(View.VISIBLE);

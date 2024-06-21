@@ -8,14 +8,49 @@
     android:foregroundTint="@color/white"
     tools:context=".DrawingActivity">
 
+    <TextView
+        android:id="@+id/txt_blur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/txt_width"
+        android:text="B" />
+
+    <TextView
+        android:id="@+id/txt_width"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fab_color"
+        android:text="W" />
+
     <SeekBar
         android:id="@+id/seek_width"
-        android:layout_width="141dp"
-        android:layout_height="149dp"
-        android:layout_marginEnd="10dp"
+        android:layout_width="115dp"
+        android:layout_height="115dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:max="200"
         android:min="10"
         android:progress="50"
+        android:progressBackgroundTint="@color/white"
+        android:rotation="270"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <SeekBar
+        android:id="@+id/seek_blur"
+        android:layout_width="115dp"
+        android:layout_height="115dp"
+        android:layout_marginEnd="45dp"
+        android:layout_marginBottom="20dp"
+        android:max="100"
+        android:min="0"
+        android:progress="0"
         android:progressBackgroundTint="@color/white"
         android:rotation="270"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -27,7 +62,7 @@
         android:layout_height="0dp"
         android:layout_marginStart="75dp"
         android:layout_marginTop="0dp"
-        android:layout_marginEnd="95dp"
+        android:layout_marginEnd="120dp"
         android:layout_marginBottom="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +132,7 @@
         android:contentDescription="@string/stroke_color"
         android:src="@drawable/ic_palette_white_24dp"
         app:backgroundTint="@color/purple_500"
+        app:fabCustomSize="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
@@ -110,16 +146,17 @@
         android:contentDescription="@string/eraser"
         android:src="@drawable/ic_eraser"
         app:backgroundTint="@color/purple_500"
+        app:fabCustomSize="50dp"
         app:layout_constraintBottom_toTopOf="@+id/fab_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
 
     <com.jsoft.diffusionpaint.component.CircleView
         android:id="@+id/circle_pen"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         android:background="#00000000"
         app:layout_constraintBottom_toTopOf="@+id/fab_eraser"
         app:layout_constraintEnd_toEndOf="parent" />
