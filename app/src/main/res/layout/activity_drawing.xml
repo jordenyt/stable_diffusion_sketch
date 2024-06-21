@@ -39,7 +39,7 @@
         android:id="@+id/seek_blur"
         android:layout_width="115dp"
         android:layout_height="25dp"
-        android:max="100"
+        android:max="20"
         android:min="0"
         android:progress="0"
         android:progressBackgroundTint="@color/white"

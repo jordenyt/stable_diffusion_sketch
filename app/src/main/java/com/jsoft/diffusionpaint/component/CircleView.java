@@ -34,7 +34,7 @@ public class CircleView extends View {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.FILL);
         if (blur > 0) {
-            filter = new BlurMaskFilter((float) 1, BlurMaskFilter.Blur.NORMAL);
+            filter = new BlurMaskFilter(blur / 20 * radius, BlurMaskFilter.Blur.NORMAL);
         } else {
             filter = null;
         }
@@ -62,13 +62,18 @@ public class CircleView extends View {
 
     public void setRadius(float radius) {
         this.radius = radius;
+        if (this.blur > 0) {
+            filter = new BlurMaskFilter(blur / 20 * radius, BlurMaskFilter.Blur.NORMAL);
+        } else {
+            filter = null;
+        }
         invalidate();
     }
 
     public void setBlur(float blur) {
         this.blur = blur;
         if (this.blur > 0) {
-            filter = new BlurMaskFilter(blur, BlurMaskFilter.Blur.NORMAL);
+            filter = new BlurMaskFilter(blur / 20 * radius, BlurMaskFilter.Blur.NORMAL);
         } else {
             filter = null;
         }

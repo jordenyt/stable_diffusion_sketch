@@ -28,33 +28,48 @@
         app:layout_constraintEnd_toStartOf="@id/fab_color"
         android:text="W" />
 
-    <SeekBar
-        android:id="@+id/seek_width"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="115dp"
-        android:layout_height="115dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:max="200"
-        android:min="10"
-        android:progress="50"
-        android:progressBackgroundTint="@color/white"
+        android:layout_height="50dp"
         android:rotation="270"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteX="688dp"
+        tools:layout_editor_absoluteY="253dp">
 
-    <SeekBar
-        android:id="@+id/seek_blur"
-        android:layout_width="115dp"
-        android:layout_height="115dp"
-        android:layout_marginEnd="45dp"
-        android:layout_marginBottom="20dp"
-        android:max="100"
-        android:min="0"
-        android:progress="0"
-        android:progressBackgroundTint="@color/white"
-        android:rotation="270"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <SeekBar
+            android:id="@+id/seek_width"
+            android:layout_width="115dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginTop="0dp"
+            android:max="200"
+            android:min="10"
+            android:progress="50"
+            android:progressBackgroundTint="@color/white"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <SeekBar
+            android:id="@+id/seek_blur"
+            android:layout_width="115dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="25dp"
+            android:max="20"
+            android:min="0"
+            android:progress="0"
+            android:progressBackgroundTint="@color/white"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <com.jsoft.diffusionpaint.component.DrawingView
         android:id="@+id/drawing_view"
@@ -215,6 +230,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_brush"
         app:tint="@android:color/white" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
