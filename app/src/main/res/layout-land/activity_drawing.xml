@@ -60,7 +60,7 @@
         android:id="@+id/drawing_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="75dp"
+        android:layout_marginStart="70dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="120dp"
         android:layout_marginBottom="0dp"
@@ -81,6 +81,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_undo_white_24dp"
         app:backgroundTint="@color/light_blue_A400"
+        app:fabCustomSize="50dp"
         app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -94,6 +95,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_undo"
         app:backgroundTint="@color/light_blue_A400"
+        app:fabCustomSize="50dp"
         app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -107,6 +109,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:backgroundTint="@color/teal_700"
+        app:fabCustomSize="50dp"
         app:tint="@android:color/white" />
 
 
@@ -121,6 +124,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_save"
         app:backgroundTint="@color/teal_700"
+        app:fabCustomSize="50dp"
         app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -170,6 +174,7 @@
         android:contentDescription="@string/sdAction"
         android:src="@drawable/ic_magic"
         app:backgroundTint="@android:color/holo_orange_dark"
+        app:fabCustomSize="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@android:color/white" />
@@ -183,15 +188,16 @@
         android:contentDescription="@string/refImg"
         android:src="@drawable/ic_image"
         app:backgroundTint="@android:color/holo_orange_dark"
+        app:fabCustomSize="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/fab_stable_diffusion"
         app:tint="@android:color/white" />
 
     <ImageView
         android:id="@+id/img_reference"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="0dp"
         android:layout_marginBottom="10dp"
         android:background="#222222"
         app:layout_constraintStart_toStartOf="parent"
