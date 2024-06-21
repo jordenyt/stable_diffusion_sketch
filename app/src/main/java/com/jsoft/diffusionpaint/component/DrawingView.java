@@ -39,6 +39,7 @@ public class DrawingView extends View
 	private int mBackgroundColor = 0xFFFFFFFF;
 	private int mPaintColor = 0xFF666666;
 	private int mStrokeWidth = 10;
+	private int mStrokeBlur = 0;
 	private final int pathCacheSize = 10;
 	private boolean isEyedropper = false;
 	private boolean isEraser = false;
@@ -103,6 +104,11 @@ public class DrawingView extends View
 		mDrawPaint.setColor(mPaintColor);
 		mDrawPaint.setAntiAlias(true);
 		mDrawPaint.setStrokeWidth(mStrokeWidth);
+		if (mStrokeBlur > 0) {
+			mDrawPaint.setMaskFilter(new BlurMaskFilter((float) (mStrokeBlur / curScale), BlurMaskFilter.Blur.NORMAL));
+		} else {
+			mDrawPaint.setMaskFilter(null);
+		}
 		mDrawPaint.setStyle(Paint.Style.STROKE);
 		mDrawPaint.setStrokeJoin(Paint.Join.ROUND);
 		mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -266,7 +272,11 @@ public class DrawingView extends View
 					if (!isEyedropper) {
 						mDrawPath.moveTo(realX, realY);
 						mDrawPaint.setStrokeWidth((int) round((double)mStrokeWidth / curScale));
-						mDrawPaint.setMaskFilter(new BlurMaskFilter((float)(mStrokeWidth / curScale), BlurMaskFilter.Blur.NORMAL));
+						if (mStrokeBlur > 0) {
+							mDrawPaint.setMaskFilter(new BlurMaskFilter((float) (mStrokeBlur / curScale), BlurMaskFilter.Blur.NORMAL));
+						} else {
+							mDrawPaint.setMaskFilter(null);
+						}
 						DrawingActivity.mUndonePaths.clear();
 						DrawingActivity.mUndonePaints.clear();
 					}
@@ -384,6 +394,10 @@ public class DrawingView extends View
 
 	public void setPaintStrokeWidth(int strokeWidth) {
 		mStrokeWidth = strokeWidth;
+	}
+
+	public void setPaintStrokeBlur(int strokeBlur) {
+		mStrokeBlur = strokeBlur;
 	}
 
 	public void setEraserMode() {

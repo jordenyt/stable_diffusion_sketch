@@ -1,6 +1,7 @@
 package com.jsoft.diffusionpaint.component;
 
 import android.content.Context;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
@@ -10,6 +11,8 @@ public class CircleView extends View {
     private Paint paint;
     private int color;
     private float radius;
+    private float blur;
+    BlurMaskFilter filter;
 
     public CircleView(Context context) {
         super(context);
@@ -30,6 +33,11 @@ public class CircleView extends View {
         // Initialize the Paint object with antialiasing enabled.
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.FILL);
+        if (blur > 0) {
+            filter = new BlurMaskFilter((float) 1, BlurMaskFilter.Blur.NORMAL);
+        } else {
+            filter = null;
+        }
     }
 
     @Override
@@ -38,11 +46,13 @@ public class CircleView extends View {
 
         // Set the Paint color to the specified color.
         paint.setColor(color);
+        paint.setStrokeWidth(radius);
+        paint.setMaskFilter(filter);
 
         // Draw a circle with the specified radius at the center of the View.
         float centerX = getWidth() / 2f;
         float centerY = getHeight() / 2f;
-        canvas.drawCircle(centerX, centerY, radius, paint);
+        canvas.drawCircle(centerX, centerY, radius / 2, paint);
     }
 
     public void setColor(int color) {
@@ -52,6 +62,16 @@ public class CircleView extends View {
 
     public void setRadius(float radius) {
         this.radius = radius;
+        invalidate();
+    }
+
+    public void setBlur(float blur) {
+        this.blur = blur;
+        if (this.blur > 0) {
+            filter = new BlurMaskFilter(blur, BlurMaskFilter.Blur.NORMAL);
+        } else {
+            filter = null;
+        }
         invalidate();
     }
 }
