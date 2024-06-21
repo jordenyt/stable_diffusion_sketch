@@ -560,4 +560,27 @@ public class Utils {
 
         return resultBitmap;
     }
+
+    public static Bitmap getEmptyBackground(int longSide, String aspectRatio) {
+        int baseWidth, baseHeight;
+        if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE)) {
+            baseWidth = baseHeight = longSide;
+        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
+            baseWidth = (int)round(longSide * 3 / 4d);
+            baseHeight = longSide;
+        } else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)){
+            baseHeight = (int)round(longSide * 3 / 4d);
+            baseWidth = longSide;
+        } else {
+            baseHeight = (int)round(longSide * 9 / 16d);
+            baseWidth = longSide;
+        }
+        Bitmap resultBitmap = Bitmap.createBitmap(baseWidth, baseHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(resultBitmap);
+        Paint mBackgroundPaint = new Paint();
+        mBackgroundPaint.setColor(Color.WHITE);
+        mBackgroundPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(0f,0f,baseWidth, baseHeight, mBackgroundPaint);
+        return resultBitmap;
+    }
 }
