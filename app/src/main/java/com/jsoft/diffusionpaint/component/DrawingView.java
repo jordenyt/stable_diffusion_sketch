@@ -105,7 +105,7 @@ public class DrawingView extends View
 		mDrawPaint.setAntiAlias(true);
 		mDrawPaint.setStrokeWidth(mStrokeWidth);
 		if (mStrokeBlur > 0) {
-			mDrawPaint.setMaskFilter(new BlurMaskFilter((float) (mStrokeBlur / 20f * mStrokeWidth / curScale), BlurMaskFilter.Blur.NORMAL));
+			mDrawPaint.setMaskFilter(new BlurMaskFilter((float) (mStrokeBlur / 40f * mStrokeWidth / curScale), BlurMaskFilter.Blur.NORMAL));
 		} else {
 			mDrawPaint.setMaskFilter(null);
 		}
@@ -273,7 +273,7 @@ public class DrawingView extends View
 						mDrawPath.moveTo(realX, realY);
 						mDrawPaint.setStrokeWidth((int) round((double)mStrokeWidth / curScale));
 						if (mStrokeBlur > 0) {
-							mDrawPaint.setMaskFilter(new BlurMaskFilter((float) (mStrokeBlur / 20f * mStrokeWidth / curScale), BlurMaskFilter.Blur.NORMAL));
+							mDrawPaint.setMaskFilter(new BlurMaskFilter((float) (mStrokeBlur / 40f * mStrokeWidth / curScale), BlurMaskFilter.Blur.NORMAL));
 						} else {
 							mDrawPaint.setMaskFilter(null);
 						}
