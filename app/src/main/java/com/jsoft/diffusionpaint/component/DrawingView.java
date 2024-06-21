@@ -36,7 +36,6 @@ public class DrawingView extends View
 	private Bitmap mTranslateBitmap;
 
 	// Set default values
-	private int mBackgroundColor = 0xFFFFFFFF;
 	private int mPaintColor = 0xFF666666;
 	private int mStrokeWidth = 10;
 	private int mStrokeBlur = 0;
@@ -46,7 +45,6 @@ public class DrawingView extends View
 	private DrawingViewListener listener;
 
 	private int maxImgSize = 3840;
-	private String aspectRatio;
 
 	private double minScale = 1.0;
 	private double curScale = 1.0;
@@ -122,39 +120,7 @@ public class DrawingView extends View
 	}
 
 	private void drawBackground(Canvas viewCanvas, double offsetX, double offsetY, double viewScale) {
-		if (mBaseBitmap == null) {
-			//Create new mBaseBitmap for new Drawing
-			Paint mBackgroundPaint = new Paint();
-			mBackgroundPaint.setColor(mBackgroundColor);
-			mBackgroundPaint.setStyle(Paint.Style.FILL);
-			double baseWidth, baseHeight;
-			if (aspectRatio.equals(Sketch.ASPECT_RATIO_SQUARE)) {
-				baseWidth = baseHeight = min(viewCanvas.getWidth(), (double)viewCanvas.getHeight());
-			} else if (aspectRatio.equals(Sketch.ASPECT_RATIO_PORTRAIT)) {
-				double ratio = (double) viewCanvas.getHeight() / (double) viewCanvas.getWidth();
-				baseWidth = (ratio >= 4d / 3d) ? viewCanvas.getWidth() : viewCanvas.getHeight() * 3d / 4d;
-				baseHeight = (ratio >= 4d / 3d) ? viewCanvas.getWidth() * 4d / 3d : viewCanvas.getHeight();
-			} else if (aspectRatio.equals(Sketch.ASPECT_RATIO_LANDSCAPE)){
-				double ratio = (double) viewCanvas.getWidth() / (double) viewCanvas.getHeight();
-				baseWidth = (ratio >= 4d / 3d) ? viewCanvas.getHeight() * 4d / 3d : viewCanvas.getWidth();
-				baseHeight = (ratio >= 4d / 3d) ? viewCanvas.getHeight() : viewCanvas.getWidth() * 3d / 4d;
-			} else {
-				double ratio = (double) viewCanvas.getWidth() / (double) viewCanvas.getHeight();
-				baseWidth = (ratio >= 16d / 9d) ? viewCanvas.getHeight() * 16d / 9d : viewCanvas.getWidth();
-				baseHeight = (ratio >= 16d / 9d) ? viewCanvas.getHeight() : viewCanvas.getWidth() * 10d / 9d;
-			}
-			mBaseBitmap = Bitmap.createBitmap((int) round(baseWidth), (int) round(baseHeight), Bitmap.Config.ARGB_8888);
-			Canvas baseCanvas = new Canvas(mBaseBitmap);
-			baseCanvas.drawRect(0f,0f,(int) round(baseWidth), (int) round(baseHeight), mBackgroundPaint);
-
-			curLeft = (viewCanvas.getWidth() - baseCanvas.getWidth()) / 2d;
-			curTop = (viewCanvas.getHeight() - baseCanvas.getHeight()) / 2d;
-
-			minScale = 1.0;
-			maxScale = (double)maxResolution / max(baseWidth, baseHeight);
-			curScale = 1.0;
-			drawBackground(viewCanvas, curLeft, curTop, curScale);
-		} else {
+		if (mBaseBitmap != null) {
 			drawBitmapOnCanvas(mBaseBitmap, viewCanvas, offsetX, offsetY, viewScale);
 		}
 	}
@@ -410,16 +376,8 @@ public class DrawingView extends View
 		mDrawPaint.setXfermode(null);
 	}
 
-	public void setBackgroundColor(int color) {
-		mBackgroundColor = color;
-		//mBackgroundPaint.setColor(mBackgroundColor);
-		invalidate();
-	}
-
-
-
 	public void undo() {
-		if (DrawingActivity.mPaths.size() > 0) {
+		if (!DrawingActivity.mPaths.isEmpty()) {
 			DrawingActivity.mUndonePaths.add(DrawingActivity.mPaths.remove(DrawingActivity.mPaths.size() - 1));
 			DrawingActivity.mUndonePaints.add(DrawingActivity.mPaints.remove(DrawingActivity.mPaints.size() - 1));
 			mLastPathBitmap = null;
@@ -428,7 +386,7 @@ public class DrawingView extends View
 	}
 
 	public void redo() {
-		if (DrawingActivity.mUndonePaths.size() > 0)
+		if (!DrawingActivity.mUndonePaths.isEmpty())
 		{
 			DrawingActivity.mPaths.add(DrawingActivity.mUndonePaths.remove(DrawingActivity.mUndonePaths.size() - 1));
 			DrawingActivity.mPaints.add(DrawingActivity.mUndonePaints.remove(DrawingActivity.mUndonePaints.size() - 1));
@@ -492,11 +450,8 @@ public class DrawingView extends View
 	}
 
 	public boolean isEmpty() {
-		return (DrawingActivity.mPaths.size() == 0);
+		return (DrawingActivity.mPaths.isEmpty());
 	}
 
 	public void setCanvasSize(int canvasSize) { this.maxImgSize = canvasSize; }
-
-	public void setAspectRatio(String aspectRatio) { this.aspectRatio = aspectRatio; }
-
 }

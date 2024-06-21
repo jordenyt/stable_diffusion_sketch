@@ -8,6 +8,16 @@
     android:foregroundTint="@color/white"
     tools:context=".DrawingActivity">
 
+    <com.jsoft.diffusionpaint.component.CircleView
+        android:id="@+id/circle_pen"
+        android:layout_width="120dp"
+        android:layout_height="200dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="80dp"
+        android:background="#00000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/txt_blur"
         android:layout_width="wrap_content"
@@ -89,10 +99,10 @@
         android:id="@+id/fab_undo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/undo"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fab_redo"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_undo_white_24dp"
         app:backgroundTint="@color/light_blue_A400"
@@ -103,12 +113,12 @@
         android:id="@+id/fab_redo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/redo"
         android:src="@drawable/ic_redo_white_24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fab_undo"
+        app:layout_constraintTop_toTopOf="parent"
         app:backgroundTint="@color/light_blue_A400"
         app:fabCustomSize="50dp"
         app:tint="@android:color/white" />
@@ -170,15 +180,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
 
-    <com.jsoft.diffusionpaint.component.CircleView
-        android:id="@+id/circle_pen"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="20dp"
-        android:background="#00000000"
-        app:layout_constraintBottom_toTopOf="@+id/fab_eraser"
-        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_stable_diffusion"
