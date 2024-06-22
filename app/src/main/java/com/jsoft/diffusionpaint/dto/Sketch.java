@@ -91,6 +91,10 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
         json.put(CN_MODE_SUPIR_PARTIAL, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":768}");
         json.put(CN_MODE_IDMVTON, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"sdSize\":1280}");
+        json.put(CN_MODE_SUPIR, "{\"type\":\"img2img\"}");
+        json.put(CN_MODE_ICLIGHT_BG, "{\"type\":\"img2img\"}");
+        json.put(CN_MODE_ICLIGHT_TEXT, "{\"type\":\"img2img\"}");
+        json.put(CN_MODE_ICLIGHT_RELIGHT, "{\"type\":\"img2img\"}");
         defaultJSON = Collections.unmodifiableMap(json);
     }
 
