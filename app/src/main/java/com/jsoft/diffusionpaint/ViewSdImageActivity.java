@@ -177,7 +177,11 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             currentResult = 0;
             savedImageName = null;
             if (cnMode.equals(Sketch.CN_MODE_ORIGIN)) {
-                mBitmap = mCurrentSketch.getImgBgRef(10);
+                if (mCurrentSketch.getImgReference() != null) {
+                    mBitmap = mCurrentSketch.getImgBgRef(10);
+                } else {
+                    mBitmap = mCurrentSketch.getImgBackground();
+                }
                 sdImage.setImageBitmap(mBitmap);
                 addResult("original", null);
                 remainGen = 0;

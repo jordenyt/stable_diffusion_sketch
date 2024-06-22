@@ -25,6 +25,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -49,7 +51,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -233,13 +237,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mDrawingView.setmBaseBitmap(rotatedBitmap);
             mDrawingView.prepareBitmap(mCurrentSketch, null);
         } else if (sketchId == -1) {
-            try {
-                int canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840"));
-                Bitmap emptyImg = Utils.getEmptyBackground(canvasDim, aspectRatio);
+            //try {
+                //int canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840"));
+                Bitmap emptyImg = Utils.getEmptyBackground(1280, aspectRatio);
                 mDrawingView.setmBaseBitmap(emptyImg);
                 mCurrentSketch.setImgBackground(emptyImg);
                 mDrawingView.prepareBitmap(mCurrentSketch, null);
-            } catch (Exception ignored) {}
+            //} catch (Exception ignored) {}
         }
     }
 
@@ -417,6 +421,12 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         final MultiAutoCompleteTextView promptTV = dialogView.findViewById(R.id.sd_prompt);
         final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
+        final RadioGroup radioGroupMode = dialogView.findViewById(R.id.radio_sdmode);
+        final RadioButton radioAll = dialogView.findViewById(R.id.radio_all);
+        //final RadioButton radioTxt2img = dialogView.findViewById(R.id.radio_txt2img);
+        //final RadioButton radioImg2img = dialogView.findViewById(R.id.radio_img2img);
+        //final RadioButton radioInpaint = dialogView.findViewById(R.id.radio_inpaint);
+
         promptTV.setText(mCurrentSketch.getPrompt());
         negPromptTV.setText(mCurrentSketch.getNegPrompt());
         List<String> acList = new ArrayList<>();
@@ -452,33 +462,62 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
-        List<String> modeSelectList = new ArrayList<>();
-        List<String> cnModeList = new ArrayList<>();
+        //List<String> modeSelectList = new ArrayList<>();
+        //List<String> cnModeList = new ArrayList<>();
+        Map<String, String> modeMap = new LinkedHashMap<>();
         for (String mode : cnModeMap.keySet()) {
-            String modeName = mode;
+            String modeDisplayName = mode;
             if (cnModeMap.get(mode).startsWith(CN_MODE_CUSTOM)) {
                 String jsonMode = sharedPreferences.getString("modeCustom" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
                 try {
                     JSONObject jsonObjectMode = new JSONObject(jsonMode);
                     if (jsonObjectMode.has("name")) {
-                        modeName = "CM" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()) + " - " + jsonObjectMode.getString("name");
+                        modeDisplayName = "CM" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()) + " - " + jsonObjectMode.getString("name");
                     }
                 } catch (Exception ignored) {}
             }
-            cnModeList.add(cnModeMap.get(mode));
-            modeSelectList.add(modeName);
+            //cnModeList.add(cnModeMap.get(mode));
+            //modeSelectList.add(modeDisplayName);
+            modeMap.put(modeDisplayName, cnModeMap.get(mode));
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modeSelectList);
+        /*List<String> modeDisplayList = new ArrayList<>(modeMap.keySet());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modeDisplayList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sdMode.setAdapter(adapter);
-        for (int i=0; i<cnModeMap.size(); i++) {
-            String cnMode = cnModeList.get(i);
-            if (Objects.equals(cnMode, mCurrentSketch.getCnMode())) {
-                sdMode.setSelection(i);
-                break;
+        sdMode.setAdapter(adapter);*/
+
+        radioGroupMode.setOnCheckedChangeListener((group, checkedId) -> {
+            String modeType = "all";
+            switch (checkedId) {
+                case R.id.radio_txt2img:
+                    modeType = SdParam.SD_MODE_TYPE_TXT2IMG;
+                    break;
+                case R.id.radio_img2img:
+                    modeType = SdParam.SD_MODE_TYPE_IMG2IMG;
+                    break;
+                case R.id.radio_inpaint:
+                    modeType = SdParam.SD_MODE_TYPE_INPAINT;
+                    break;
             }
-        }
+            List<String> modeSelectList = new ArrayList<>();
+            for (String displayName : modeMap.keySet()) {
+                SdParam sdParam = sdApiHelper.getSdCnParm(modeMap.get(displayName));
+                if (modeType.equals(sdParam.type) || "all".equals(modeType)) {
+                    modeSelectList.add(displayName);
+                }
+            }
+            ArrayAdapter<String> filteredAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modeSelectList);
+            filteredAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            sdMode.setAdapter(filteredAdapter);
+            for (int i=0; i<modeSelectList.size(); i++) {
+                String cnMode = modeMap.get(modeSelectList.get(i));
+                if (Objects.equals(cnMode, mCurrentSketch.getCnMode())) {
+                    sdMode.setSelection(i);
+                    break;
+                }
+            }
+        });
+        radioGroupMode.check(R.id.radio_all);
 
         TextView sdAspectRatioTxt = dialogView.findViewById(R.id.sd_aspect_ratio_txt);
         Spinner sdAspectRatio = dialogView.findViewById(R.id.sd_aspect_ratio);
@@ -516,8 +555,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             mCurrentSketch.setPrompt(promptText);
-            int selectMode = sdMode.getSelectedItemPosition();
-            mCurrentSketch.setCnMode(cnModeList.get(selectMode));
+            String selectMode = sdMode.getSelectedItem().toString();
+            mCurrentSketch.setCnMode(modeMap.get(selectMode));
             String negPromptText = negPromptTV.getText().toString();
             mCurrentSketch.setNegPrompt(negPromptText);
             String style = sdStyle.getSelectedItem().toString();

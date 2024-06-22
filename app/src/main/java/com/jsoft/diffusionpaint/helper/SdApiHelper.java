@@ -40,7 +40,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class SdApiHelper {
-    private final SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences = null;
     private Activity activity;
     private SdApiResponseListener listener;
     private OkHttpClient client;
