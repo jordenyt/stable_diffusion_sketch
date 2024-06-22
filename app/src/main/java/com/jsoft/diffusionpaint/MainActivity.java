@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.PopupMenu;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -650,6 +651,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
         promptTV.setText(sharedPreferences.getString("txt2imgPrompt", ""));
         negPromptTV.setText(sharedPreferences.getString("txt2imgNegPrompt", ""));
+        final RadioGroup rgSdMode = dialogView.findViewById(R.id.radio_sdmode);
+        rgSdMode.setVisibility(View.GONE);
         List<String> acList = new ArrayList<>();
         if (DrawingActivity.loraList != null) {
             acList.addAll(DrawingActivity.loraList);

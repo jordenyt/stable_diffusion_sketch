@@ -48,7 +48,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
@@ -68,8 +68,30 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text= "Preset SD Mode:"
+        android:text= "SD Mode:"
         android:textAppearance="?android:textAppearanceMedium" />
+    <RadioGroup
+        android:id="@+id/radio_sdmode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/radio_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="all"/>
+        <RadioButton android:id="@+id/radio_txt2img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="txt2img"/>
+        <RadioButton android:id="@+id/radio_img2img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="img2img"/>
+        <RadioButton android:id="@+id/radio_inpaint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="inpainting"/>
+    </RadioGroup>
     <Spinner
         android:id="@+id/sd_mode_selection"
         android:layout_width="match_parent"
