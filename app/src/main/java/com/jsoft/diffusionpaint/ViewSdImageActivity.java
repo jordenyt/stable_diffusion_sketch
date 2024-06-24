@@ -597,6 +597,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getSD3Text(mCurrentSketch, batchSize);
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_PAS_COMFYUI)) {
+                requestType = "comfyui";
+                jsonObject = sdApiHelper.getPASText(mCurrentSketch, batchSize);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
             } else if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 requestType = "txt2img";
                 jsonObject = sdApiHelper.getControlnetTxt2imgJSON(param, mCurrentSketch, batchSize);
