@@ -953,8 +953,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (result.getResultCode() == RESULT_OK && result.getData()!= null && result.getData().getData() != null) {
                     Uri uri = result.getData().getData();
                     if (uri != null) {
-                        String uriString = uri.toString();
-                        if (uriString.endsWith(".json")) {
+                        if (Utils.isJsonUri(this, uri)) {
                             boolean success = readSharedPreferencesFromUri(this, uri);
                             if (success) {
                                 Toast.makeText(this, "Settings imported successfully.", Toast.LENGTH_SHORT).show();

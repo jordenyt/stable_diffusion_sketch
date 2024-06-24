@@ -29,11 +29,13 @@ import com.jsoft.diffusionpaint.dto.Sketch;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -163,6 +165,49 @@ public class Utils {
             MediaScannerConnection.scanFile(a, new String[]{file.toString()}, null, null);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static boolean isJsonUri(Context context, Uri uri) {
+        InputStream inputStream = null;
+        BufferedReader reader = null;
+        try {
+            // Open an input stream from the URI
+            inputStream = context.getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                return false;
+            }
+
+            // Read the input stream into a StringBuilder
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+
+            // Try to parse the content as JSON
+            new JSONObject(content.toString());
+            return true;
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // Close resources
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
