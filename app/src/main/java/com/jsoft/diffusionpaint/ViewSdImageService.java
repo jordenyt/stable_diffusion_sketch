@@ -2,13 +2,16 @@ package com.jsoft.diffusionpaint;
 
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.Lifecycle;
 
 import com.jsoft.diffusionpaint.helper.Utils;
 
@@ -37,6 +40,10 @@ public class ViewSdImageService extends Service {
     private JSONObject requestJSON;
     private static OkHttpClient client;
     private String sdBaseUrl;
+    private int numGen;
+    private List<String> listInfotext = new ArrayList<>();
+    private List<Bitmap> listBitmap = new ArrayList<>();
+    private static SharedPreferences sharedPreferences;
 
     private static final int FOREGROUND_ID = 1;
     private Notification notification;
@@ -62,7 +69,15 @@ public class ViewSdImageService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             String requestType = intent.getStringExtra("requestType");
+            sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            if (intent.hasExtra("numGen")) {
+                numGen = intent.getIntExtra("numGen", 1);
+            } else {
+                numGen = 1;
+            }
             isRunning = true;
+            listInfotext = new ArrayList<>();
+            listBitmap = new ArrayList<>();
             showForegroundNotification();
             callSD4Img(requestType);
         } catch (Exception e) {
@@ -174,8 +189,6 @@ public class ViewSdImageService extends Service {
                     String info = jsonObject.getString("info");
                     JSONObject infoObject = new JSONObject(info);
                     JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
-                    List<String> listInfotext = new ArrayList<>();
-                    List<Bitmap> listBitmap = new ArrayList<>();
 
                     if (images.length() > 0 && !ViewSdImageActivity.isInterrupted) {
                         int numImage = 1;
@@ -186,14 +199,22 @@ public class ViewSdImageService extends Service {
                             listInfotext.add(infotextsArray.getString(i).replaceAll("\\\\n","\n"));
                             listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
                         }
-                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                             isRunning = false;
                             stopForeground(true);
                             activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
                         } else {
-                            ViewSdImageActivity.rtResultType = requestType;
-                            ViewSdImageActivity.rtBitmap = listBitmap;
-                            ViewSdImageActivity.rtInfotext = listInfotext;
+                            int nextBatchSize = Math.min(numGen - listBitmap.size(), Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
+                            if (nextBatchSize > 0 && requestJSON.has("batch_size")) {
+                                requestJSON.put("batch_size", nextBatchSize);
+                                callSD4Img(requestType);
+                            } else {
+                                ViewSdImageActivity.rtResultType = requestType;
+                                ViewSdImageActivity.rtBitmap = listBitmap;
+                                ViewSdImageActivity.rtInfotext = listInfotext;
+                                isRunning = false;
+                                stopForeground(true);
+                            }
                         }
                     } else {
                         ViewSdImageActivity.isInterrupted = false;
