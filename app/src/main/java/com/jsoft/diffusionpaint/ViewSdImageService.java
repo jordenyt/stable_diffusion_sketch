@@ -245,7 +245,7 @@ public class ViewSdImageService extends Service {
                 case "comfyui": {
                     ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
-                    List<Bitmap> listBitmap = new ArrayList<>();
+                    //List<Bitmap> listBitmap = new ArrayList<>();
 
                     JSONArray images = jsonObject.getJSONArray("processed_image");
                     if (images.length() > 0) {
@@ -254,14 +254,22 @@ public class ViewSdImageService extends Service {
                         }
                     }
 
-                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                         isRunning = false;
                         stopForeground(true);
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
                     } else {
-                        ViewSdImageActivity.rtResultType = requestType;
-                        ViewSdImageActivity.rtBitmap = listBitmap;
-                        ViewSdImageActivity.rtInfotext = null;
+                        int nextBatchSize = Math.min(numGen - listBitmap.size(), Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
+                        if (nextBatchSize > 0 && requestJSON.has("batch_size")) {
+                            requestJSON.put("batch_size", nextBatchSize);
+                            callSD4Img(requestType);
+                        } else {
+                            ViewSdImageActivity.rtResultType = requestType;
+                            ViewSdImageActivity.rtBitmap = listBitmap;
+                            ViewSdImageActivity.rtInfotext = null;
+                            isRunning = false;
+                            stopForeground(true);
+                        }
                     }
                     break;
                 }
