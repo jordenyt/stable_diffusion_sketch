@@ -260,8 +260,10 @@ public class ViewSdImageService extends Service {
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
                     } else {
                         int nextBatchSize = Math.min(numGen - listBitmap.size(), Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
-                        if (nextBatchSize > 0 && requestJSON.has("batch_size")) {
-                            requestJSON.put("batch_size", nextBatchSize);
+                        if (nextBatchSize > 0) {
+                            if (requestJSON.has("batch_size")) {
+                                requestJSON.put("batch_size", nextBatchSize);
+                            }
                             callSD4Img(requestType);
                         } else {
                             ViewSdImageActivity.rtResultType = requestType;
