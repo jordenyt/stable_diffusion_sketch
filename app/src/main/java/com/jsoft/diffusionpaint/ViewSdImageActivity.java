@@ -543,6 +543,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             try {
                 if (remainGen > 0) {
                     batchSize = Math.min(remainGen, Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
+                    intent.putExtra("numGen", remainGen);
                 }
             } catch (Exception ignored) {}
             if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
