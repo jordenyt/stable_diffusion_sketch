@@ -194,9 +194,9 @@ public class ViewSdImageService extends Service {
                             listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
                         }
                         if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
                             isRunning = false;
                             stopForeground(true);
-                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
                         } else {
                             int nextBatchSize = Math.min(numGen - listBitmap.size(), Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
                             if (nextBatchSize > 0 && requestJSON.has("batch_size")) {
@@ -212,9 +212,11 @@ public class ViewSdImageService extends Service {
                         }
                     } else {
                         ViewSdImageActivity.isInterrupted = false;
-                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                             activity.runOnUiThread(() -> activity.updateScreen());
                         }
+                        isRunning = false;
+                        stopForeground(true);
                     }
                     break;
                 }
@@ -224,15 +226,15 @@ public class ViewSdImageService extends Service {
                     String imageStr = jsonObject.getString("image");
                     List<Bitmap> listBitmap = new ArrayList<>();
                     listBitmap.add(Utils.base64String2Bitmap(imageStr));
-                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
-                        isRunning = false;
-                        stopForeground(true);
+                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                         activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
                     } else {
                         ViewSdImageActivity.rtResultType = requestType;
                         ViewSdImageActivity.rtBitmap = listBitmap;
                         ViewSdImageActivity.rtInfotext = null;
                     }
+                    isRunning = false;
+                    stopForeground(true);
                     break;
                 }
             }
