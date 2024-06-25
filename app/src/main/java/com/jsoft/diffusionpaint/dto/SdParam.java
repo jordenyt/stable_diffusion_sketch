@@ -130,6 +130,7 @@ public class SdParam {
             "\"sdSize\":1280",
             "\"clipSkip\":1",
             "\"clipSkip\":2",
+            "\"maskBlur\":10",
             "\"cn\":[{\"cnInputImage\":\"background\"",
             "\"cn\":[{\"cnInputImage\":\"sketch\"",
             "\"cn\":[{\"cnInputImage\":\"reference\"",
