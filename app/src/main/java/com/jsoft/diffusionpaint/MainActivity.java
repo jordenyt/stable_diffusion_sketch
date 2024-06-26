@@ -384,6 +384,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sd3_comfyui:
                 showTextInputDialog("modeSD3ComfyUI", "Parameters for txt2img with SD3 ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3_COMFYUI));
                 break;
+            case R.id.mi_mode_idm_vton:
+                showTextInputDialog("modeIDMVTON", "Parameters for IDM-VTON:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_IDMVTON));
+                break;
             case R.id.mi_mode_pas_comfyui:
                 showTextInputDialog("modePASComfyUI", "Parameters for txt2img with PixArt Sigma ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_PAS_COMFYUI));
                 break;

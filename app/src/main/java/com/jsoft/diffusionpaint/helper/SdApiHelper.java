@@ -164,12 +164,19 @@ public class SdApiHelper {
             jsonObject.put("negative", mCurrentSketch.getNegPrompt());
             RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
             Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
+            if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+                Bitmap imgPreview = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
+                baseImage = Utils.extractBitmap(imgPreview, inpaintArea);
+            }
             jsonObject.put("background", Utils.jpg2Base64String(baseImage));
             float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
             mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
             Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
             jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
             jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
+            jsonObject.put("denoise", sdParam.denoise);
+            jsonObject.put("steps", sdParam.steps);
+            jsonObject.put("cfg", sdParam.cfgScale);
             jsonObject.put("workflow", "vtron");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -331,6 +338,7 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SD3_COMFYUI) ? sharedPreferences.getString("modeSD3ComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_PAS_COMFYUI) ? sharedPreferences.getString("modePASComfyUI", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_IDMVTON) ? sharedPreferences.getString("modeIDMVTON", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? sharedPreferences.getString("modeInpaint", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_SKETCH) ? sharedPreferences.getString("modeInpaintS", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_REFINER) ? sharedPreferences.getString("modeRefiner", Sketch.defaultJSON.get(cnMode)) :

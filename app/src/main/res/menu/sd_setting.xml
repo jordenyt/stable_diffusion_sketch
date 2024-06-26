@@ -78,6 +78,7 @@
                     <item android:id="@+id/mi_mode_p_refine" android:title="Partial Refiner"/>
                     <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
                     <item android:id="@+id/mi_mode_merge" android:title="Merge with Reference"/>
+                    <item android:id="@+id/mi_mode_idm_vton" android:title="IDM-VTON"/>
                 </menu>
             </item>
             <item android:title="Customized Modes">
