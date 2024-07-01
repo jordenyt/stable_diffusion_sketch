@@ -79,7 +79,7 @@ public class PaintDb {
         Cursor c = db.rawQuery(queryString, new String[] {});
         List<Sketch> sketches = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            CursorWindow cw = new CursorWindow("sketchBg", 5000000);
+            CursorWindow cw = new CursorWindow("sketchBg", 10000000);
             AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
             ac.setWindow(cw);
 
@@ -115,7 +115,7 @@ public class PaintDb {
         Cursor c = db.rawQuery(queryString, new String[] {});
         List<Sketch> sketches = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            CursorWindow cw = new CursorWindow("sketchBg", 5000000);
+            CursorWindow cw = new CursorWindow("sketchBg", 10000000);
             AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
             ac.setWindow(cw);
 

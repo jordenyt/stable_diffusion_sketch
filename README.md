@@ -1,4 +1,4 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.16.5-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 ### Notes
@@ -64,6 +64,8 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
 - Support multiple ControlNet
 - Keep EXIF of shared content in your SD output
 - Batch size
+- Mask Blur
+- Import and Export Settings
 
 ## Custom Modes
 Custom mode can be defined in JSON format.<br/>
@@ -98,6 +100,7 @@ Custom mode can be defined in JSON format.<br/>
 | `model`          | O       | O       | O          | `v1Model` - Default for `type`=`txt2img` and `type`=`img2img` <br/> `v1Inpaint` - Default for `type`=`inpaint` <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlInpaint` <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode|
 | `sampler`        | O       | O       | O          | Can use all samplers available in your A1111 webui.                                                              |
 | `scheduler`      | O       | O       | O          | `Automatic` - Default <br/> Possible values are `Uniform`, `Exponential`, `Karras`, `Polyexponential` and `SGM Uniform`|
+| `maskBlur`       | O       | O       | O          | decimal from 0 to 50, default value is 10.                                                                       |
 | `denoise`        | -       | M       | M          | decimal from 0 to 1                                                                                              |
 | `baseImage`      | -       | M       | M          | `background` - background image under your drawing <br/> `sketch` - your drawing on the background image         |
 | `inpaintFill`    | -       | -       | O          | `0` - fill (DEFAULT) <br/> `1` - original <br/> `2` - latent noise <br/> `3` - latent nothing                    |
