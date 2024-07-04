@@ -95,6 +95,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public static List<Bitmap> rtBitmap = null;
     public static List<String> rtInfotext = null;
     public static String rtErrMsg = null;
+    public static boolean rtQueued = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -444,9 +445,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     @Override
     public void onResume() {
         isPaused = false;
-        if (rtResultType != null && rtBitmap != null) {
-            processResultBitmap(rtResultType, rtBitmap, rtInfotext);
-            clearStaticVar();
+        if (rtResultType != null && rtBitmap != null && !rtQueued) {
+            rtQueued = true;
+            runOnUiThread(() -> {
+                processResultBitmap(rtResultType, rtBitmap, rtInfotext);
+                clearStaticVar();
+                rtQueued = false;
+            });
         } else if (rtResultType != null && rtErrMsg != null) {
             onSdApiFailure(rtResultType, rtErrMsg);
             clearStaticVar();
