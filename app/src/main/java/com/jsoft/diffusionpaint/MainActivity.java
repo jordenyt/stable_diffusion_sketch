@@ -17,6 +17,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -145,10 +146,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
 
         /*CompletableFuture.supplyAsync(() -> {
-            sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info?v=" + BuildConfig.VERSION_CODE, null, "GET");
-            return "";
+            try {
+                int verCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;//Version Code
+                sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info?v=" + verCode, null, "GET");
+                return "";
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });*/
-
     }
 
     private boolean validateSettings() {
@@ -1203,7 +1208,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 AlertDialog alert = builder.create();
                 alert.show();
             } else if ("getVersionCode".equals(requestType)) {
-                int appVersionCode = BuildConfig.VERSION_CODE;
+                int appVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
                 JSONObject jsonObject = new JSONObject(responseBody);
                 int latestVersionCode = jsonObject.getInt("versionCode");
                 String latestVersionName = jsonObject.getString("versionName");
@@ -1227,6 +1232,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }
