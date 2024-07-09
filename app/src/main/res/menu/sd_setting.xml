@@ -70,6 +70,7 @@
                     <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
                     <item android:id="@+id/mi_mode_sd3_comfyui" android:title="SD3 ComfyUI txt2img"/>
                     <item android:id="@+id/mi_mode_pas_comfyui" android:title="PixArt Sigma ComfyUI txt2img"/>
+                    <item android:id="@+id/mi_mode_kkolor_comfyui" android:title="Kwai Kolor ComfyUI txt2img"/>
                     <item android:id="@+id/mi_mode_inpaint" android:title="Inpainting on Background"/>
                     <item android:id="@+id/mi_mode_inpaint_s" android:title="Inpainting with Sketch"/>
                     <item android:id="@+id/mi_mode_refine" android:title="Refiner"/>

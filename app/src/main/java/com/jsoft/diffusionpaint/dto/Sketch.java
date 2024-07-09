@@ -42,6 +42,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
     public static final String CN_MODE_TXT_SD3_COMFYUI = "txtSD3ComfyUI";
     public static final String CN_MODE_TXT_PAS_COMFYUI = "txtPASComfyUI";
+    public static final String CN_MODE_TXT_KKOLOR_COMFYUI = "txtKKolorComfyUI";
     public static final String CN_MODE_REFINER = "imgSDXL";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
@@ -80,6 +81,7 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_TXT_SDXL, "{\"type\":\"txt2img\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_SD3_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":6.0, \"steps\":35, \"sdSize\":1280}");
         json.put(CN_MODE_TXT_PAS_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":5.0, \"steps\":30, \"sdSize\":1024}");
+        json.put(CN_MODE_TXT_KKOLOR_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":5.0, \"steps\":25, \"sdSize\":1280}");
         json.put(CN_MODE_REFINER, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_SDXL_TURBO, "{\"type\":\"txt2img\", \"sdSize\":1024, \"cfgScale\":2.0, \"steps\":6, \"sampler\":\"DPM++ SDE\"}");
         json.put(CN_MODE_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}");
@@ -111,6 +113,7 @@ public class Sketch implements Serializable {
         cnMode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("txt2img with SD3 ComfyUI", CN_MODE_TXT_SD3_COMFYUI);
         cnMode.put("txt2img with PixArt-Sigma ComfyUI", CN_MODE_TXT_PAS_COMFYUI);
+        cnMode.put("txt2img with Kwai Kolor ComfyUI", CN_MODE_TXT_KKOLOR_COMFYUI);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
         cnMode.put("Refiner", CN_MODE_REFINER);
@@ -145,6 +148,7 @@ public class Sketch implements Serializable {
         mode.put("txt2img with v1.5 model", CN_MODE_TXT);
         mode.put("txt2img with SD3 ComfyUI", CN_MODE_TXT_SD3_COMFYUI);
         mode.put("txt2img with PixArt-Sigma ComfyUI", CN_MODE_TXT_PAS_COMFYUI);
+        mode.put("txt2img with Kwai Kolor ComfyUI", CN_MODE_TXT_KKOLOR_COMFYUI);
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }
 

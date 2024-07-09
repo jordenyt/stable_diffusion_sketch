@@ -282,6 +282,33 @@ public class SdApiHelper {
         return jsonObject;
     }
 
+    public JSONObject getKKolorText(Sketch mCurrentSketch, int batchSize) {
+        JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
+        try {
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "kkolor_txt2img");
+            jsonObject.put("batch_size", batchSize);
+
+            if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
+                jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
+            } else {
+                jsonObject.put("width", sdParam.sdSize);
+            }
+            if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
+                jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
+            } else {
+                jsonObject.put("height", sdParam.sdSize);
+            }
+            jsonObject.put("steps", sdParam.steps);
+            jsonObject.put("cfg", sdParam.cfgScale);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
@@ -338,6 +365,7 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SD3_COMFYUI) ? sharedPreferences.getString("modeSD3ComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_PAS_COMFYUI) ? sharedPreferences.getString("modePASComfyUI", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI) ? sharedPreferences.getString("modeKKolorComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_IDMVTON) ? sharedPreferences.getString("modeIDMVTON", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? sharedPreferences.getString("modeInpaint", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_SKETCH) ? sharedPreferences.getString("modeInpaintS", Sketch.defaultJSON.get(cnMode)) :
