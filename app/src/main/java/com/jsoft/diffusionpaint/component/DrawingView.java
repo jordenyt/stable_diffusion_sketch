@@ -266,7 +266,7 @@ public class DrawingView extends View
 						invalidate();
 					} else {
 						Bitmap viewBM = getViewBitmap();
-						int eyedropperColor = viewBM.getPixel((int) touchX, (int) touchY);
+						int eyedropperColor = viewBM.getPixel(min(max(0, (int)touchX), viewBM.getWidth() - 1), min(max(0, (int)touchY), viewBM.getHeight() - 1));
 						listener.onEyedropperResult(eyedropperColor);
 					}
 					break;

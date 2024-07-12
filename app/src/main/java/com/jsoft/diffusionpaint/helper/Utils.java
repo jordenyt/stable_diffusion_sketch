@@ -515,44 +515,56 @@ public class Utils {
             throw new IllegalArgumentException("All bitmaps must have the same dimensions");
         }
 
-        int[] blackPixels = new int[width * height];
-        int[] whitePixels = new int[width * height];
-        int[] maskPixels = new int[width * height];
-        int[] mergedPixels = new int[width * height];
+        Bitmap mergedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
-        blackImg.getPixels(blackPixels, 0, width, 0, 0, width, height);
-        whiteImg.getPixels(whitePixels, 0, width, 0, 0, width, height);
-        maskImg.getPixels(maskPixels, 0, width, 0, 0, width, height);
+        // Define fixed segment dimensions
+        int segmentWidth = 1000;
+        int segmentHeight = 1000;
 
-        for (int i = 0; i < width * height; i++) {
-            int maskPixel = maskPixels[i];
-            int alpha = (int)round(0.299d * Color.red(maskPixel) + 0.587d * Color.green(maskPixel) + 0.114d * Color.blue(maskPixel));
+        for (int y = 0; y < height; y += segmentHeight) {
+            for (int x = 0; x < width; x += segmentWidth) {
+                int currentSegmentWidth = Math.min(segmentWidth, width - x);
+                int currentSegmentHeight = Math.min(segmentHeight, height - y);
 
-            if (alpha == 255) {
-                // White mask pixel, take image B
-                mergedPixels[i] = whitePixels[i];
-            } else if (alpha == 0) {
-                // Black mask pixel, take image A
-                mergedPixels[i] = blackPixels[i];
-            } else {
-                // Gray mask pixel, blend A and B based on the mask's alpha value
-                int redA = Color.red(blackPixels[i]);
-                int greenA = Color.green(blackPixels[i]);
-                int blueA = Color.blue(blackPixels[i]);
+                int[] blackPixels = new int[currentSegmentWidth * currentSegmentHeight];
+                int[] whitePixels = new int[currentSegmentWidth * currentSegmentHeight];
+                int[] maskPixels = new int[currentSegmentWidth * currentSegmentHeight];
+                int[] mergedPixels = new int[currentSegmentWidth * currentSegmentHeight];
 
-                int redB = Color.red(whitePixels[i]);
-                int greenB = Color.green(whitePixels[i]);
-                int blueB = Color.blue(whitePixels[i]);
+                blackImg.getPixels(blackPixels, 0, currentSegmentWidth, x, y, currentSegmentWidth, currentSegmentHeight);
+                whiteImg.getPixels(whitePixels, 0, currentSegmentWidth, x, y, currentSegmentWidth, currentSegmentHeight);
+                maskImg.getPixels(maskPixels, 0, currentSegmentWidth, x, y, currentSegmentWidth, currentSegmentHeight);
 
-                int red = (redA * (255 - alpha) + redB * alpha) / 255;
-                int green = (greenA * (255 - alpha) + greenB * alpha) / 255;
-                int blue = (blueA * (255 - alpha) + blueB * alpha) / 255;
+                for (int i = 0; i < currentSegmentWidth * currentSegmentHeight; i++) {
+                    int maskPixel = maskPixels[i];
+                    int alpha = (int) Math.round(0.299d * Color.red(maskPixel) + 0.587d * Color.green(maskPixel) + 0.114d * Color.blue(maskPixel));
 
-                mergedPixels[i] = Color.argb(255, red, green, blue);
+                    if (alpha == 255) {
+                        mergedPixels[i] = whitePixels[i];
+                    } else if (alpha == 0) {
+                        mergedPixels[i] = blackPixels[i];
+                    } else {
+                        int redA = Color.red(blackPixels[i]);
+                        int greenA = Color.green(blackPixels[i]);
+                        int blueA = Color.blue(blackPixels[i]);
+
+                        int redB = Color.red(whitePixels[i]);
+                        int greenB = Color.green(whitePixels[i]);
+                        int blueB = Color.blue(whitePixels[i]);
+
+                        int red = (redA * (255 - alpha) + redB * alpha) / 255;
+                        int green = (greenA * (255 - alpha) + greenB * alpha) / 255;
+                        int blue = (blueA * (255 - alpha) + blueB * alpha) / 255;
+
+                        mergedPixels[i] = Color.argb(255, red, green, blue);
+                    }
+                }
+
+                mergedBitmap.setPixels(mergedPixels, 0, currentSegmentWidth, x, y, currentSegmentWidth, currentSegmentHeight);
             }
         }
 
-        return Bitmap.createBitmap(mergedPixels, width, height, Bitmap.Config.ARGB_8888);
+        return mergedBitmap;
     }
 
     public static Bitmap changeBlackPixelsToTransparent(Bitmap bitmap) {
