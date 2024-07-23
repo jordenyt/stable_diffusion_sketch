@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -56,7 +58,11 @@ public class SdApiHelper {
     public void setListener(SdApiResponseListener listener) { this.listener  = listener;}
 
     public boolean isValid() {
-        return !sharedPreferences.getString("sdServerAddress", "").equals("");
+        String sdAddress = sharedPreferences.getString("sdServerAddress", "");
+
+        Pattern p = Pattern.compile("^https?://[a-zA-Z0-9\\-]+(\\.[a-zA-Z0-9\\-]+)*(:[0-9]{1,5})?$");
+        Matcher matcher = p.matcher(sdAddress);
+        return matcher.matches();
     }
 
     public void sendGetRequest(String requestType, String url) {

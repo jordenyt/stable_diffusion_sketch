@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void showServerAddressInput() {
-        showTextInputDialog("sdServerAddress", "A1111 SD-webui Address:", "http://192.168.1.101:7860", "");
+        showTextInputDialog("sdServerAddress", "A1111 SD-webui Address:", "http://a1111.myserver.com:7860", "");
     }
 
     public boolean menuItemClick(MenuItem item) {
