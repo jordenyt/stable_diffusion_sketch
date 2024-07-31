@@ -38,6 +38,7 @@
             <item android:id="@+id/mi_sd_model" android:title="SD 1.5 model"/>
             <item android:id="@+id/mi_sd_inpaint_model" android:title="SD 1.5 Inpaint model"/>
             <item android:id="@+id/mi_sdxl_base_model" android:title="SDXL model"/>
+            <item android:id="@+id/mi_sd3_model" android:title="SD3 model"/>
             <item android:id="@+id/mi_sdxl_turbo_model" android:title="SDXL Turbo/Lightning model"/>
             <item android:id="@+id/mi_sdxl_inpaint_model" android:title="SDXL Inpaint model"/>
             <item android:title="ControlNet models">
@@ -68,6 +69,7 @@
                     <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
                     <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
                     <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
+                    <item android:id="@+id/mi_mode_sd3" android:title="SD3 txt2img"/>
                     <item android:id="@+id/mi_mode_sd3_comfyui" android:title="SD3 ComfyUI txt2img"/>
                     <item android:id="@+id/mi_mode_pas_comfyui" android:title="PixArt Sigma ComfyUI txt2img"/>
                     <item android:id="@+id/mi_mode_kkolor_comfyui" android:title="Kwai Kolor ComfyUI txt2img"/>

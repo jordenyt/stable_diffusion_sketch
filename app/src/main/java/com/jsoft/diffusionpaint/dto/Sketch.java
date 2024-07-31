@@ -40,6 +40,7 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT = "txt";
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
     public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
+    public static final String CN_MODE_TXT_SD3 = "txtSD3";
     public static final String CN_MODE_TXT_SD3_COMFYUI = "txtSD3ComfyUI";
     public static final String CN_MODE_TXT_PAS_COMFYUI = "txtPASComfyUI";
     public static final String CN_MODE_TXT_KKOLOR_COMFYUI = "txtKKolorComfyUI";
@@ -84,6 +85,7 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_TXT_KKOLOR_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":5.0, \"steps\":25, \"sdSize\":1280}");
         json.put(CN_MODE_REFINER, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_SDXL_TURBO, "{\"type\":\"txt2img\", \"sdSize\":1024, \"cfgScale\":2.0, \"steps\":6, \"sampler\":\"DPM++ SDE\"}");
+        json.put(CN_MODE_TXT_SD3, "{\"type\":\"txt2img\", \"sdSize\":1024, \"cfgScale\":6.0, \"steps\":32, \"sampler\":\"DPM++ 2M\"}");
         json.put(CN_MODE_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"type\":\"inpaint\"}");
         json.put(CN_MODE_INPAINT_SKETCH, "{\"baseImage\":\"sketch\", \"denoise\":0.5, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_PARTIAL_INPAINT, "{\"baseImage\":\"background\", \"denoise\":1.0, \"inpaintFill\":2, \"inpaintPartial\":1, \"type\":\"inpaint\", \"model\":\"sdxlInpaint\", \"sdSize\":1280}");
@@ -111,6 +113,7 @@ public class Sketch implements Serializable {
         cnMode.put("txt2img with v1.5 model", CN_MODE_TXT);
         cnMode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
         cnMode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
+        cnMode.put("txt2img with SD3", CN_MODE_TXT_SD3);
         cnMode.put("txt2img with SD3 ComfyUI", CN_MODE_TXT_SD3_COMFYUI);
         cnMode.put("txt2img with PixArt-Sigma ComfyUI", CN_MODE_TXT_PAS_COMFYUI);
         cnMode.put("txt2img with Kwai Kolor ComfyUI", CN_MODE_TXT_KKOLOR_COMFYUI);
@@ -146,6 +149,7 @@ public class Sketch implements Serializable {
         mode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
         mode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
         mode.put("txt2img with v1.5 model", CN_MODE_TXT);
+        mode.put("txt2img with SD3", CN_MODE_TXT_SD3);
         mode.put("txt2img with SD3 ComfyUI", CN_MODE_TXT_SD3_COMFYUI);
         mode.put("txt2img with PixArt-Sigma ComfyUI", CN_MODE_TXT_PAS_COMFYUI);
         mode.put("txt2img with Kwai Kolor ComfyUI", CN_MODE_TXT_KKOLOR_COMFYUI);
