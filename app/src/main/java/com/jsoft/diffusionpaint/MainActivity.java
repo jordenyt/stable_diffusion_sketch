@@ -371,6 +371,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sdxl_turbo:
                 showTextInputDialog("modeSDXLTurbo", "Parameters for txt2img with SDXL Turbo/Lightning:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
                 break;
+            case R.id.mi_mode_sd3:
+                showTextInputDialog("modeSD3", "Parameters for txt2img with SD3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3));
+                break;
             case R.id.mi_mode_inpaint:
                 showTextInputDialog("modeInpaint", "Parameters for Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT));
                 break;
@@ -487,6 +490,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sdxl_base_model:
                 if (!validateSettings()) break;
                 sdApiHelper.sendGetRequest("setSDXLBaseModel", "/sdapi/v1/sd-models");
+                break;
+            case R.id.mi_sd3_model:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("setSD3Model", "/sdapi/v1/sd-models");
                 break;
             case R.id.mi_sdxl_turbo_model:
                 if (!validateSettings()) break;
@@ -1072,6 +1079,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SD 1.5 Inpaint Model", "sdInpaintModel", "", "inpainting.");
             } else if ("setSDXLBaseModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Model", "sdxlBaseModel", "", "");
+            } else if ("setSD3Model".equals(requestType)) {
+                showSpinnerDialog(new JSONArray(responseBody), "title", "SD3 Model", "sd3Model", "", "");
             } else if ("setSDXLTurboModel".equals(requestType)) {
                 showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Turbo Model", "sdxlTurboModel", "", "");
             } else if ("setSDXLInpaintModel".equals(requestType)) {

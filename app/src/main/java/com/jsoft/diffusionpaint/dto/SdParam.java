@@ -33,6 +33,7 @@ public class SdParam {
     public static final String SD_MODEL_V1 = "v1Model";
     public static final String SD_MODEL_INPAINT = "v1Inpaint";
     public static final String SD_MODEL_SDXL_BASE = "sdxlBase";
+    public static final String SD_MODEL_SD3 = "sd3Model";
     public static final String SD_MODEL_SDXL_TURBO = "sdxlTurbo";
     public static final String SD_MODEL_SDXL_INPAINT = "sdxlInpaint";
     public static final String SD_MODE_TYPE_TXT2IMG = "txt2img";
@@ -110,6 +111,7 @@ public class SdParam {
             "\"model\":\"v1Inpaint\"",
             "\"model\":\"sdxlBase\"",
             "\"model\":\"sdxlTurbo\"",
+            "\"model\":\"sd3Model\"",
             "\"model\":\"sdxlInpaint\"",
             "\"scheduler\":\"Automatic\"",
             "\"scheduler\":\"Uniform\"",

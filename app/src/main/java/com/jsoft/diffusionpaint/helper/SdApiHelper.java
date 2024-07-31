@@ -213,6 +213,7 @@ public class SdApiHelper {
         if (param.model == null) {
             param.model = param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) ? SdParam.SD_MODEL_INPAINT:
                     Sketch.CN_MODE_TXT_SDXL.equals(cnMode) ? SdParam.SD_MODEL_SDXL_BASE :
+                    Sketch.CN_MODE_TXT_SD3.equals(cnMode) ? SdParam.SD_MODEL_SD3 :
                     Sketch.CN_MODE_TXT_SDXL_TURBO.equals(cnMode) ? SdParam.SD_MODEL_SDXL_TURBO : SdParam.SD_MODEL_V1;
         }
         if (!param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) { param.inpaintPartial = 0; }
@@ -289,6 +290,7 @@ public class SdApiHelper {
     public JSONObject getConfig(SdParam param) {
         String preferredModel = param.model.equals(SdParam.SD_MODEL_INPAINT) ? sharedPreferences.getString("sdInpaintModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_BASE) ? sharedPreferences.getString("sdxlBaseModel", ""):
+                param.model.equals(SdParam.SD_MODEL_SD3) ? sharedPreferences.getString("sd3Model", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_TURBO) ? sharedPreferences.getString("sdxlTurboModel", ""):
                 param.model.equals(SdParam.SD_MODEL_SDXL_INPAINT) ? sharedPreferences.getString("sdxlInpaintModel", ""):
                 sharedPreferences.getString("sdModelCheckpoint", "");
