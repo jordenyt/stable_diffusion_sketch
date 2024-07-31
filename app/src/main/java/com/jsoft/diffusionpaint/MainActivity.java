@@ -388,6 +388,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 break;
             case R.id.mi_mode_sd3:
                 showTextInputDialog("modeSD3", "Parameters for txt2img with SD3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3));
+                break;
             case R.id.mi_mode_sd3_comfyui:
                 showTextInputDialog("modeSD3ComfyUI", "Parameters for txt2img with SD3 ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3_COMFYUI));
                 break;
