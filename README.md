@@ -1,7 +1,8 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.1-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 ### Notes
+- A1111 SD-webui start support on SD3 in 1.10.0.
 - A1111 SD-webui 1.8.0 and prior does not support separate sampler and scheduler. When you update your SD-webui to 1.9.x, please also update the custom mode JSON and default sampler in the app.
 - A1111 SD-webui 1.7.0 and prior does not support SDXL Inpainiting model.  Please update to latest release.
 - There are several SDXL Inpainting models on [Civitai](https://civitai.com/). For your instance, [JuggerXL_inpaint](https://civitai.com/models/245423/juggerxlinpaint) and [RealVisXL V3.0](https://civitai.com/models/139562?modelVersionId=297320) may be a good choice.
@@ -17,6 +18,7 @@ Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/
 ## Supported Features
 
 - Support ControlNet
+- Support SD3
 - Support SDXL
 - Support SDXL Turbo / Lightning
 - Support SDXL Inpainting
@@ -97,7 +99,7 @@ Custom mode can be defined in JSON format.<br/>
 | `type`           | M       | M       | M          | `txt2img` - Text to Image <br /> `img2img` - Image to Image <br /> `inpaint` - Inpainting                        |
 | `steps`          | O       | O       | O          | integer from 1 to 120, default value is 40                                                                       |
 | `cfgScale`       | O       | O       | O          | decimal from 0 to 30, default value is 7.0                                                                       |
-| `model`          | O       | O       | O          | `v1Model` - Default for `type`=`txt2img` and `type`=`img2img` <br/> `v1Inpaint` - Default for `type`=`inpaint` <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlInpaint` <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode|
+| `model`          | O       | O       | O          | `v1Model` - Default for `type`=`txt2img` and `type`=`img2img` <br/> `v1Inpaint` - Default for `type`=`inpaint` <br/> `sdxlBase` - Default for SDXL txt2img mode <br/> `sdxlInpaint` <br/> `sdxlTurbo` - Default for SDXL Turbo txt2img mode <br/> `sd3Model` - Default for SD3 txt2img mode | 
 | `sampler`        | O       | O       | O          | Can use all samplers available in your A1111 webui.                                                              |
 | `scheduler`      | O       | O       | O          | `Automatic` - Default <br/> Possible values are `Uniform`, `Exponential`, `Karras`, `Polyexponential` and `SGM Uniform`|
 | `maskBlur`       | O       | O       | O          | decimal from 0 to 50, default value is 10.                                                                       |
