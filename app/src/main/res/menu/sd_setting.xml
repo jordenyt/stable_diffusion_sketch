@@ -70,9 +70,6 @@
                     <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
                     <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
                     <item android:id="@+id/mi_mode_sd3" android:title="SD3 txt2img"/>
-                    <item android:id="@+id/mi_mode_sd3_comfyui" android:title="SD3 ComfyUI txt2img"/>
-                    <item android:id="@+id/mi_mode_pas_comfyui" android:title="PixArt Sigma ComfyUI txt2img"/>
-                    <item android:id="@+id/mi_mode_kkolor_comfyui" android:title="Kwai Kolor ComfyUI txt2img"/>
                     <item android:id="@+id/mi_mode_inpaint" android:title="Inpainting on Background"/>
                     <item android:id="@+id/mi_mode_inpaint_s" android:title="Inpainting with Sketch"/>
                     <item android:id="@+id/mi_mode_refine" android:title="Refiner"/>
@@ -81,7 +78,11 @@
                     <item android:id="@+id/mi_mode_p_refine" android:title="Partial Refiner"/>
                     <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
                     <item android:id="@+id/mi_mode_merge" android:title="Merge with Reference"/>
-                    <item android:id="@+id/mi_mode_idm_vton" android:title="IDM-VTON"/>
+                    <item android:id="@+id/mi_mode_idm_vton" android:title="ComfyUI IDM-VTON"/>
+                    <item android:id="@+id/mi_mode_sd3_comfyui" android:title="SD3 ComfyUI txt2img"/>
+                    <item android:id="@+id/mi_mode_flux_dev_comfyui" android:title="Flux-Dev ComfyUI txt2img"/>
+                    <item android:id="@+id/mi_mode_pas_comfyui" android:title="PixArt Sigma ComfyUI txt2img"/>
+                    <item android:id="@+id/mi_mode_kkolor_comfyui" android:title="Kwai Kolor ComfyUI txt2img"/>
                 </menu>
             </item>
             <item android:title="Customized Modes">
