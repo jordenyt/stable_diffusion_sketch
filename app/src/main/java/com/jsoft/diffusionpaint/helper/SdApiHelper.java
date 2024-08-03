@@ -288,6 +288,59 @@ public class SdApiHelper {
         return jsonObject;
     }
 
+    public JSONObject getFluxDevImg2img(Sketch mCurrentSketch, int batchSize) {
+        JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
+        try {
+            Bitmap baseImage = mCurrentSketch.getImgBackground();
+            if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+                Bitmap imgPreview = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
+                baseImage = imgPreview;
+            }
+            jsonObject.put("background", Utils.jpg2Base64String(baseImage));
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "flux_dev_img2img");
+            jsonObject.put("batch_size", batchSize);
+            jsonObject.put("size", sdParam.sdSize);
+            jsonObject.put("steps", sdParam.steps);
+            jsonObject.put("cfg", sdParam.cfgScale);
+            jsonObject.put("denoise", sdParam.denoise);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getFluxDevInpaint(Sketch mCurrentSketch, int batchSize) {
+        JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
+        try {
+            RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
+            Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
+            if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+                Bitmap imgPreview = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
+                baseImage = Utils.extractBitmap(imgPreview, inpaintArea);
+            }
+            jsonObject.put("background", Utils.jpg2Base64String(baseImage));
+            float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
+            mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
+            Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
+            jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
+            jsonObject.put("positive", mCurrentSketch.getPrompt());
+            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
+            jsonObject.put("workflow", "flux_dev_img2img");
+            jsonObject.put("batch_size", batchSize);
+            jsonObject.put("size", sdParam.sdSize);
+            jsonObject.put("steps", sdParam.steps);
+            jsonObject.put("cfg", sdParam.cfgScale);
+            jsonObject.put("denoise", sdParam.denoise);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public JSONObject getPASText(Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
@@ -398,6 +451,8 @@ public class SdApiHelper {
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SD3_COMFYUI) ? sharedPreferences.getString("modeSD3ComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_FLUX_DEV_COMFYUI) ? sharedPreferences.getString("modeFluxDevComfyUI", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI) ? sharedPreferences.getString("modeFluxDevImg2imgComfyUI", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.equals(Sketch.CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI) ? sharedPreferences.getString("modeFluxDevInpaintComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_PAS_COMFYUI) ? sharedPreferences.getString("modePASComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI) ? sharedPreferences.getString("modeKKolorComfyUI", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_IDMVTON) ? sharedPreferences.getString("modeIDMVTON", Sketch.defaultJSON.get(cnMode)) :

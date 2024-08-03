@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         menuButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(this, menuButton);
             popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
-            MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(1);
+            MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(2);
             if (submenuItem.hasSubMenu()) {
                 SubMenu subMenu = submenuItem.getSubMenu();
                 for (int i=1;i<=Sketch.customModeCount;i++) {
@@ -394,6 +394,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 break;
             case R.id.mi_mode_flux_dev_comfyui:
                 showTextInputDialog("modeFluxDevComfyUI", "Parameters for txt2img with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_COMFYUI));
+                break;
+            case R.id.mi_mode_flux_dev_img2img_comfyui:
+                showTextInputDialog("modeFluxDevImg2imgComfyUI", "Parameters for img2img with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI));
+                break;
+            case R.id.mi_mode_flux_dev_inpaint_comfyui:
+                showTextInputDialog("modeFluxDevInpaintComfyUI", "Parameters for inpaint with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI));
                 break;
             case R.id.mi_mode_idm_vton:
                 showTextInputDialog("modeIDMVTON", "Parameters for IDM-VTON:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_IDMVTON));

@@ -607,6 +607,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getFluxDevText(mCurrentSketch, batchSize);
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI)) {
+                requestType = "comfyui";
+                jsonObject = sdApiHelper.getFluxDevImg2img(mCurrentSketch, batchSize);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI)) {
+                requestType = "comfyui";
+                jsonObject = sdApiHelper.getFluxDevInpaint(mCurrentSketch, batchSize);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
             } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_PAS_COMFYUI)) {
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getPASText(mCurrentSketch, batchSize);

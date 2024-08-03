@@ -43,6 +43,8 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_SD3 = "txtSD3";
     public static final String CN_MODE_TXT_SD3_COMFYUI = "txtSD3ComfyUI";
     public static final String CN_MODE_TXT_FLUX_DEV_COMFYUI = "txtFluxDevComfyUI";
+    public static final String CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI = "imgFluxDevComfyUI";
+    public static final String CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI = "inpaintFluxDevComfyUI";
     public static final String CN_MODE_TXT_PAS_COMFYUI = "txtPASComfyUI";
     public static final String CN_MODE_TXT_KKOLOR_COMFYUI = "txtKKolorComfyUI";
     public static final String CN_MODE_REFINER = "imgSDXL";
@@ -83,6 +85,8 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_TXT_SDXL, "{\"type\":\"txt2img\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_SD3_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":6.0, \"steps\":35, \"sdSize\":1280}");
         json.put(CN_MODE_TXT_FLUX_DEV_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":2.0, \"steps\":20, \"sdSize\":1280}");
+        json.put(CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI, "{\"type\":\"img2img\", \"denoise\":0.75, \"cfgScale\":3.5, \"steps\":20, \"baseImage\":\"background\", \"sdSize\":1280}");
+        json.put(CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI, "{\"type\":\"inpaint\", \"inpaintPartial\":1, \"denoise\":0.75, \"cfgScale\":3.5, \"steps\":20, \"baseImage\":\"background\", \"sdSize\":1280}");
         json.put(CN_MODE_TXT_PAS_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":5.0, \"steps\":30, \"sdSize\":1024}");
         json.put(CN_MODE_TXT_KKOLOR_COMFYUI, "{\"type\":\"txt2img\", \"cfgScale\":5.0, \"steps\":25, \"sdSize\":1280}");
         json.put(CN_MODE_REFINER, "{\"type\":\"img2img\", \"denoise\":0.5, \"model\":\"sdxlBase\", \"baseImage\":\"background\", \"sdSize\":1280}");
@@ -116,16 +120,18 @@ public class Sketch implements Serializable {
         cnMode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
         cnMode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("txt2img with SD3", CN_MODE_TXT_SD3);
-        cnMode.put("txt2img with Flux-dev ComfyUI", CN_MODE_TXT_FLUX_DEV_COMFYUI);
-        cnMode.put("txt2img with SD3 ComfyUI", CN_MODE_TXT_SD3_COMFYUI);
-        cnMode.put("txt2img with PixArt-Sigma ComfyUI", CN_MODE_TXT_PAS_COMFYUI);
-        cnMode.put("txt2img with Kwai Kolor ComfyUI", CN_MODE_TXT_KKOLOR_COMFYUI);
+        cnMode.put("ComfyUI txt2img with Flux-dev", CN_MODE_TXT_FLUX_DEV_COMFYUI);
+        cnMode.put("ComfyUI txt2img with SD3", CN_MODE_TXT_SD3_COMFYUI);
+        cnMode.put("ComfyUI txt2img with PixArt-Sigma", CN_MODE_TXT_PAS_COMFYUI);
+        cnMode.put("ComfyUI txt2img with Kwai Kolor", CN_MODE_TXT_KKOLOR_COMFYUI);
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
+        cnMode.put("ComfyUI Flux-dev Partial Inpainting", CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI);
         cnMode.put("Refiner", CN_MODE_REFINER);
         cnMode.put("Partial Inpainting (background)", CN_MODE_PARTIAL_INPAINT);
         cnMode.put("Partial Inpainting (sketch)", CN_MODE_PARTIAL_INPAINT_SKETCH);
         cnMode.put("Partial Refiner", CN_MODE_PARTIAL_REFINER);
+        cnMode.put("ComfyUI Flux-dev Refiner", CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI);
         cnMode.put("Outpainting Horizontally", CN_MODE_OUTPAINT_H);
         cnMode.put("Outpainting on Left", CN_MODE_OUTPAINT_H_LEFT);
         cnMode.put("Outpainting on Right", CN_MODE_OUTPAINT_H_RIGHT);
@@ -134,12 +140,12 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
         cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
-        cnMode.put("SupIR", CN_MODE_SUPIR);
-        cnMode.put("Partial SupIR", CN_MODE_SUPIR_PARTIAL);
-        cnMode.put("Virtual Try-On (IDM-VTON)", CN_MODE_IDMVTON);
-        cnMode.put("IC-Light Text", CN_MODE_ICLIGHT_TEXT);
-        cnMode.put("IC-Light Relight", CN_MODE_ICLIGHT_RELIGHT);
-        cnMode.put("IC-Light Background", CN_MODE_ICLIGHT_BG);
+        cnMode.put("ComfyUI SupIR", CN_MODE_SUPIR);
+        cnMode.put("ComfyUI Partial SupIR", CN_MODE_SUPIR_PARTIAL);
+        cnMode.put("ComfyUI Virtual Try-On (IDM-VTON)", CN_MODE_IDMVTON);
+        cnMode.put("ComfyUI IC-Light Text", CN_MODE_ICLIGHT_TEXT);
+        cnMode.put("ComfyUI IC-Light Relight", CN_MODE_ICLIGHT_RELIGHT);
+        cnMode.put("ComfyUI IC-Light Background", CN_MODE_ICLIGHT_BG);
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
         }
@@ -153,10 +159,10 @@ public class Sketch implements Serializable {
         mode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
         mode.put("txt2img with v1.5 model", CN_MODE_TXT);
         mode.put("txt2img with SD3", CN_MODE_TXT_SD3);
-        mode.put("txt2img with Flux-dev ComfyUI", CN_MODE_TXT_FLUX_DEV_COMFYUI);
-        mode.put("txt2img with SD3 ComfyUI", CN_MODE_TXT_SD3_COMFYUI);
-        mode.put("txt2img with PixArt-Sigma ComfyUI", CN_MODE_TXT_PAS_COMFYUI);
-        mode.put("txt2img with Kwai Kolor ComfyUI", CN_MODE_TXT_KKOLOR_COMFYUI);
+        mode.put("ComfyUI txt2img with Flux-dev", CN_MODE_TXT_FLUX_DEV_COMFYUI);
+        mode.put("ComfyUI txt2img with SD3", CN_MODE_TXT_SD3_COMFYUI);
+        mode.put("ComfyUI txt2img with PixArt-Sigma", CN_MODE_TXT_PAS_COMFYUI);
+        mode.put("ComfyUI txt2img with Kwai Kolor", CN_MODE_TXT_KKOLOR_COMFYUI);
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }
 
