@@ -849,20 +849,44 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             editText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         }
 
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            String inputText = editText.getText().toString();
-            inputText.replace("“", "\"");
-            inputText.replace("”", "\"");
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(key,inputText);
-            editor.apply();
-            dialog.dismiss();
-        });
-
+        builder.setPositiveButton("OK", null);
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();
+
+        Button buttonOk = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        buttonOk.setOnClickListener(v -> {
+            boolean validated = true;
+            String inputText = editText.getText().toString();
+            inputText.replace("“", "\"");
+            inputText.replace("”", "\"");
+            if (key.startsWith("mode") && !isValidJson(inputText)) {
+                validated = false;
+            }
+            if (validated) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(key, inputText);
+                editor.apply();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getApplicationContext(), "Invalid JSON", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean isValidJson(String json) {
+        try {
+            new JSONObject(json);
+        } catch (JSONException ex) {
+            try {
+                new JSONArray(json);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void showAutoCompleteDialog() {
