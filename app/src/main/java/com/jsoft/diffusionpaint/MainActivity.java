@@ -389,9 +389,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sd3:
                 showTextInputDialog("modeSD3", "Parameters for txt2img with SD3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3));
                 break;
-            case R.id.mi_mode_sd3_comfyui:
-                showTextInputDialog("modeSD3ComfyUI", "Parameters for txt2img with SD3 ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3_COMFYUI));
-                break;
             case R.id.mi_mode_flux_dev_comfyui:
                 showTextInputDialog("modeFluxDevComfyUI", "Parameters for txt2img with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_COMFYUI));
                 break;
@@ -404,12 +401,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_idm_vton:
                 showTextInputDialog("modeIDMVTON", "Parameters for IDM-VTON:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_IDMVTON));
                 break;
+            /*case R.id.mi_mode_sd3_comfyui:
+                showTextInputDialog("modeSD3ComfyUI", "Parameters for txt2img with SD3 ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3_COMFYUI));
+                break;
             case R.id.mi_mode_pas_comfyui:
                 showTextInputDialog("modePASComfyUI", "Parameters for txt2img with PixArt Sigma ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_PAS_COMFYUI));
                 break;
             case R.id.mi_mode_kkolor_comfyui:
                 showTextInputDialog("modeKKolorComfyUI", "Parameters for txt2img with Kwai Kolor ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI));
-                break;
+                break;*/
             case R.id.mi_mode_inpaint:
                 showTextInputDialog("modeInpaint", "Parameters for Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT));
                 break;

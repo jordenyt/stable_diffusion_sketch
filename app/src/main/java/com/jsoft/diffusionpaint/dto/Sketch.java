@@ -121,9 +121,9 @@ public class Sketch implements Serializable {
         cnMode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
         cnMode.put("txt2img with SD3", CN_MODE_TXT_SD3);
         cnMode.put("ComfyUI txt2img with Flux-dev", CN_MODE_TXT_FLUX_DEV_COMFYUI);
-        cnMode.put("ComfyUI txt2img with SD3", CN_MODE_TXT_SD3_COMFYUI);
+        /*cnMode.put("ComfyUI txt2img with SD3", CN_MODE_TXT_SD3_COMFYUI);
         cnMode.put("ComfyUI txt2img with PixArt-Sigma", CN_MODE_TXT_PAS_COMFYUI);
-        cnMode.put("ComfyUI txt2img with Kwai Kolor", CN_MODE_TXT_KKOLOR_COMFYUI);
+        cnMode.put("ComfyUI txt2img with Kwai Kolor", CN_MODE_TXT_KKOLOR_COMFYUI);*/
         cnMode.put("Inpainting (background)", CN_MODE_INPAINT);
         cnMode.put("Inpainting (sketch)", CN_MODE_INPAINT_SKETCH);
         cnMode.put("ComfyUI Flux-dev Partial Inpainting", CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI);
@@ -160,9 +160,9 @@ public class Sketch implements Serializable {
         mode.put("txt2img with v1.5 model", CN_MODE_TXT);
         mode.put("txt2img with SD3", CN_MODE_TXT_SD3);
         mode.put("ComfyUI txt2img with Flux-dev", CN_MODE_TXT_FLUX_DEV_COMFYUI);
-        mode.put("ComfyUI txt2img with SD3", CN_MODE_TXT_SD3_COMFYUI);
+        /*mode.put("ComfyUI txt2img with SD3", CN_MODE_TXT_SD3_COMFYUI);
         mode.put("ComfyUI txt2img with PixArt-Sigma", CN_MODE_TXT_PAS_COMFYUI);
-        mode.put("ComfyUI txt2img with Kwai Kolor", CN_MODE_TXT_KKOLOR_COMFYUI);
+        mode.put("ComfyUI txt2img with Kwai Kolor", CN_MODE_TXT_KKOLOR_COMFYUI);*/
         txt2imgModeMap = Collections.unmodifiableMap(mode);
     }
 
