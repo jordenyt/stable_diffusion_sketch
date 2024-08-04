@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/text_title"
+    android:layout_height="wrap_content">
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="What is it?"
-        android:textAppearance="?android:textAppearanceMedium" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <MultiAutoCompleteTextView
-        android:id="@+id/edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Input here..."
-        android:textColorHint="#FF666666" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="What is it?"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Input here..."
+            android:textColorHint="#FF666666" />
+    </LinearLayout>
+</ScrollView>
