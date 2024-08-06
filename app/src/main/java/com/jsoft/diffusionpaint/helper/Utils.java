@@ -43,6 +43,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -639,5 +641,11 @@ public class Utils {
         mBackgroundPaint.setStyle(Paint.Style.FILL);
         canvas.drawRect(0f,0f,baseWidth, baseHeight, mBackgroundPaint);
         return resultBitmap;
+    }
+
+    public static boolean isValidServerURL(String url) {
+        Pattern p = Pattern.compile("^https?://[a-zA-Z0-9\\-]+(\\.[a-zA-Z0-9\\-]+)*(:[0-9]{1,5})?$");
+        Matcher matcher = p.matcher(url);
+        return matcher.matches();
     }
 }
