@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -140,7 +141,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getSupirJSON(Sketch mCurrentSketch, boolean isPartial) {
+    /*public JSONObject getSupirJSON(Sketch mCurrentSketch, boolean isPartial) {
         JSONObject jsonObject = new JSONObject();
         SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
         try {
@@ -393,6 +394,70 @@ public class SdApiHelper {
             e.printStackTrace();
         }
         return jsonObject;
+    }*/
+
+    public JSONObject getComfyuiJSON(Sketch mCurrentSketch, int batchSize) {
+        JSONObject jsonObject = new JSONObject();
+        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
+        JSONObject fields = getComfyuiFields(mCurrentSketch.getCnMode());
+
+        Bitmap backgroundImage = mCurrentSketch.getImgBackground();
+        if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+            backgroundImage = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
+        }
+
+        Bitmap maskImage = null;
+        if (sdParam.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
+            if (sdParam.inpaintPartial == 1) {
+                RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
+                Bitmap baseImage = Utils.extractBitmap(backgroundImage, inpaintArea);
+                //mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0, false));
+                backgroundImage = baseImage;
+                float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
+                mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
+                maskImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
+            } else {
+                float ratio = (float)max(backgroundImage.getWidth(), backgroundImage.getHeight()) / sdParam.sdSize;
+                maskImage = Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true);
+                mCurrentSketch.setImgInpaintMask(maskImage);
+            }
+        }
+        /*RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
+        float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
+        mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
+        Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);*/
+
+        for (Iterator<String> it = fields.keys(); it.hasNext(); ) {
+            String key = it.next();
+            try {
+                String value = fields.getString(key);
+                if ("workflow".equals(key)) {
+                    jsonObject.put(key, value);
+                } else if ("positive".equals(value)) {
+                    jsonObject.put(key, mCurrentSketch.getPrompt());
+                } else if ("negative".equals(value)) {
+                    jsonObject.put(key, mCurrentSketch.getNegPrompt());
+                } else if ("size".equals(value)) {
+                    jsonObject.put(key, sdParam.sdSize);
+                } else if ("steps".equals(value)) {
+                    jsonObject.put(key, sdParam.steps);
+                } else if ("denoise".equals(value)) {
+                    jsonObject.put(key, sdParam.denoise);
+                } else if ("cfg".equals(value)) {
+                    jsonObject.put(key, sdParam.cfgScale);
+                } else if ("batch_size".equals(value)) {
+                    jsonObject.put(key, batchSize);
+                } else if ("background".equals(value)) {
+                    jsonObject.put(key, Utils.jpg2Base64String(backgroundImage));
+                } else if ("mask".equals(value)) {
+                    jsonObject.put(key, Utils.jpg2Base64String(maskImage));
+                } else {
+                    jsonObject.put(key, value);
+                }
+            } catch (JSONException ignored) {}
+        }
+
+        return jsonObject;
     }
 
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
@@ -443,19 +508,40 @@ public class SdApiHelper {
         return jsonObject;
     }
 
+    private String getComfyuiModeName(String cnMode) {
+        return cnMode.substring(Sketch.CN_MODE_COMFYUI.length());
+    }
+
+    private String getComfyuiDefault(String cnMode) {
+        for (int i = 0; i < Sketch.comfyuiModes.length(); i ++) {
+            try {
+                JSONObject cfMode = Sketch.comfyuiModes.getJSONObject(i);
+                if (cfMode.get("name").equals(getComfyuiModeName(cnMode))) {
+                    return cfMode.getJSONObject("default").toString();
+                }
+            } catch (JSONException ignored) {}
+        }
+        return Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
+    }
+
+    private JSONObject getComfyuiFields(String cnMode) {
+        for (int i = 0; i < Sketch.comfyuiModes.length(); i ++) {
+            try {
+                JSONObject cfMode = Sketch.comfyuiModes.getJSONObject(i);
+                if (cfMode.get("name").equals(getComfyuiModeName(cnMode))) {
+                    return cfMode.getJSONObject("fields");
+                }
+            } catch (JSONException ignored) {}
+        }
+        return new JSONObject();
+    }
+
     public SdParam getSdCnParm(String cnMode) {
 
         Gson gson = new Gson();
         String jsonMode = cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_TXT_SDXL_TURBO) ? sharedPreferences.getString("modeSDXLTurbo", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_TXT_SD3_COMFYUI) ? sharedPreferences.getString("modeSD3ComfyUI", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_TXT_FLUX_DEV_COMFYUI) ? sharedPreferences.getString("modeFluxDevComfyUI", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI) ? sharedPreferences.getString("modeFluxDevImg2imgComfyUI", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI) ? sharedPreferences.getString("modeFluxDevInpaintComfyUI", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_TXT_PAS_COMFYUI) ? sharedPreferences.getString("modePASComfyUI", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI) ? sharedPreferences.getString("modeKKolorComfyUI", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.equals(Sketch.CN_MODE_IDMVTON) ? sharedPreferences.getString("modeIDMVTON", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT) ? sharedPreferences.getString("modeInpaint", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_SKETCH) ? sharedPreferences.getString("modeInpaintS", Sketch.defaultJSON.get(cnMode)) :
                         cnMode.equals(Sketch.CN_MODE_REFINER) ? sharedPreferences.getString("modeRefiner", Sketch.defaultJSON.get(cnMode)) :
@@ -465,6 +551,7 @@ public class SdApiHelper {
                         cnMode.startsWith(Sketch.CN_MODE_CUSTOM) ? sharedPreferences.getString("modeCustom" + cnMode.substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM)) :
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT) ? sharedPreferences.getString("modeOutpaint", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_MERGE) ? sharedPreferences.getString("modeMerge", Sketch.defaultJSON.get(cnMode)) :
+                        cnMode.startsWith(Sketch.CN_MODE_COMFYUI) ? sharedPreferences.getString(getComfyuiModeName(cnMode), getComfyuiDefault(cnMode)) :
                         Sketch.defaultJSON.get(cnMode) != null ? Sketch.defaultJSON.get(cnMode) : Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);

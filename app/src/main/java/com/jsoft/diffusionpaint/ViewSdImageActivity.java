@@ -398,8 +398,8 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             if (exif == null || exif.length() < 2) { exif = "{}"; }
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
             if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)
-                    && !mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)
-                    && !mCurrentSketch.getCnMode().startsWith("iclight")
+                    /*&& !mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)
+                    && !mCurrentSketch.getCnMode().startsWith("iclight")*/
                     && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
                     JSONObject jsonExif = new JSONObject();
@@ -579,7 +579,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     intent.putExtra("numGen", remainGen);
                 }
             } catch (Exception ignored) {}
-            if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)) {
+            /*if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)) {
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getSupirJSON(mCurrentSketch, mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL));
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
@@ -622,6 +622,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI)) {
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getKKolorText(mCurrentSketch, batchSize);
+                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");*/
+            if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_COMFYUI)) {
+                requestType = "comfyui";
+                jsonObject = sdApiHelper.getComfyuiJSON(mCurrentSketch, batchSize);
                 sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
             } else if (param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 requestType = "txt2img";

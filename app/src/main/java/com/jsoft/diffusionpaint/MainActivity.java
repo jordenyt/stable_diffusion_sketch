@@ -1,6 +1,7 @@
 package com.jsoft.diffusionpaint;
 
 import static com.jsoft.diffusionpaint.dto.Sketch.ASPECT_RATIO_SQUARE;
+import static com.jsoft.diffusionpaint.dto.Sketch.comfyuiModes;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
@@ -29,6 +30,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
     private String t_key, t_title, t_hint, t_defaultValue;
     private static final String settingFileName = "SDSketch.json";
+    private static Menu mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,17 +120,20 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         addTxt2img.setOnClickListener(view -> addTxt2img());
 
         ImageButton menuButton = findViewById(R.id.menu_button);
-        menuButton.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(this, menuButton);
-            popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
-            MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(2);
-            if (submenuItem.hasSubMenu()) {
-                SubMenu subMenu = submenuItem.getSubMenu();
-                for (int i=1;i<=Sketch.customModeCount;i++) {
-                    subMenu.add(0, MI_CUSTOM_MODE_BASE + i, 0, "Custom Mode " + i);
-                }
+
+        PopupMenu popupMenu = new PopupMenu(this, menuButton);
+        popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
+        mainMenu = popupMenu.getMenu();
+        MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(2);
+        if (submenuItem.hasSubMenu()) {
+            SubMenu subMenu = submenuItem.getSubMenu();
+            for (int i=1;i<=Sketch.customModeCount;i++) {
+                subMenu.add(0, MI_CUSTOM_MODE_BASE + i, 0, "Custom Mode " + i);
             }
-            popupMenu.setOnMenuItemClickListener(this::menuItemClick);
+        }
+        popupMenu.setOnMenuItemClickListener(this::menuItemClick);
+
+        menuButton.setOnClickListener(v -> {
             popupMenu.show();
         });
 
@@ -145,6 +151,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             newPaintFromImage(intent);
         }
 
+        String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
+        if (dflApiAddress.length() > 0 && Sketch.comfyuiModes == null) {
+            sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
+        }
+
         /*CompletableFuture.supplyAsync(() -> {
             try {
                 int verCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;//Version Code
@@ -154,6 +165,22 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 throw new RuntimeException(e);
             }
         });*/
+    }
+
+    private void createComfyuiModeConfig() {
+        MenuItem submenuItem = mainMenu.getItem(3).getSubMenu().getItem(1);
+        if (submenuItem.hasSubMenu()) {
+            SubMenu subMenu = submenuItem.getSubMenu();
+            int menuID = MI_CUSTOM_MODE_BASE + Sketch.customModeCount + 1;
+            for (int i = 0; i < comfyuiModes.length(); i++) {
+                try {
+                    JSONObject modeConfig = comfyuiModes.getJSONObject(i);
+                    if (modeConfig.has("configurable") && modeConfig.getBoolean("configurable")) {
+                        subMenu.add(0, menuID + i , 0, modeConfig.getString("title"));
+                    }
+                } catch (JSONException ignored) {}
+            }
+        }
     }
 
     private boolean validateSettings() {
@@ -389,27 +416,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_mode_sd3:
                 showTextInputDialog("modeSD3", "Parameters for txt2img with SD3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3));
                 break;
-            case R.id.mi_mode_flux_dev_comfyui:
-                showTextInputDialog("modeFluxDevComfyUI", "Parameters for txt2img with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_COMFYUI));
-                break;
-            case R.id.mi_mode_flux_dev_img2img_comfyui:
-                showTextInputDialog("modeFluxDevImg2imgComfyUI", "Parameters for img2img with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI));
-                break;
-            case R.id.mi_mode_flux_dev_inpaint_comfyui:
-                showTextInputDialog("modeFluxDevInpaintComfyUI", "Parameters for inpaint with Flux-dev ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI));
-                break;
-            case R.id.mi_mode_idm_vton:
-                showTextInputDialog("modeIDMVTON", "Parameters for IDM-VTON:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_IDMVTON));
-                break;
-            /*case R.id.mi_mode_sd3_comfyui:
-                showTextInputDialog("modeSD3ComfyUI", "Parameters for txt2img with SD3 ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3_COMFYUI));
-                break;
-            case R.id.mi_mode_pas_comfyui:
-                showTextInputDialog("modePASComfyUI", "Parameters for txt2img with PixArt Sigma ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_PAS_COMFYUI));
-                break;
-            case R.id.mi_mode_kkolor_comfyui:
-                showTextInputDialog("modeKKolorComfyUI", "Parameters for txt2img with Kwai Kolor ComfyUI:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI));
-                break;*/
             case R.id.mi_mode_inpaint:
                 showTextInputDialog("modeInpaint", "Parameters for Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT));
                 break;
@@ -587,6 +593,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
                     showTextInputDialog("modeCustom" + i, "Parameters for Custom Mode "+ i +":", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
+                } else if (item.getItemId() > MI_CUSTOM_MODE_BASE + Sketch.customModeCount && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount + comfyuiModes.length()) {
+                    int i = item.getItemId() - MI_CUSTOM_MODE_BASE - Sketch.customModeCount - 1;
+                    try {
+                        JSONObject modeConfig = comfyuiModes.getJSONObject(i);
+                        showTextInputDialog("modeComyui" + modeConfig.getString("name"), "Parameters for " + modeConfig.getString("title") +  ":", "", modeConfig.getJSONObject("default").toString());
+                    } catch (JSONException ignored) {}
                 }
                 return super.onOptionsItemSelected(item);
         }
@@ -1274,6 +1286,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     alert.show();
                 }
                 updateChecked = true;
+            } else if ("getComfyuiMode".equals(requestType)) {
+                JSONArray jsonArray = new JSONArray(responseBody);
+                Sketch.comfyuiModes = jsonArray;
+                createComfyuiModeConfig();
             }
         } catch (JSONException e) {
             e.printStackTrace();
