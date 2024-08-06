@@ -46,12 +46,6 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_TXT_SDXL = "txtSDXL";
     public static final String CN_MODE_TXT_SDXL_TURBO = "txtSDXLTurbo";
     public static final String CN_MODE_TXT_SD3 = "txtSD3";
-    /*public static final String CN_MODE_TXT_SD3_COMFYUI = "txtSD3ComfyUI";
-    public static final String CN_MODE_TXT_FLUX_DEV_COMFYUI = "txtFluxDevComfyUI";
-    public static final String CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI = "imgFluxDevComfyUI";
-    public static final String CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI = "inpaintFluxDevComfyUI";
-    public static final String CN_MODE_TXT_PAS_COMFYUI = "txtPASComfyUI";
-    public static final String CN_MODE_TXT_KKOLOR_COMFYUI = "txtKKolorComfyUI";*/
     public static final String CN_MODE_REFINER = "imgSDXL";
     public static final String CN_MODE_TXT_CANNY = "txtCanny";
     public static final String CN_MODE_TXT_SCRIBBLE = "txtScribble";
@@ -71,12 +65,6 @@ public class Sketch implements Serializable {
     public static final String CN_MODE_CUSTOM = "custom";
     public static final String CN_MODE_COMFYUI = "comfyui";
     public static final String CN_MODE_ORIGIN = "original";
-    /*public static final String CN_MODE_SUPIR = "supir";
-    public static final String CN_MODE_SUPIR_PARTIAL = "supirPartial";
-    public static final String CN_MODE_IDMVTON = "vtron";
-    public static final String CN_MODE_ICLIGHT_TEXT = "iclightText";
-    public static final String CN_MODE_ICLIGHT_RELIGHT = "iclightRelight";
-    public static final String CN_MODE_ICLIGHT_BG = "iclightBG";*/
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
     public static final String ASPECT_RATIO_PORTRAIT = "portrait";
     public static final String ASPECT_RATIO_SQUARE = "square";
@@ -128,6 +116,7 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
         cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
+
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
         }
