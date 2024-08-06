@@ -86,8 +86,7 @@ public class Sketch implements Serializable {
         defaultJSON = Collections.unmodifiableMap(json);
     }
 
-    public static final Map<String, String> cnModeMap;
-    static {
+    public static  Map<String, String> cnModeMap() {
         Map<String, String> cnMode = new LinkedHashMap<>();
         cnMode.put("img2img(sketch) + Scribble(sketch)", CN_MODE_IMG_SCRIBBLE);
         cnMode.put("txt2img + Canny(sketch)", CN_MODE_TXT_CANNY);
@@ -113,17 +112,16 @@ public class Sketch implements Serializable {
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
         }
-        cnModeMap = Collections.unmodifiableMap(cnMode);
+        return Collections.unmodifiableMap(cnMode);
     }
 
-    public static final Map<String, String> txt2imgModeMap;
-    static {
+    public static Map<String, String> txt2imgModeMap()  {
         Map<String, String> mode = new LinkedHashMap<>();
         mode.put("txt2img with SDXL Turbo/Lightning", CN_MODE_TXT_SDXL_TURBO);
         mode.put("txt2img with SDXL", CN_MODE_TXT_SDXL);
         mode.put("txt2img with v1.5 model", CN_MODE_TXT);
         mode.put("txt2img with SD3", CN_MODE_TXT_SD3);
-        txt2imgModeMap = Collections.unmodifiableMap(mode);
+        return Collections.unmodifiableMap(mode);
     }
 
     public Sketch() {

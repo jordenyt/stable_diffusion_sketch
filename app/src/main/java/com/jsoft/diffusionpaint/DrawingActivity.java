@@ -461,9 +461,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
-        //List<String> modeSelectList = new ArrayList<>();
-        //List<String> cnModeList = new ArrayList<>();
         Map<String, String> modeMap = new LinkedHashMap<>();
+        Map<String, String> cnModeMap = Sketch.cnModeMap();
         for (String mode : cnModeMap.keySet()) {
             String modeDisplayName = mode;
             if (cnModeMap.get(mode).startsWith(CN_MODE_CUSTOM)) {
@@ -475,15 +474,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                     }
                 } catch (Exception ignored) {}
             }
-            //cnModeList.add(cnModeMap.get(mode));
-            //modeSelectList.add(modeDisplayName);
             modeMap.put(modeDisplayName, cnModeMap.get(mode));
         }
-
-        /*List<String> modeDisplayList = new ArrayList<>(modeMap.keySet());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, modeDisplayList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sdMode.setAdapter(adapter);*/
 
         radioGroupMode.setOnCheckedChangeListener((group, checkedId) -> {
             String modeType = "all";

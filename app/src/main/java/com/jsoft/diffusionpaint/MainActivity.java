@@ -29,6 +29,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
     private String t_key, t_title, t_hint, t_defaultValue;
     private static final String settingFileName = "SDSketch.json";
+    private static Menu mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,17 +119,19 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         addTxt2img.setOnClickListener(view -> addTxt2img());
 
         ImageButton menuButton = findViewById(R.id.menu_button);
-        menuButton.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(this, menuButton);
-            popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
-            MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(1);
-            if (submenuItem.hasSubMenu()) {
-                SubMenu subMenu = submenuItem.getSubMenu();
-                for (int i=1;i<=Sketch.customModeCount;i++) {
-                    subMenu.add(0, MI_CUSTOM_MODE_BASE + i, 0, "Custom Mode " + i);
-                }
+        PopupMenu popupMenu = new PopupMenu(this, menuButton);
+        popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
+        mainMenu = popupMenu.getMenu();
+        MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(2);
+        if (submenuItem.hasSubMenu()) {
+            SubMenu subMenu = submenuItem.getSubMenu();
+            for (int i=1;i<=Sketch.customModeCount;i++) {
+                subMenu.add(0, MI_CUSTOM_MODE_BASE + i, 0, "Custom Mode " + i);
             }
-            popupMenu.setOnMenuItemClickListener(this::menuItemClick);
+        }
+        popupMenu.setOnMenuItemClickListener(this::menuItemClick);
+
+        menuButton.setOnClickListener(v -> {
             popupMenu.show();
         });
 
@@ -691,7 +695,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
 
         List<String> filteredModes = new ArrayList<>();
-        filteredModes.addAll(Sketch.txt2imgModeMap.keySet());
+        Map<String, String> txt2imgModeMap = Sketch.txt2imgModeMap();
+        filteredModes.addAll(txt2imgModeMap.keySet());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -762,7 +767,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             lastStyleSelection = sdStyle.getSelectedItemPosition();
             Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
-            intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
+            intent.putExtra("cnMode", txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));
