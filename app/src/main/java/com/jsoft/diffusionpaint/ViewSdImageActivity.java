@@ -579,50 +579,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     intent.putExtra("numGen", remainGen);
                 }
             } catch (Exception ignored) {}
-            /*if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getSupirJSON(mCurrentSketch, mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_SUPIR_PARTIAL));
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_IDMVTON)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getIdmVtonJSON(mCurrentSketch);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_TEXT)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getICLightTextJSON(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_RELIGHT)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getICLightRelightJSON(mCurrentSketch);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ICLIGHT_BG)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getICLightBGJSON(mCurrentSketch);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_SD3_COMFYUI)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getSD3Text(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_FLUX_DEV_COMFYUI)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getFluxDevText(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_FLUX_DEV_IMG2IMG_COMFYUI)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getFluxDevImg2img(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_FLUX_DEV_INPAINT_COMFYUI)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getFluxDevInpaint(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_PAS_COMFYUI)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getPASText(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            } else if (mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_TXT_KKOLOR_COMFYUI)) {
-                requestType = "comfyui";
-                jsonObject = sdApiHelper.getKKolorText(mCurrentSketch, batchSize);
-                sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");*/
+
             if (mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_COMFYUI)) {
                 requestType = "comfyui";
                 jsonObject = sdApiHelper.getComfyuiJSON(mCurrentSketch, batchSize);

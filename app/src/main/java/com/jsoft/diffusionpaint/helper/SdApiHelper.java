@@ -141,272 +141,18 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    /*public JSONObject getSupirJSON(Sketch mCurrentSketch, boolean isPartial) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            if (isPartial) {
-                RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
-                Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
-                mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0, false));
-                jsonObject.put("background", Utils.jpg2Base64String(baseImage));
-                jsonObject.put("size", min(2560, max(inpaintArea.width(), inpaintArea.height())));
-            } else {
-                jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
-            }
-            jsonObject.put("workflow", "supir");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getIdmVtonJSON(Sketch mCurrentSketch) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
-            Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
-            if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
-                Bitmap imgPreview = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
-                baseImage = Utils.extractBitmap(imgPreview, inpaintArea);
-            }
-            jsonObject.put("background", Utils.jpg2Base64String(baseImage));
-            float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
-            mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
-            Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
-            jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
-            jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
-            jsonObject.put("denoise", sdParam.denoise);
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-            jsonObject.put("workflow", "vtron");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getICLightTextJSON(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
-            jsonObject.put("paint", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "iclight_text");
-            jsonObject.put("batch_size", batchSize);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getICLightRelightJSON(Sketch mCurrentSketch) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
-            jsonObject.put("paint", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "iclight_relight");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getICLightBGJSON(Sketch mCurrentSketch) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("background", Utils.jpg2Base64String(mCurrentSketch.getImgBackground()));
-            jsonObject.put("paint", Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
-            jsonObject.put("reference", Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "iclight_bg");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getSD3Text(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "sd3_txt2img");
-            jsonObject.put("batch_size", batchSize);
-
-            if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
-                jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
-            } else {
-                jsonObject.put("width", sdParam.sdSize);
-            }
-            if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
-                jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
-            } else {
-                jsonObject.put("height", sdParam.sdSize);
-            }
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getFluxDevText(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "flux_dev_txt2img");
-            jsonObject.put("batch_size", batchSize);
-
-            if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
-                jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
-            } else {
-                jsonObject.put("width", sdParam.sdSize);
-            }
-            if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
-                jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
-            } else {
-                jsonObject.put("height", sdParam.sdSize);
-            }
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getFluxDevImg2img(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            Bitmap baseImage = mCurrentSketch.getImgBackground();
-            if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
-                Bitmap imgPreview = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
-                baseImage = imgPreview;
-            }
-            jsonObject.put("background", Utils.jpg2Base64String(baseImage));
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "flux_dev_img2img");
-            jsonObject.put("batch_size", batchSize);
-            jsonObject.put("size", sdParam.sdSize);
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-            jsonObject.put("denoise", sdParam.denoise);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getFluxDevInpaint(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
-            Bitmap baseImage = Utils.extractBitmap(mCurrentSketch.getImgBackground(), inpaintArea);
-            if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
-                Bitmap imgPreview = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
-                baseImage = Utils.extractBitmap(imgPreview, inpaintArea);
-            }
-            jsonObject.put("background", Utils.jpg2Base64String(baseImage));
-            float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
-            mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
-            Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
-            jsonObject.put("paint", Utils.jpg2Base64String(paintImage));
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "flux_dev_img2img");
-            jsonObject.put("batch_size", batchSize);
-            jsonObject.put("size", sdParam.sdSize);
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-            jsonObject.put("denoise", sdParam.denoise);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getPASText(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "pas_txt2img");
-            jsonObject.put("batch_size", batchSize);
-
-            double aspectRatio = (double) mCurrentSketch.getImgBackground().getWidth() / mCurrentSketch.getImgBackground().getHeight();
-            if (aspectRatio > 1.6) {
-                jsonObject.put("aspectRatio", "1.75");
-            } else if (aspectRatio > 1.1) {
-                jsonObject.put("aspectRatio", "1.29");
-            } else if (aspectRatio > 0.9) {
-                jsonObject.put("aspectRatio", "1.00");
-            } else {
-                jsonObject.put("aspectRatio", "0.78");
-            }
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getKKolorText(Sketch mCurrentSketch, int batchSize) {
-        JSONObject jsonObject = new JSONObject();
-        SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
-        try {
-            jsonObject.put("positive", mCurrentSketch.getPrompt());
-            jsonObject.put("negative", mCurrentSketch.getNegPrompt());
-            jsonObject.put("workflow", "kkolor_txt2img");
-            jsonObject.put("batch_size", batchSize);
-
-            if (mCurrentSketch.getImgBackground().getHeight() > mCurrentSketch.getImgBackground().getWidth()) {
-                jsonObject.put("width", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
-            } else {
-                jsonObject.put("width", sdParam.sdSize);
-            }
-            if (mCurrentSketch.getImgBackground().getHeight() < mCurrentSketch.getImgBackground().getWidth()) {
-                jsonObject.put("height", Utils.getShortSize(mCurrentSketch.getImgBackground(), sdParam.sdSize));
-            } else {
-                jsonObject.put("height", sdParam.sdSize);
-            }
-            jsonObject.put("steps", sdParam.steps);
-            jsonObject.put("cfg", sdParam.cfgScale);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }*/
-
     public JSONObject getComfyuiJSON(Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
         JSONObject fields = getComfyuiFields(mCurrentSketch.getCnMode());
 
         Bitmap backgroundImage = mCurrentSketch.getImgBackground();
-        if (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
+        if (sdParam.baseImage != null && sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)) {
             backgroundImage = Bitmap.createScaledBitmap(mCurrentSketch.getImgPreview(), mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight(), true);
         }
 
         Bitmap maskImage = null;
+        int size = sdParam.sdSize;
         if (sdParam.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
             if (sdParam.inpaintPartial == 1) {
                 RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
@@ -416,16 +162,28 @@ public class SdApiHelper {
                 float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
                 mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
                 maskImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
+                size = min(sdParam.sdSize, (int)max(inpaintArea.width(), inpaintArea.height()));
             } else {
                 float ratio = (float)max(backgroundImage.getWidth(), backgroundImage.getHeight()) / sdParam.sdSize;
                 maskImage = Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true);
                 mCurrentSketch.setImgInpaintMask(maskImage);
             }
         }
-        /*RectF inpaintArea = mCurrentSketch.getRectInpaint(sdParam.sdSize);
-        float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
-        mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
-        Bitmap paintImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);*/
+
+        long width = 1024;
+        long height = 1024;
+        if (backgroundImage != null) {
+            if (backgroundImage.getHeight() > backgroundImage.getWidth()) {
+                width = Utils.getShortSize(backgroundImage, sdParam.sdSize);
+            } else {
+                width = sdParam.sdSize;
+            }
+            if (backgroundImage.getHeight() < backgroundImage.getWidth()) {
+                height = Utils.getShortSize(backgroundImage, sdParam.sdSize);
+            } else {
+                height = sdParam.sdSize;
+            }
+        }
 
         for (Iterator<String> it = fields.keys(); it.hasNext(); ) {
             String key = it.next();
@@ -438,19 +196,27 @@ public class SdApiHelper {
                 } else if ("negative".equals(value)) {
                     jsonObject.put(key, mCurrentSketch.getNegPrompt());
                 } else if ("size".equals(value)) {
-                    jsonObject.put(key, sdParam.sdSize);
+                    jsonObject.put(key, size);
                 } else if ("steps".equals(value)) {
                     jsonObject.put(key, sdParam.steps);
                 } else if ("denoise".equals(value)) {
                     jsonObject.put(key, sdParam.denoise);
                 } else if ("cfg".equals(value)) {
                     jsonObject.put(key, sdParam.cfgScale);
-                } else if ("batch_size".equals(value)) {
+                } else if ("batchSize".equals(value)) {
                     jsonObject.put(key, batchSize);
+                } else if ("width".equals(value)) {
+                    jsonObject.put(key, width);
+                } else if ("height".equals(value)) {
+                    jsonObject.put(key, height);
                 } else if ("background".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(backgroundImage));
                 } else if ("mask".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(maskImage));
+                } else if ("reference".equals(value)) {
+                    jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
+                } else if ("paint".equals(value)) {
+                    jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
                 } else {
                     jsonObject.put(key, value);
                 }
@@ -551,7 +317,7 @@ public class SdApiHelper {
                         cnMode.startsWith(Sketch.CN_MODE_CUSTOM) ? sharedPreferences.getString("modeCustom" + cnMode.substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM)) :
                         cnMode.startsWith(Sketch.CN_MODE_OUTPAINT) ? sharedPreferences.getString("modeOutpaint", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT)) :
                         cnMode.equals(Sketch.CN_MODE_INPAINT_MERGE) ? sharedPreferences.getString("modeMerge", Sketch.defaultJSON.get(cnMode)) :
-                        cnMode.startsWith(Sketch.CN_MODE_COMFYUI) ? sharedPreferences.getString(getComfyuiModeName(cnMode), getComfyuiDefault(cnMode)) :
+                        cnMode.startsWith(Sketch.CN_MODE_COMFYUI) ? sharedPreferences.getString("modeComyui" + getComfyuiModeName(cnMode), getComfyuiDefault(cnMode)) :
                         Sketch.defaultJSON.get(cnMode) != null ? Sketch.defaultJSON.get(cnMode) : Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
 
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);

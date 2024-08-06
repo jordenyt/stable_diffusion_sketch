@@ -154,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
         if (dflApiAddress.length() > 0 && Sketch.comfyuiModes == null) {
             sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
+        } else if (comfyuiModes != null) {
+            createComfyuiModeConfig();
         }
 
         /*CompletableFuture.supplyAsync(() -> {
@@ -171,14 +173,17 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         MenuItem submenuItem = mainMenu.getItem(3).getSubMenu().getItem(1);
         if (submenuItem.hasSubMenu()) {
             SubMenu subMenu = submenuItem.getSubMenu();
-            int menuID = MI_CUSTOM_MODE_BASE + Sketch.customModeCount + 1;
-            for (int i = 0; i < comfyuiModes.length(); i++) {
-                try {
-                    JSONObject modeConfig = comfyuiModes.getJSONObject(i);
-                    if (modeConfig.has("configurable") && modeConfig.getBoolean("configurable")) {
-                        subMenu.add(0, menuID + i , 0, modeConfig.getString("title"));
+            if (subMenu.size() == 0) {
+                int menuID = MI_CUSTOM_MODE_BASE + Sketch.customModeCount + 1;
+                for (int i = 0; i < comfyuiModes.length(); i++) {
+                    try {
+                        JSONObject modeConfig = comfyuiModes.getJSONObject(i);
+                        if (modeConfig.has("configurable") && modeConfig.getBoolean("configurable")) {
+                            subMenu.add(0, menuID + i, 0, modeConfig.getString("title"));
+                        }
+                    } catch (JSONException ignored) {
                     }
-                } catch (JSONException ignored) {}
+                }
             }
         }
     }
@@ -747,7 +752,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
 
         List<String> filteredModes = new ArrayList<>();
-        filteredModes.addAll(Sketch.txt2imgModeMap.keySet());
+        Map<String, String> txt2imgModeMap = Sketch.txt2imgModeMap();
+        filteredModes.addAll(txt2imgModeMap.keySet());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filteredModes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -818,7 +824,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             lastStyleSelection = sdStyle.getSelectedItemPosition();
             Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
-            intent.putExtra("cnMode", Sketch.txt2imgModeMap.get(selectMode));
+            intent.putExtra("cnMode", txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));

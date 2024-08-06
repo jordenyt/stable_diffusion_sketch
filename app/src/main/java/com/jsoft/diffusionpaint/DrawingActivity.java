@@ -465,6 +465,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         //List<String> modeSelectList = new ArrayList<>();
         //List<String> cnModeList = new ArrayList<>();
         Map<String, String> modeMap = new LinkedHashMap<>();
+        Map<String, String> cnModeMap = Sketch.cnModeMap();
         for (String mode : cnModeMap.keySet()) {
             String modeDisplayName = mode;
             if (cnModeMap.get(mode).startsWith(CN_MODE_CUSTOM)) {
