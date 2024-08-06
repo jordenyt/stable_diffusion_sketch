@@ -59,10 +59,7 @@ public class SdApiHelper {
 
     public boolean isValid() {
         String sdAddress = sharedPreferences.getString("sdServerAddress", "");
-
-        Pattern p = Pattern.compile("^https?://[a-zA-Z0-9\\-]+(\\.[a-zA-Z0-9\\-]+)*(:[0-9]{1,5})?$");
-        Matcher matcher = p.matcher(sdAddress);
-        return matcher.matches();
+        return Utils.isValidServerURL(sdAddress);
     }
 
     public void sendGetRequest(String requestType, String url) {
