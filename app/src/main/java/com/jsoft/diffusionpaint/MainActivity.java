@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
 
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
-        if (dflApiAddress.length() > 0 && Sketch.comfyuiModes == null) {
+        if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
             sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
         } else if (comfyuiModes != null) {
             createComfyuiModeConfig();
