@@ -878,6 +878,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         buttonOk.setOnClickListener(v -> {
             boolean validated = true;
             String inputText = editText.getText().toString();
+            if (inputText.isEmpty()) {
+                inputText = defaultValue;
+                editText.setText(defaultValue);
+            }
             inputText.replace("“", "\"");
             inputText.replace("”", "\"");
             if (key.startsWith("mode") && !isValidJson(inputText)) {
