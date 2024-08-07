@@ -89,7 +89,6 @@ public class Sketch implements Serializable {
         json.put(CN_MODE_INPAINT_MERGE, "{\"baseImage\":\"background\", \"denoise\":0.5, \"inpaintPartial\":1, \"inpaintFill\":1, \"type\":\"inpaint\"}");
         json.put(CN_MODE_ORIGIN, "{\"type\":\"img2img\"}");
         json.put(CN_MODE_CUSTOM, "{\"type\":\"txt2img\"}");
-
         defaultJSON = Collections.unmodifiableMap(json);
     }
 
@@ -116,7 +115,6 @@ public class Sketch implements Serializable {
         cnMode.put("Outpainting on Bottom", CN_MODE_OUTPAINT_V_BOTTOM);
         cnMode.put("Original / Fill with Reference", CN_MODE_ORIGIN);
         cnMode.put("Merge with Reference", CN_MODE_INPAINT_MERGE);
-
         for (int i=1; i<=customModeCount; i++) {
             cnMode.put("Custom Mode " + i, CN_MODE_CUSTOM + i);
         }

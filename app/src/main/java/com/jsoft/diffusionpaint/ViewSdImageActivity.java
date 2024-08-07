@@ -397,10 +397,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             String exif = mCurrentSketch.getExif();
             if (exif == null || exif.length() < 2) { exif = "{}"; }
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-            if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)
-                    /*&& !mCurrentSketch.getCnMode().startsWith(Sketch.CN_MODE_SUPIR)
-                    && !mCurrentSketch.getCnMode().startsWith("iclight")*/
-                    && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
+            if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
                 try {
                     JSONObject jsonExif = new JSONObject();
                     String userComment = apiResultList.get(currentResult).infoTexts;
@@ -684,7 +681,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     }
 
     public void processResultBitmap(String requestType, List<Bitmap> results, List<String> listInfotext) {
-        for (int i = 0; i<results.size(); i++) {
+        for (int i=0; i<results.size();i++) {
             if (results.get(i) != null) {
                 mBitmap = results.get(i);
                 if (!"txt2img".equals(requestType)) {
@@ -702,7 +699,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
             }
         }
-
         if (remainGen > 0) {
             callSD4Img();
         }

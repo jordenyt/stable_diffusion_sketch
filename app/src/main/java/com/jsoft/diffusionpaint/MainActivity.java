@@ -1,7 +1,6 @@
 package com.jsoft.diffusionpaint;
 
 import static com.jsoft.diffusionpaint.dto.Sketch.ASPECT_RATIO_SQUARE;
-import static com.jsoft.diffusionpaint.dto.Sketch.comfyuiModes;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
@@ -120,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         addTxt2img.setOnClickListener(view -> addTxt2img());
 
         ImageButton menuButton = findViewById(R.id.menu_button);
-
         PopupMenu popupMenu = new PopupMenu(this, menuButton);
         popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
         mainMenu = popupMenu.getMenu();
@@ -154,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
         if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
             sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
-        } else if (comfyuiModes != null) {
+        } else if (Sketch.comfyuiModes != null) {
             createComfyuiModeConfig();
         }
 
@@ -175,9 +173,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             SubMenu subMenu = submenuItem.getSubMenu();
             if (subMenu.size() == 0) {
                 int menuID = MI_CUSTOM_MODE_BASE + Sketch.customModeCount + 1;
-                for (int i = 0; i < comfyuiModes.length(); i++) {
+                for (int i = 0; i < Sketch.comfyuiModes.length(); i++) {
                     try {
-                        JSONObject modeConfig = comfyuiModes.getJSONObject(i);
+                        JSONObject modeConfig = Sketch.comfyuiModes.getJSONObject(i);
                         if (modeConfig.has("configurable") && modeConfig.getBoolean("configurable")) {
                             subMenu.add(0, menuID + i, 0, modeConfig.getString("title"));
                         }
@@ -387,6 +385,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_stop_comfyui:
                 sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/stop_comfyui", null, "GET");
                 break;
+            case R.id.mi_sd_unload_checkpoint:
+                if (!validateSettings()) break;
+                sdApiHelper.sendPostRequest("unloadCheckpoint", "/sdapi/v1/unload-checkpoint", new JSONObject());
+                break;
+            case R.id.mi_vram:
+                if (!validateSettings()) break;
+                sdApiHelper.sendGetRequest("checkVRAM", "/sdapi/v1/memory");
+                break;
             case R.id.mi_dfl_api_address:
                 showTextInputDialog("dflApiAddress", "DFL API Address:", "http://192.168.1.101:7860", "");
                 break;
@@ -586,22 +592,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if (!validateSettings()) break;
                 sdApiHelper.sendPostRequest("refreshCheckpoints", "/sdapi/v1/refresh-checkpoints", new JSONObject());
                 break;
-            case R.id.mi_sd_unload_checkpoint:
-                if (!validateSettings()) break;
-                sdApiHelper.sendPostRequest("unloadCheckpoint", "/sdapi/v1/unload-checkpoint", new JSONObject());
-                break;
-            case R.id.mi_vram:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("checkVRAM", "/sdapi/v1/memory");
-                break;
             default:
                 if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
                     showTextInputDialog("modeCustom" + i, "Parameters for Custom Mode "+ i +":", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                } else if (item.getItemId() > MI_CUSTOM_MODE_BASE + Sketch.customModeCount && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount + comfyuiModes.length()) {
+                } else if (item.getItemId() > MI_CUSTOM_MODE_BASE + Sketch.customModeCount && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount + Sketch.comfyuiModes.length()) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE - Sketch.customModeCount - 1;
                     try {
-                        JSONObject modeConfig = comfyuiModes.getJSONObject(i);
+                        JSONObject modeConfig = Sketch.comfyuiModes.getJSONObject(i);
                         showTextInputDialog("modeComyui" + modeConfig.getString("name"), "Parameters for " + modeConfig.getString("title") +  ":", "", modeConfig.getJSONObject("default").toString());
                     } catch (JSONException ignored) {}
                 }
@@ -1227,15 +1225,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("getLoras2".equals(requestType)) {
                 DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
                 showAutoCompleteDialog();
-            } else if ("restart_Server".equals(requestType)) {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Service Command sent.")
-                        .setMessage(jsonObject.getString("message"))
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
             } else if ("refreshLoras".equals(requestType)) {
                 DrawingActivity.loraList = null;
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1247,29 +1236,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } else if ("refreshCheckpoints".equals(requestType)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Refresh Checkpoints Command sent.")
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            } else if ("unloadCheckpoint".equals(requestType)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("All Checkpoint unloaded.")
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            } else if ("checkVRAM".equals(requestType)) {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String message = "RAM: ";
-                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
-                message += "VRAM: ";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Memory Usage")
-                        .setMessage(message)
                         .setPositiveButton("OK", (dialog, id) -> {
                         });
                 AlertDialog alert = builder.create();
@@ -1296,6 +1262,38 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     alert.show();
                 }
                 updateChecked = true;
+            } else if ("unloadCheckpoint".equals(requestType)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("All Checkpoint unloaded.")
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else if ("checkVRAM".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                String message = "RAM: ";
+                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
+                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
+                message += "VRAM: ";
+                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
+                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Memory Usage")
+                        .setMessage(message)
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else if ("restart_Server".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Service Command sent.")
+                        .setMessage(jsonObject.getString("message"))
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
             } else if ("getComfyuiMode".equals(requestType)) {
                 JSONArray jsonArray = new JSONArray(responseBody);
                 Sketch.comfyuiModes = jsonArray;
