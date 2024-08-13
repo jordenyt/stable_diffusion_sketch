@@ -716,13 +716,13 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             canvasEdit.drawBitmap(mBitmap, null, mCurrentSketch.getRectInpaint(param.sdSize), null);
             RectF partialRect = mCurrentSketch.getRectInpaint(param.sdSize);
             double ratio = (double)max(partialRect.width(), partialRect.height()) / param.sdSize;
-            int boundary = (int) round(param.maskBlur * (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)?2:1) * ratio);
-            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, boundary, (int)round(10 * ratio));
+            int boundary = (int) round(param.maskBlur * (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)?1:0) * ratio);
+            mBitmap = mCurrentSketch.getImgBgMerge(bmEdit, boundary, (int)round((param.maskBlur + 10) * ratio));
         } else if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT)) {
             inpaintBitmap = mBitmap.copy(mBitmap.getConfig(), true);
             double ratio = (double)max(mCurrentSketch.getImgBackground().getWidth(), mCurrentSketch.getImgBackground().getHeight()) / param.sdSize;
-            int boundary = (int) round(param.maskBlur * (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)?2:1) * ratio);
-            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, boundary, (int)round(10 * ratio));
+            int boundary = (int) round(param.maskBlur * (param.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)?1:0) * ratio);
+            mBitmap = mCurrentSketch.getImgBgMerge(inpaintBitmap, boundary, (int)round((param.maskBlur + 10) * ratio));
         }
     }
 }
