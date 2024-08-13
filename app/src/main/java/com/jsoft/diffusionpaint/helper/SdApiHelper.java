@@ -156,13 +156,15 @@ public class SdApiHelper {
                 Bitmap baseImage = Utils.extractBitmap(backgroundImage, inpaintArea);
                 //mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, 0, false));
                 backgroundImage = baseImage;
-                float ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
-                mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true));
+                double ratio = max(inpaintArea.width(), inpaintArea.height()) / sdParam.sdSize;
+                int boundary = (int) round(sdParam.maskBlur * (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)?1:0) * ratio);
+                mCurrentSketch.setImgInpaintMask(Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, false));
                 maskImage = Utils.extractBitmap(mCurrentSketch.getImgInpaintMask(), inpaintArea);
                 size = min(sdParam.sdSize, (int)max(inpaintArea.width(), inpaintArea.height()));
             } else {
-                float ratio = (float)max(backgroundImage.getWidth(), backgroundImage.getHeight()) / sdParam.sdSize;
-                maskImage = Sketch.getInpaintMaskFromPaint(mCurrentSketch, round(sdParam.maskBlur * ratio), true);
+                double ratio = (double)max(backgroundImage.getWidth(), backgroundImage.getHeight()) / sdParam.sdSize;
+                int boundary = (int) round(sdParam.maskBlur * (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH)?1:0) * ratio);
+                maskImage = Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, false);
                 mCurrentSketch.setImgInpaintMask(maskImage);
             }
         }
@@ -206,6 +208,8 @@ public class SdApiHelper {
                     jsonObject.put(key, width);
                 } else if ("height".equals(value)) {
                     jsonObject.put(key, height);
+                } else if ("maskBlur".equals(value)) {
+                    jsonObject.put(key, sdParam.maskBlur);
                 } else if ("background".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(backgroundImage));
                 } else if ("mask".equals(value)) {
