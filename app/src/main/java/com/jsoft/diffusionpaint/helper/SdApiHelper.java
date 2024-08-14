@@ -188,35 +188,33 @@ public class SdApiHelper {
             String key = it.next();
             try {
                 String value = fields.getString(key);
-                if ("workflow".equals(key)) {
-                    jsonObject.put(key, value);
-                } else if ("positive".equals(value)) {
+                if ("$positive".equals(value)) {
                     jsonObject.put(key, mCurrentSketch.getPrompt());
-                } else if ("negative".equals(value)) {
+                } else if ("$negative".equals(value)) {
                     jsonObject.put(key, mCurrentSketch.getNegPrompt());
-                } else if ("size".equals(value)) {
+                } else if ("$size".equals(value)) {
                     jsonObject.put(key, size);
-                } else if ("steps".equals(value)) {
+                } else if ("$steps".equals(value)) {
                     jsonObject.put(key, sdParam.steps);
-                } else if ("denoise".equals(value)) {
+                } else if ("$denoise".equals(value)) {
                     jsonObject.put(key, sdParam.denoise);
-                } else if ("cfg".equals(value)) {
+                } else if ("$cfg".equals(value)) {
                     jsonObject.put(key, sdParam.cfgScale);
-                } else if ("batchSize".equals(value)) {
+                } else if ("$batchSize".equals(value)) {
                     jsonObject.put(key, batchSize);
-                } else if ("width".equals(value)) {
+                } else if ("$width".equals(value)) {
                     jsonObject.put(key, width);
-                } else if ("height".equals(value)) {
+                } else if ("$height".equals(value)) {
                     jsonObject.put(key, height);
-                } else if ("maskBlur".equals(value)) {
+                } else if ("$maskBlur".equals(value)) {
                     jsonObject.put(key, sdParam.maskBlur);
-                } else if ("background".equals(value)) {
+                } else if ("$background".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(backgroundImage));
-                } else if ("mask".equals(value)) {
+                } else if ("$mask".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(maskImage));
-                } else if ("reference".equals(value)) {
+                } else if ("$reference".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
-                } else if ("paint".equals(value)) {
+                } else if ("$paint".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
                 } else {
                     jsonObject.put(key, value);
