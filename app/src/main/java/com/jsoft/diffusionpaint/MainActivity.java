@@ -877,8 +877,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             boolean validated = true;
             String inputText = editText.getText().toString();
             if (inputText.isEmpty()) {
-                inputText = defaultValue;
-                editText.setText(defaultValue);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove(key);
+                editor.apply();
+                dialog.dismiss();
+                return;
             }
             inputText.replace("“", "\"");
             inputText.replace("”", "\"");
