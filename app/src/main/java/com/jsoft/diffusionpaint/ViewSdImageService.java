@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,7 @@ public class ViewSdImageService extends Service {
     private static final int FOREGROUND_ID = 1;
     private Notification notification;
     private boolean isRunning;
+    private static Handler handler;
     public ViewSdImageService() {
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -78,6 +80,7 @@ public class ViewSdImageService extends Service {
             isRunning = true;
             listInfotext = new ArrayList<>();
             listBitmap = new ArrayList<>();
+            handler = new Handler();
             showForegroundNotification();
             callSD4Img(requestType);
         } catch (Exception e) {
@@ -136,12 +139,24 @@ public class ViewSdImageService extends Service {
     }
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject) {
+        sendRequest(requestType, baseUrl, url, jsonObject, "POST");
+    }
+
+    public void sendRequest(String requestType, String baseUrl, String url) {
+        sendRequest(requestType, baseUrl, url, null, "GET");
+    }
+
+    public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String method) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(baseUrl + url);
 
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
-        requestBuilder.post(body);
+        if ("POST".equals(method)) {
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+            requestBuilder.post(body);
+        } else if ("GET".equals(method)) {
+            requestBuilder.get();
+        }
 
         Request request = requestBuilder.build();
 

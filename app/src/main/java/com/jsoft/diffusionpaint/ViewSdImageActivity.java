@@ -534,6 +534,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
     }
 
+    public void updateStatus(String progress) {
+        txtSdStatus.setText(progress);
+    }
+
     public void callSD4Img() {
         clearStaticVar();
         if (mBound) {
@@ -669,8 +673,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
             }
         }
-        if (remainGen > 0) {
+        if (remainGen > 0 && !isInterrupted) {
             callSD4Img();
+        } else {
+            isInterrupted = false;
         }
         updateScreen();
     }
