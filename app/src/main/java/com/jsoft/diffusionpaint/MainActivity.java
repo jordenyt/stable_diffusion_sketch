@@ -385,6 +385,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_stop_comfyui:
                 sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/stop_comfyui", null, "GET");
                 break;
+            case R.id.mi_comfyui_unload:
+                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_free", null, "GET");
+                break;
             case R.id.mi_sd_unload_checkpoint:
                 if (!validateSettings()) break;
                 sdApiHelper.sendPostRequest("unloadCheckpoint", "/sdapi/v1/unload-checkpoint", new JSONObject());

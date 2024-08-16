@@ -432,6 +432,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         if (isCallingSD && !isInterrupted) {
             sdApiHelper.sendPostRequest("interrupt", "/sdapi/v1/interrupt", new JSONObject());
             isInterrupted = true;
+        } else if (isCallingDFL) {
+            String sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
+            sdApiHelper.sendRequest("interrupt", sdBaseUrl, "/comfyui_interrupt", null, "GET");
+            isInterrupted = true;
         } else if (isCallingDFL ||isCallingSD || isCallingAPI) {
             // do Nothing
         } else {
@@ -557,6 +561,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             AlertDialog alert = builder.create();
             if (!isFinishing()) alert.show();
         }
+    }
+
+    public void updateStatus(String progress) {
+        txtSdStatus.setText(progress);
     }
 
     public void callSD4Img() {
@@ -699,8 +707,10 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 }
             }
         }
-        if (remainGen > 0) {
+        if (remainGen > 0 && !isInterrupted) {
             callSD4Img();
+        } else {
+            isInterrupted = false;
         }
         updateScreen();
     }

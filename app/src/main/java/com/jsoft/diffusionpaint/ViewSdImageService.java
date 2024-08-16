@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,7 @@ public class ViewSdImageService extends Service {
     private static final int FOREGROUND_ID = 1;
     private Notification notification;
     private boolean isRunning;
+    private static Handler handler;
     public ViewSdImageService() {
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -78,6 +80,7 @@ public class ViewSdImageService extends Service {
             isRunning = true;
             listInfotext = new ArrayList<>();
             listBitmap = new ArrayList<>();
+            handler = new Handler();
             showForegroundNotification();
             callSD4Img(requestType);
         } catch (Exception e) {
@@ -142,12 +145,24 @@ public class ViewSdImageService extends Service {
     }
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject) {
+        sendRequest(requestType, baseUrl, url, jsonObject, "POST");
+    }
+
+    public void sendRequest(String requestType, String baseUrl, String url) {
+        sendRequest(requestType, baseUrl, url, null, "GET");
+    }
+
+    public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String method) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(baseUrl + url);
 
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
-        requestBuilder.post(body);
+        if ("POST".equals(method)) {
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+            requestBuilder.post(body);
+        } else if ("GET".equals(method)) {
+            requestBuilder.get();
+        }
 
         Request request = requestBuilder.build();
 
@@ -243,12 +258,43 @@ public class ViewSdImageService extends Service {
                     stopForeground(true);
                     break;
                 }
-                case "deepFaceLab":
                 case "comfyui": {
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    if (jsonObject.has("status")) {
+                        handler.postDelayed(() -> sendRequest("comfyuiStatus", sdBaseUrl, "/comfyui_status"), 1000);
+                    } else {
+                        isRunning = false;
+                        stopForeground(true);
+                        onSdApiFailure(requestType, "ComfyUI not started.");
+                    }
+                    break;
+                }
+                case "comfyuiStatus": {
+                    JSONObject jsonObject = new JSONObject(responseBody);
+                    if (jsonObject.has("progress") && jsonObject.has("step")) {
+                        String progress = jsonObject.getString("progress");
+                        String step = jsonObject.getString("step");
+                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                            activity.runOnUiThread(() -> activity.updateStatus(progress + "\n" + step));
+                        }
+                        if ("Done".equals(progress)) {
+                            sendRequest("comfyuiResult", sdBaseUrl, "/comfyui_result");
+                        } else {
+                            handler.postDelayed(() -> sendRequest("comfyuiStatus", sdBaseUrl, "/comfyui_status"), 1000);
+                        }
+                    } else {
+                        isRunning = false;
+                        stopForeground(true);
+                        onSdApiFailure(requestType, "Cannot get ComfyUI Status.");
+                    }
+                    break;
+                }
+                case "deepFaceLab":
+                case "comfyuiResult": {
                     ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
-                    //List<Bitmap> listBitmap = new ArrayList<>();
-
+                    String actualRequestType = "comfyuiResult".equals(requestType) ? "comfyui": requestType;
+                    
                     JSONArray images = jsonObject.getJSONArray("processed_image");
                     if (images.length() > 0) {
                         for (int i=0;i<images.length();i++) {
@@ -259,16 +305,16 @@ public class ViewSdImageService extends Service {
                     if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
                         isRunning = false;
                         stopForeground(true);
-                        activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
+                        activity.runOnUiThread(() -> activity.processResultBitmap(actualRequestType, listBitmap, null));
                     } else {
                         int nextBatchSize = Math.min(numGen - listBitmap.size(), Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
                         if (nextBatchSize > 0) {
                             if (requestJSON.has("batch_size")) {
                                 requestJSON.put("batch_size", nextBatchSize);
                             }
-                            callSD4Img(requestType);
+                            callSD4Img(actualRequestType);
                         } else {
-                            ViewSdImageActivity.rtResultType = requestType;
+                            ViewSdImageActivity.rtResultType = actualRequestType;
                             ViewSdImageActivity.rtBitmap = listBitmap;
                             ViewSdImageActivity.rtInfotext = null;
                             isRunning = false;
@@ -285,6 +331,10 @@ public class ViewSdImageService extends Service {
     }
 
     private void onSdApiFailure(String requestType, String errMsg) {
+        if ("comfyuiStatus".equals(requestType)) {
+            handler.postDelayed(() -> sendRequest("comfyuiStatus", sdBaseUrl, "/comfyui_status"), 1000);
+            return;
+        }
         isRunning = false;
         stopForeground(true);
         ViewSdImageActivity.isCallingSD = false;
