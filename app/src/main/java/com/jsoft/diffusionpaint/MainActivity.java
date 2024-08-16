@@ -17,7 +17,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -49,7 +48,7 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
-import com.jaredrummler.android.colorpicker.BuildConfig;
+import com.google.gson.JsonSyntaxException;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.helper.PaintDb;
@@ -75,7 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -793,7 +791,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         MultiAutoCompleteTextView editText = dialogView.findViewById(R.id.edit_text);
         editText.setHint(hint);
-        editText.setText(sharedPreferences.getString(key, defaultValue));
+        String defaultText = sharedPreferences.getString(key, defaultValue);
+        if (key.startsWith("mode")) {
+            defaultText = defaultText.replace(",", ", ");
+            defaultText = defaultText.replace("  ", " ");
+        }
+        editText.setText(defaultText);
 
         if (key.startsWith("mode")) {
             if (SdParam.cnModelList == null || SdParam.cnModulesResponse == null || SdParam.samplerList == null) {
@@ -828,9 +831,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 dialog.dismiss();
                 return;
             }
-            inputText.replace("“", "\"");
-            inputText.replace("”", "\"");
-            if (key.startsWith("mode") && !isValidJson(inputText)) {
+            inputText = inputText.replace("“", "\"");
+            inputText = inputText.replace("”", "\"");
+            if (key.startsWith("mode") && !isValidModeJson(inputText)) {
                 validated = false;
             }
             if (validated) {
@@ -844,15 +847,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         });
     }
 
-    private boolean isValidJson(String json) {
+    private boolean isValidModeJson(String json) {
         try {
-            new JSONObject(json);
-        } catch (JSONException ex) {
-            try {
-                new JSONArray(json);
-            } catch (JSONException ex1) {
-                return false;
-            }
+            Gson gson = new Gson();
+            gson.fromJson(json, SdParam.class);
+        } catch (JsonSyntaxException ex) {
+            return false;
         }
         return true;
     }
