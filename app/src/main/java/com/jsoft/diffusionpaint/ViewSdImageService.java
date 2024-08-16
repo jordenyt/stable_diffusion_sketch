@@ -231,6 +231,16 @@ public class ViewSdImageService extends Service {
                                 stopForeground(true);
                             }
                         }
+                    } else if (!listBitmap.isEmpty() && ViewSdImageActivity.isInterrupted) {
+                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
+                        } else {
+                            ViewSdImageActivity.rtResultType = requestType;
+                            ViewSdImageActivity.rtBitmap = listBitmap;
+                            ViewSdImageActivity.rtInfotext = listInfotext;
+                        }
+                        isRunning = false;
+                        stopForeground(true);
                     } else {
                         ViewSdImageActivity.isInterrupted = false;
                         if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
