@@ -138,7 +138,7 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getComfyuiJSON(Sketch mCurrentSketch, int batchSize) {
+    public JSONObject getComfyuiJSON(Sketch mCurrentSketch, int batchSize){
         JSONObject jsonObject = new JSONObject();
         SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
         JSONObject fields = getComfyuiFields(mCurrentSketch.getCnMode());
@@ -184,6 +184,12 @@ public class SdApiHelper {
             }
         }
 
+        JSONObject modeJSON = null;
+        try {
+            modeJSON = new JSONObject(getSdParmJSON(mCurrentSketch.getCnMode()));
+        } catch (JSONException e) {
+            modeJSON = new JSONObject();
+        }
         for (Iterator<String> it = fields.keys(); it.hasNext(); ) {
             String key = it.next();
             try {
@@ -216,6 +222,8 @@ public class SdApiHelper {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
                 } else if ("$paint".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
+                } else if (modeJSON.has(key)) {
+                    jsonObject.put(key, modeJSON.get(key));
                 } else {
                     jsonObject.put(key, value);
                 }
@@ -223,6 +231,34 @@ public class SdApiHelper {
         }
 
         return jsonObject;
+    }
+
+    private String getComfyuiModeName(String cnMode) {
+        return cnMode.substring(Sketch.CN_MODE_COMFYUI.length());
+    }
+
+    private String getComfyuiDefault(String cnMode) {
+        for (int i = 0; i < Sketch.comfyuiModes.length(); i ++) {
+            try {
+                JSONObject cfMode = Sketch.comfyuiModes.getJSONObject(i);
+                if (cfMode.get("name").equals(getComfyuiModeName(cnMode))) {
+                    return cfMode.getJSONObject("default").toString();
+                }
+            } catch (JSONException ignored) {}
+        }
+        return Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
+    }
+
+    private JSONObject getComfyuiFields(String cnMode) {
+        for (int i = 0; i < Sketch.comfyuiModes.length(); i ++) {
+            try {
+                JSONObject cfMode = Sketch.comfyuiModes.getJSONObject(i);
+                if (cfMode.get("name").equals(getComfyuiModeName(cnMode))) {
+                    return cfMode.getJSONObject("fields");
+                }
+            } catch (JSONException ignored) {}
+        }
+        return new JSONObject();
     }
 
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
@@ -273,34 +309,6 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    private String getComfyuiModeName(String cnMode) {
-        return cnMode.substring(Sketch.CN_MODE_COMFYUI.length());
-    }
-
-    private String getComfyuiDefault(String cnMode) {
-        for (int i = 0; i < Sketch.comfyuiModes.length(); i ++) {
-            try {
-                JSONObject cfMode = Sketch.comfyuiModes.getJSONObject(i);
-                if (cfMode.get("name").equals(getComfyuiModeName(cnMode))) {
-                    return cfMode.getJSONObject("default").toString();
-                }
-            } catch (JSONException ignored) {}
-        }
-        return Sketch.defaultJSON.get(Sketch.CN_MODE_TXT);
-    }
-
-    private JSONObject getComfyuiFields(String cnMode) {
-        for (int i = 0; i < Sketch.comfyuiModes.length(); i ++) {
-            try {
-                JSONObject cfMode = Sketch.comfyuiModes.getJSONObject(i);
-                if (cfMode.get("name").equals(getComfyuiModeName(cnMode))) {
-                    return cfMode.getJSONObject("fields");
-                }
-            } catch (JSONException ignored) {}
-        }
-        return new JSONObject();
-    }
-
     public String getSdParmJSON(String cnMode) {
         return cnMode.equals(Sketch.CN_MODE_TXT) ? sharedPreferences.getString("modeTxt2img", Sketch.defaultJSON.get(cnMode)) :
                 cnMode.equals(Sketch.CN_MODE_TXT_SDXL) ? sharedPreferences.getString("modeSDXL", Sketch.defaultJSON.get(cnMode)) :
@@ -321,7 +329,6 @@ public class SdApiHelper {
     public SdParam getSdCnParm(String cnMode) {
         Gson gson = new Gson();
         String jsonMode = getSdParmJSON(cnMode);
-
         JsonObject rootObj = gson.fromJson(jsonMode, JsonObject.class);
         if (rootObj.get("cnInputImage") != null && rootObj.get("cn") == null) {
             JsonObject cnObj = new JsonObject();
