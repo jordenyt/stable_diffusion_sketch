@@ -261,6 +261,22 @@ public class SdApiHelper {
         return new JSONObject();
     }
 
+    public JSONObject getComfyuiCaptionJSON(Bitmap bitmap) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("workflow", "caption");
+            double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
+            Bitmap resultBm = bitmap;
+            if (scale > 1) {
+                resultBm = Bitmap.createScaledBitmap(bitmap, (int) round(bitmap.getWidth() / scale), (int) round(bitmap.getHeight() / scale), true);
+            }
+            jsonObject.put("background", Utils.jpg2Base64String(resultBm));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}

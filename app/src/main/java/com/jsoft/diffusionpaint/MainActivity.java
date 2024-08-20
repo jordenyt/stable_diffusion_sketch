@@ -748,6 +748,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
         btnInterrogate.setVisibility(View.GONE);
 
+        Button btnCaption = dialogView.findViewById(R.id.btnCaption);
+        btnCaption.setVisibility(View.GONE);
+
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
 
         List<String> filteredModes = new ArrayList<>();

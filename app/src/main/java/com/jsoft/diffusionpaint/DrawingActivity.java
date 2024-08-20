@@ -460,6 +460,17 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             });
         }
 
+        Button btnCaption = dialogView.findViewById(R.id.btnCaption);
+        if (mCurrentSketch.getImgBackground()==null) {
+            btnCaption.setVisibility(View.GONE);
+        } else {
+            btnCaption.setOnClickListener(view -> {
+                JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground());
+                sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
+                btnCaption.setEnabled(false);
+            });
+        }
+
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
         Map<String, String> modeMap = new LinkedHashMap<>();
@@ -712,6 +723,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 }
                 promptTextView.setText(tag);
                 //promptTextView.setText(jsonObject.getString("caption"));
+            } catch (JSONException ignored) {}
+        } else if ("caption".equals(requestType)) {
+            try {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                promptTextView.setText(jsonObject.getString("caption"));
             } catch (JSONException ignored) {}
         }
     }
