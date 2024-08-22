@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private String t_key, t_title, t_hint, t_defaultValue;
     private static final String settingFileName = "SDSketch.json";
     private static Menu mainMenu;
+    private TextView txtVRAM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -778,6 +779,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
+
+        txtVRAM = dialogView.findViewById(R.id.sd_vram_txt);
+        sdApiHelper.sendGetRequest("getVRAM", "/sdapi/v1/memory");
     }
 
     private void showTextInputDialog(String key, String title, String hint, String defaultValue) {
@@ -1095,7 +1099,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     @Override
     public void onSdApiFailure(String requestType, String errMessage) {
-        if (!"setSDModel1".equals(requestType) && !"getVersionCode".equals(requestType)) {
+        if (!"setSDModel1".equals(requestType) && !"getVersionCode".equals(requestType) && !"getVRAM".equals(requestType)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Call Stable Diffusion Web UI API failed. (" + requestType + ")")
                     .setMessage(errMessage)
@@ -1188,6 +1192,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
+            } else if ("getVRAM".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                String message = "";
+                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
+                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB";
+                txtVRAM.setText(message);
             } else if ("getVersionCode".equals(requestType)) {
                 int appVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
                 JSONObject jsonObject = new JSONObject(responseBody);
