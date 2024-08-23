@@ -70,7 +70,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private SeekBar seekBlur;
     private TextView tvWidth;
     private TextView tvBlur;
-    private TextView txtVRAM;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
     FloatingActionButton paletteButton;
@@ -566,9 +565,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         AlertDialog dialog = builder.create();
         if(!isFinishing()) dialog.show();
-
-        txtVRAM = dialogView.findViewById(R.id.sd_vram_txt);
-        sdApiHelper.sendGetRequest("getVRAM", "/sdapi/v1/memory");
     }
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
@@ -703,14 +699,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 promptTextView.setText(jsonObject.getString("caption"));
-            } catch (JSONException ignored) {}
-        } else if ("getVRAM".equals(requestType)) {
-            try {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String message = "";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB";
-                txtVRAM.setText(message);
             } catch (JSONException ignored) {}
         }
     }

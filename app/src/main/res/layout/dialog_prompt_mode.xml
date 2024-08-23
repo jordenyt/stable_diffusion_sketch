@@ -147,22 +147,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="VRAM:"
-                android:textAppearance="?android:textAppearanceMedium" />
-            <TextView
-                android:id="@+id/sd_vram_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAppearance="?android:textAppearanceMedium" />
-        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
