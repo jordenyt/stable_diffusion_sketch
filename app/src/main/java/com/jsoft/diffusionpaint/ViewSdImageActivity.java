@@ -401,6 +401,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 try {
                     JSONObject jsonExif = new JSONObject();
                     String userComment = apiResultList.get(currentResult).infoTexts;
+                    if (userComment == null || userComment.equals("")) {
+                        userComment = mCurrentSketch.getPrompt() + "\nNegative prompt: " + mCurrentSketch.getNegPrompt() + "\nSteps: " + param.steps;
+                    }
                     jsonExif.put("UserComment", userComment);
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
@@ -413,6 +416,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     JSONObject jsonExif = new JSONObject(exif);
                     if (!jsonExif.has("UserComment")) {
                         String userComment = apiResultList.get(currentResult).infoTexts;
+                        if (userComment == null || userComment.equals("")) {
+                            userComment = mCurrentSketch.getPrompt() + "\nNegative prompt: " + mCurrentSketch.getNegPrompt() + "\nSteps: " + param.steps;
+                        }
                         jsonExif.put("UserComment", userComment);
                     }
                     if (!jsonExif.has("DateTimeOriginal")) {
