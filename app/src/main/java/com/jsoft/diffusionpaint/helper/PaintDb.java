@@ -142,6 +142,42 @@ public class PaintDb {
         }
     }
 
+    public Bitmap getSketchPaint(int sketchId) {
+        String queryString =
+                "SELECT " + SketchEntry._ID
+                        + ", " + SketchEntry.PAINT
+                        + " FROM " + SketchEntry.TABLE_NAME
+                        + " WHERE " + SketchEntry._ID + " = " + sketchId;
+        Cursor c = db.rawQuery(queryString, new String[] {});
+        List<Sketch> sketches = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            CursorWindow cw = new CursorWindow("sketchPaint", 10000000);
+            AbstractWindowedCursor ac = (AbstractWindowedCursor) c;
+            ac.setWindow(cw);
+
+            while (ac.moveToNext()) {
+                Sketch sketch = new Sketch();
+                sketch.setId(ac.getInt(ac.getColumnIndexOrThrow(SketchEntry._ID)));
+                sketch.setImgPaint(Utils.base64String2Bitmap(ac.getString(ac.getColumnIndexOrThrow(SketchEntry.PAINT))));
+                sketches.add(sketch);
+            }
+            ac.close();
+        } else {
+            while (c.moveToNext()) {
+                Sketch sketch = new Sketch();
+                sketch.setId(c.getInt(c.getColumnIndexOrThrow(SketchEntry._ID)));
+                sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
+                sketches.add(sketch);
+            }
+        }
+        c.close();
+        if (sketches.size() > 0) {
+            return sketches.get(0).getImgPaint();
+        } else {
+            return null;
+        }
+    }
+
     public int getSketchParent(int sketchId) {
         String queryString =
                 "SELECT " + SketchEntry._ID
@@ -171,7 +207,7 @@ public class PaintDb {
                         + ", " + SketchEntry.CREATE_DATE
                         + ", " + SketchEntry.LAST_UPDATE_DATE
                         + ", " + SketchEntry.PREVIEW
-                        + ", " + SketchEntry.PAINT
+                        //+ ", " + SketchEntry.PAINT
                         + ", " + SketchEntry.MASK
                         + ", " + SketchEntry.PROMPT
                         + ", " + SketchEntry.NEG_PROMPT
@@ -193,7 +229,7 @@ public class PaintDb {
             sketch.setStyle(c.getString(c.getColumnIndexOrThrow(SketchEntry.STYLE)));
             sketch.setCnMode(c.getString(c.getColumnIndexOrThrow(SketchEntry.CN_MODE)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
-            sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
+            //sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
             sketch.setImgInpaintMask(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.MASK))));
             sketch.setExif(c.getString(c.getColumnIndexOrThrow(SketchEntry.EXIF)));
             sketches.add(sketch);
@@ -203,6 +239,7 @@ public class PaintDb {
             Sketch result = sketches.get(0);
             result.setImgReference(getSketchRef(sketchId));
             result.setImgBackground(getSketchBg(sketchId));
+            result.setImgPaint(getSketchPaint(sketchId));
             return result;
         } else {
             return null;
