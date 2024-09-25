@@ -50,7 +50,7 @@
             android:exported="true"
             android:taskAffinity="com.jsoft.diffusionpaint"
             android:theme="@style/Theme.DiffusionPaint"
-            android:launchMode="singleTask">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
