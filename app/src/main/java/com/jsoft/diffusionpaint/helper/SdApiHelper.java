@@ -138,6 +138,40 @@ public class SdApiHelper {
         return jsonObject;
     }
 
+    private String getCleanString(String input) {
+        Pattern pattern = Pattern.compile("<\\s*(\\w+)\\s*:\\s*(.*?)\\s*>");
+        Matcher matcher = pattern.matcher(input);
+
+        StringBuilder cleanString = new StringBuilder(input);
+
+        while (matcher.find()) {
+            cleanString.replace(matcher.start(), matcher.end(), "");
+            matcher.reset(cleanString);
+        }
+
+        return cleanString.toString().replaceAll("\\s+", " ").trim();
+    }
+
+    private JSONObject getEmbeddedJSONObject(String input) {
+        Pattern pattern = Pattern.compile("<\\s*(\\w+)\\s*:\\s*(.*?)\\s*>");
+        Matcher matcher = pattern.matcher(input);
+
+        JSONObject jsonObject = new JSONObject();
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2); // Capture the entire value, including spaces and colons
+
+            try {
+                jsonObject.put(key, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return jsonObject;
+    }
+
     public JSONObject getComfyuiJSON(Sketch mCurrentSketch, int batchSize){
         JSONObject jsonObject = new JSONObject();
         SdParam sdParam = getSdCnParm(mCurrentSketch.getCnMode());
@@ -184,6 +218,12 @@ public class SdApiHelper {
             }
         }
 
+        String prompt = getCleanString(mCurrentSketch.getPrompt());
+        String negPrompt = getCleanString(mCurrentSketch.getNegPrompt());
+
+        JSONObject overrideParam = getEmbeddedJSONObject(mCurrentSketch.getPrompt());
+
+
         JSONObject modeJSON = null;
         try {
             modeJSON = new JSONObject(getSdParmJSON(mCurrentSketch.getCnMode()));
@@ -195,9 +235,9 @@ public class SdApiHelper {
             try {
                 String value = fields.getString(key);
                 if ("$positive".equals(value)) {
-                    jsonObject.put(key, mCurrentSketch.getPrompt());
+                    jsonObject.put(key, prompt);
                 } else if ("$negative".equals(value)) {
-                    jsonObject.put(key, mCurrentSketch.getNegPrompt());
+                    jsonObject.put(key, negPrompt);
                 } else if ("$size".equals(value)) {
                     jsonObject.put(key, size);
                 } else if ("$steps".equals(value)) {
@@ -222,6 +262,8 @@ public class SdApiHelper {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
                 } else if ("$paint".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
+                } else if (overrideParam.has(key)) {
+                    jsonObject.put(key, overrideParam.get(key));
                 } else if (modeJSON.has(key)) {
                     jsonObject.put(key, modeJSON.get(key));
                 } else {
