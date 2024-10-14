@@ -100,6 +100,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         db = new PaintDb(this);
         sdApiHelper = new SdApiHelper(this, this);
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
         if (loraList == null) {
             sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
         }
@@ -108,6 +110,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         }
         if (SdParam.cnModulesResponse == null) {
             sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
+        }
+        String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
+        if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
+            sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
         }
         loadSketch(getIntent());
     }
@@ -121,7 +127,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     private void loadSketch(Intent i) {
         mCurrentSketch = new Sketch();
-        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         int sketchId = i.getIntExtra("sketchId", -1);
         int parentId = i.getIntExtra("parentId", -1);
         String bitmapPath = i.getStringExtra("bitmapPath");
@@ -711,6 +716,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             styleList = sdApiHelper.getStyles(responseBody);
         } else if ("getCnModule".equals(requestType)) {
             SdParam.cnModulesResponse = responseBody;
+        } else if ("getComfyuiMode".equals(requestType)) {
+            try {
+                Sketch.comfyuiModes = new JSONArray(responseBody);
+            } catch (JSONException ignored) {}
         } else if ("interrogate".equals(requestType)) {
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
