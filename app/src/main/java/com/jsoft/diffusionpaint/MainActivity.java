@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements SdApiResponseListener {
 
@@ -91,12 +92,32 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     private static final int MI_CUSTOM_MODE_BASE = UUID.randomUUID().hashCode();
     private String t_key, t_title, t_hint, t_defaultValue;
     private static final String settingFileName = "SDSketch.json";
+    public static boolean isViewingSDImage = false;
     private static Menu mainMenu;
     private TextView txtVRAM;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (isViewingSDImage) {
+            Intent viewSdIntent = new Intent(this, ViewSdImageActivity.class);
+            viewSdIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(viewSdIntent);
+            finish();
+            return;
+        }
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEND.equals(intent.getAction())) {
+            Intent drawIntent = getIntentFromImage(intent);
+            if (drawIntent != null) {
+                gotoDrawingActivity(drawIntent);
+                finish();
+                return;
+            }
+        }
+
         setContentView(R.layout.activity_main);
         if (mImageFile==null) mImageFile = new File(getExternalFilesDir(null), "captured_image.jpg");
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -142,11 +163,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         isPermissionGranted();
 
         sdApiHelper = new SdApiHelper(this, this);
-
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            newPaintFromImage(intent);
-        }
 
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
         if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
@@ -214,9 +230,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void gotoDrawingActivity(Intent intent) {
-        finish();
         DrawingActivity.clearPath();
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -226,26 +241,19 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         showGrid(-1);
     }
 
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            newPaintFromImage(intent);
-        }
-    }
-
-    public void newPaintFromImage(Intent intent) {
+    public Intent getIntentFromImage(Intent intent) {
         Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         String mimeType = this.getContentResolver().getType(uri);
         if (mimeType != null && mimeType.startsWith("image/")) {
             String filePath = Utils.getPathFromUri(uri, this);
             if (filePath != null) {
                 Intent drawIntent = new Intent(this, DrawingActivity.class);
-                drawIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 drawIntent.putExtra("sketchId", -2);
                 drawIntent.putExtra("bitmapPath", filePath);
-                gotoDrawingActivity(drawIntent);
+                return drawIntent;
             }
         }
+        return null;
     }
 
     public void showGrid(int rootSketchId) {
