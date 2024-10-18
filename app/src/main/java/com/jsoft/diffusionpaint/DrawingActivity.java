@@ -110,6 +110,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         loadSketch(getIntent());
     }
 
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        loadSketch(intent);
+    }
+
     public static void clearPath() {
         mPaths = new ArrayList<>();
         mPaints = new ArrayList<>();
@@ -407,7 +412,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     public void gotoMainActivity() {
         clearPath();
         Intent intent = new Intent(this, MainActivity.class);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -578,7 +583,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                         if (i != null) {
                             if (i.getIntExtra("sketchId", -1) != startIntentSketchId) {
                                 clearPath();
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 finish();
                                 startActivity(i);
                             }
@@ -590,7 +595,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                         int sketchId = i.getIntExtra("sketchId", -1);
                         if (sketchId == -2) {
                             clearPath();
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             finish();
                             startActivity(i);
                         } else {

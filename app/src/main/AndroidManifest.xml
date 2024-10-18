@@ -39,18 +39,19 @@
             android:name=".ViewSdImageActivity"
             android:configChanges="keyboardHidden|screenSize"
             android:exported="true"
-            android:theme="@style/Theme.DiffusionPaintFullScreen" />
+            android:theme="@style/Theme.DiffusionPaintFullScreen"
+            android:launchMode="singleTask" />
         <activity
             android:name=".DrawingActivity"
             android:configChanges="keyboardHidden|screenSize"
             android:exported="true"
-            android:theme="@style/Theme.DiffusionPaintFullScreen" />
+            android:theme="@style/Theme.DiffusionPaintFullScreen"
+            android:launchMode="singleTask" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:taskAffinity="com.jsoft.diffusionpaint"
-            android:theme="@style/Theme.DiffusionPaint"
-            android:launchMode="singleTop">
+            android:theme="@style/Theme.DiffusionPaint">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -116,6 +116,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         PaintDb db = new PaintDb(this);
 
         if (isFirstCall) {
+            MainActivity.isViewingSDImage = true;
             rtResultType = null;
             rtBitmap = null;
             rtInfotext = null;
@@ -319,6 +320,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     setResult(Activity.RESULT_OK, intent);
                     clearStaticVar();
+                    MainActivity.isViewingSDImage = false;
                     finish();
                 });
             });
@@ -422,6 +424,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", mCurrentSketch.getId());
             //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            MainActivity.isViewingSDImage = false;
             setResult(Activity.RESULT_CANCELED, intent);
             finish();
         }
