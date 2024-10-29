@@ -284,19 +284,19 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
             if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
                 if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
-                    double scale = (double) mCurrentSketch.getRectInpaint(param.sdSize).height() / inpaintBitmap.getHeight();
-                    jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap, scale);
+                    int upscaledSize = Math.round(Math.max(mCurrentSketch.getRectInpaint(param.sdSize).height(), inpaintBitmap.getHeight()));
+                    jsonObject = sdApiHelper.getUpscaleImageJSON(inpaintBitmap, upscaledSize);
                 } else {
-                    jsonObject = sdApiHelper.getExtraSingleImageJSON(inpaintBitmap);
+                    jsonObject = sdApiHelper.getUpscaleImageJSON(inpaintBitmap);
                 }
             } else {
-                jsonObject = sdApiHelper.getExtraSingleImageJSON(mBitmap);
+                jsonObject = sdApiHelper.getUpscaleImageJSON(mBitmap);
             }
             clearStaticVar();
             if (mBound) {
-                mService.setObject(sharedPreferences.getString("sdServerAddress", ""), jsonObject);
+                mService.setObject(sharedPreferences.getString("dflApiAddress", ""), jsonObject);
                 Intent intent = new Intent(this, ViewSdImageService.class);
-                intent.putExtra("requestType", "extraSingleImage");
+                intent.putExtra("requestType", "comfyui");
                 startService(intent);
             }
         });

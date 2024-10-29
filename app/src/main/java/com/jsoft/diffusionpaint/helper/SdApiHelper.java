@@ -323,31 +323,18 @@ public class SdApiHelper {
         return jsonObject;
     }
 
-    public JSONObject getExtraSingleImageJSON(Bitmap bitmap) {
+    public JSONObject getUpscaleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
-        return getExtraSingleImageJSON(bitmap, min(4d, (double)canvasDim / (double) max(bitmap.getWidth(), bitmap.getHeight())));
+        return getUpscaleImageJSON(bitmap, canvasDim);
     }
 
-    public JSONObject getExtraSingleImageJSON(Bitmap bitmap, double scale) {
+    public JSONObject getUpscaleImageJSON(Bitmap bitmap, int size) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("resize_mode", 0);
-            //jsonObject.put("show_extras_results", true);
-            double gfpganVisibity = 0.8;
-            try {gfpganVisibity = Double.parseDouble(sharedPreferences.getString("upscalerGFPGAN", "0.8")); } catch (Exception ignored) {}
-            jsonObject.put("gfpgan_visibility", gfpganVisibity);
-            jsonObject.put("codeformer_visibility", 0);
-            jsonObject.put("codeformer_weight", 0);
-            jsonObject.put("upscaling_resize", scale);
-            //jsonObject.put("upscaling_resize_w", 512);
-            //jsonObject.put("upscaling_resize_h", 512);
-            //jsonObject.put("upscaling_crop", true);
-            jsonObject.put("upscaler_1", scale == 1d ? "None" : sharedPreferences.getString("sdUpscaler", "R-ESRGAN General 4xV3"));
-            jsonObject.put("upscaler_2", "None");
-            jsonObject.put("extras_upscaler_2_visibility", 0);
-            jsonObject.put("upscale_first", true);
-            jsonObject.put("image", Utils.jpg2Base64String(bitmap));
+            jsonObject.put("workflow", "upscale");
+            jsonObject.put("size", size);
+            jsonObject.put("background", Utils.jpg2Base64String(bitmap));
         } catch (JSONException e) {
             e.printStackTrace();
         }
