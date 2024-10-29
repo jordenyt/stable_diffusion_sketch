@@ -1,6 +1,5 @@
 package com.jsoft.diffusionpaint.helper;
 
-import static com.jsoft.diffusionpaint.ViewSdImageActivity.sdModelList;
 import static com.jsoft.diffusionpaint.dto.Sketch.CN_MODE_ORIGIN;
 
 import static java.lang.Math.*;
@@ -9,26 +8,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.RectF;
 
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.jsoft.diffusionpaint.dto.SdParam;
-import com.jsoft.diffusionpaint.dto.SdStyle;
 import com.jsoft.diffusionpaint.dto.Sketch;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -298,6 +290,24 @@ public class SdApiHelper {
                 resultBm = Bitmap.createScaledBitmap(bitmap, (int) round(bitmap.getWidth() / scale), (int) round(bitmap.getHeight() / scale), true);
             }
             jsonObject.put("background", Utils.jpg2Base64String(resultBm));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public JSONObject getUpscaleImageJSON(Bitmap bitmap) {
+        int canvasDim = 3840;
+        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
+        return getUpscaleImageJSON(bitmap, canvasDim);
+    }
+
+    public JSONObject getUpscaleImageJSON(Bitmap bitmap, int size) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("workflow", "upscale");
+            jsonObject.put("size", size);
+            jsonObject.put("background", Utils.jpg2Base64String(bitmap));
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -42,7 +42,6 @@ import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.Sketch;
 import com.jsoft.diffusionpaint.helper.Utils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +49,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -261,7 +259,25 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         });
 
         expandButton.setOnClickListener(view -> {
-
+            JSONObject jsonObject;
+            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
+            if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
+                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
+                    int upscaledSize = Math.round(Math.max(mCurrentSketch.getRectInpaint(param.sdSize).height(), inpaintBitmap.getHeight()));
+                    jsonObject = sdApiHelper.getUpscaleImageJSON(inpaintBitmap, upscaledSize);
+                } else {
+                    jsonObject = sdApiHelper.getUpscaleImageJSON(inpaintBitmap);
+                }
+            } else {
+                jsonObject = sdApiHelper.getUpscaleImageJSON(mBitmap);
+            }
+            clearStaticVar();
+            if (mBound) {
+                mService.setObject(sharedPreferences.getString("dflApiAddress", ""), jsonObject);
+                Intent intent = new Intent(this, ViewSdImageService.class);
+                intent.putExtra("requestType", "comfyui");
+                startService(intent);
+            }
         });
 
         editButton.setOnClickListener(view -> {
