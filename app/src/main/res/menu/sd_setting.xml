@@ -2,24 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Settings">
         <menu>
-            <item android:id="@+id/mi_sd_server_address" android:title="A1111 SD-webui Address"/>
-            <item android:id="@+id/mi_dfl_api_address" android:title="DFL API Address"/>
+            <item android:id="@+id/mi_dfl_api_address" android:title="SD Server Address"/>
             <item android:title="Default Parameters">
                 <menu>
                     <item android:id="@+id/mi_sd_output_dim" android:title="Default SD Output Dimension"/>
                     <item android:id="@+id/mi_canvas_dim" android:title="Drawing Canvas Maximum Size"/>
                     <item android:id="@+id/mi_steps" android:title="Default Steps" />
                     <item android:id="@+id/mi_cfg_scale" android:title="Default CFG Scale" />
-                    <item android:id="@+id/mi_sd_sampler" android:title="Default Sampling method"/>
-                    <item android:id="@+id/mi_clip_skip" android:title="Clip skip" />
                     <item android:id="@+id/mi_mask_blur" android:title="Inpaint Mask Blur Pixels" />
                     <item android:id="@+id/mi_batch_size" android:title="Maximum batch size" />
                 </menu>
             </item>
-            <item android:id="@+id/mi_upscaler" android:title="Upscaler"/>
-            <item android:id="@+id/mi_upscaler_gfpgan" android:title="Upscaler GFPGAN Visibility"/>
-            <item android:id="@+id/mi_sd_refresh_loras" android:title="Refresh Loras"/>
-            <item android:id="@+id/mi_sd_refresh_ckpt" android:title="Refresh Checkpoints"/>
             <item android:id="@+id/mi_export_setting" android:title="Export Settings"/>
             <item android:id="@+id/mi_import_setting" android:title="Import Settings"/>
         </menu>
@@ -32,59 +25,10 @@
             <item android:id="@+id/mi_autocomplete_phrases" android:title="Auto-complete Phrases"/>
         </menu>
     </item>
-    <item android:title="Model">
-        <menu>
-            <item android:id="@+id/mi_dfl_model" android:title="DFL Model"/>
-            <item android:id="@+id/mi_sd_model" android:title="SD 1.5 model"/>
-            <item android:id="@+id/mi_sd_inpaint_model" android:title="SD 1.5 Inpaint model"/>
-            <item android:id="@+id/mi_sdxl_base_model" android:title="SDXL model"/>
-            <item android:id="@+id/mi_sd3_model" android:title="SD3 model"/>
-            <item android:id="@+id/mi_sdxl_turbo_model" android:title="SDXL Turbo/Lightning model"/>
-            <item android:id="@+id/mi_sdxl_inpaint_model" android:title="SDXL Inpaint model"/>
-            <item android:title="ControlNet models">
-                <menu>
-                    <item android:id="@+id/mi_cn_scribble" android:title="ControlNet Scribble model"/>
-                    <item android:id="@+id/mi_cn_depth" android:title="ControlNet Depth model"/>
-                    <item android:id="@+id/mi_cn_pose" android:title="ControlNet Pose model"/>
-                    <item android:id="@+id/mi_cn_canny" android:title="ControlNet Canny model"/>
-                    <item android:id="@+id/mi_cn_normal" android:title="ControlNet Normal model"/>
-                    <item android:id="@+id/mi_cn_mlsd" android:title="ControlNet MLSD model"/>
-                    <item android:id="@+id/mi_cn_lineart" android:title="ControlNet Lineart model"/>
-                    <item android:id="@+id/mi_cn_softedge" android:title="ControlNet Softedge model"/>
-                    <item android:id="@+id/mi_cn_seg" android:title="ControlNet Seg model"/>
-                    <item android:id="@+id/mi_cn_tile" android:title="ControlNet Tile model"/>
-                    <item android:id="@+id/mi_cn_ipadapter" android:title="ControlNet IP-Adapter model"/>
-                    <item android:id="@+id/mi_cnxl_ipadapter" android:title="ControlNet IP-Adapter XL model"/>
-                    <item android:id="@+id/mi_cn_other1" android:title="Other ControlNet Model 1"/>
-                    <item android:id="@+id/mi_cn_other2" android:title="Other ControlNet Model 2"/>
-                    <item android:id="@+id/mi_cn_other3" android:title="Other ControlNet Model 3"/>
-                </menu>
-            </item>
-        </menu>
-    </item>
+
     <item android:title="Define Mode with JSON">
         <menu>
-            <item android:title="Preset Modes">
-                <menu>
-                    <item android:id="@+id/mi_mode_txt2img" android:title="SD txt2img"/>
-                    <item android:id="@+id/mi_mode_sdxl" android:title="SDXL txt2img"/>
-                    <item android:id="@+id/mi_mode_sdxl_turbo" android:title="SDXL turbo txt2img"/>
-                    <item android:id="@+id/mi_mode_sd3" android:title="SD3 txt2img"/>
-                    <item android:id="@+id/mi_mode_inpaint" android:title="Inpainting on Background"/>
-                    <item android:id="@+id/mi_mode_inpaint_s" android:title="Inpainting with Sketch"/>
-                    <item android:id="@+id/mi_mode_refine" android:title="Refiner"/>
-                    <item android:id="@+id/mi_mode_p_inpaint" android:title="Partial Inpainting on Background"/>
-                    <item android:id="@+id/mi_mode_p_inpaint_s" android:title="Partial Inpainting with Sketch"/>
-                    <item android:id="@+id/mi_mode_p_refine" android:title="Partial Refiner"/>
-                    <item android:id="@+id/mi_mode_outpaint" android:title="Outpainting"/>
-                    <item android:id="@+id/mi_mode_merge" android:title="Merge with Reference"/>
-                </menu>
-            </item>
             <item android:title="ComfyUI Modes">
-                <menu>
-                </menu>
-            </item>
-            <item android:title="Customized Modes">
                 <menu>
                 </menu>
             </item>
@@ -93,12 +37,9 @@
     <item android:id="@+id/mi_about" android:title="Go to Project Page" />
     <item android:title="Service Management">
         <menu>
-            <item android:id="@+id/mi_sd_unload_checkpoint" android:title="Unload A1111 Checkpoint"/>
             <item android:id="@+id/mi_comfyui_unload" android:title="Free ComfyUI"/>
-            <item android:id="@+id/mi_restart_a1111" android:title="Restart A1111"/>
             <item android:id="@+id/mi_start_comfyui" android:title="Start ComfyUI"/>
             <item android:id="@+id/mi_stop_comfyui" android:title="Stop ComfyUI"/>
-            <item android:id="@+id/mi_vram" android:title="Check Memory Usage"/>
         </menu>
     </item>
 </menu>

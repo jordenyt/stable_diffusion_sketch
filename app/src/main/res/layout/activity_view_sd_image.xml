@@ -52,19 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_dfl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:contentDescription="@string/deepfacelab"
-        android:src="@drawable/ic_dfl"
-        app:backgroundTint="@android:color/holo_orange_dark"
-        app:fabCustomSize="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fab_expand"
-        app:tint="@android:color/white" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_save2"
         android:layout_width="wrap_content"

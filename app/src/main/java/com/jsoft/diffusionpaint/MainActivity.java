@@ -142,13 +142,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         PopupMenu popupMenu = new PopupMenu(this, menuButton);
         popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
         mainMenu = popupMenu.getMenu();
-        MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(2);
-        if (submenuItem.hasSubMenu()) {
-            SubMenu subMenu = submenuItem.getSubMenu();
-            for (int i=1;i<=Sketch.customModeCount;i++) {
-                subMenu.add(0, MI_CUSTOM_MODE_BASE + i, 0, "Custom Mode " + i);
-            }
-        }
         popupMenu.setOnMenuItemClickListener(this::menuItemClick);
 
         menuButton.setOnClickListener(v -> {
@@ -183,11 +176,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     }
 
     private void createComfyuiModeConfig() {
-        MenuItem submenuItem = mainMenu.getItem(3).getSubMenu().getItem(1);
+        MenuItem submenuItem = mainMenu.getItem(2).getSubMenu().getItem(0);
         if (submenuItem.hasSubMenu()) {
             SubMenu subMenu = submenuItem.getSubMenu();
             if (subMenu.size() == 0) {
-                int menuID = MI_CUSTOM_MODE_BASE + Sketch.customModeCount + 1;
+                int menuID = MI_CUSTOM_MODE_BASE + 1;
                 for (int i = 0; i < Sketch.comfyuiModes.length(); i++) {
                     try {
                         JSONObject modeConfig = Sketch.comfyuiModes.getJSONObject(i);
@@ -208,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             builder.setMessage(R.string.app_not_configured_message);
             builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
             builder.setPositiveButton(R.string.configure, (dialog, which) -> {
-                showServerAddressInput();
+                showTextInputDialog("dflApiAddress", "DFL API Address:", "http://192.168.1.101:5000", "");
                 dialog.dismiss();
             });
 
@@ -371,21 +364,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         return gridView;
     }
 
-    private void showServerAddressInput() {
-        showTextInputDialog("sdServerAddress", "A1111 SD-webui Address:", "http://a1111.myserver.com:7860", "");
-    }
-
     public boolean menuItemClick(MenuItem item) {
         // Handle item selection
         AlertDialog.Builder builder;
         AlertDialog alert;
         switch (item.getItemId()) {
-            case R.id.mi_sd_server_address:
-                showServerAddressInput();
-                break;
-            case R.id.mi_restart_a1111:
-                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/restart_a1111", null, "GET");
-                break;
             case R.id.mi_start_comfyui:
                 sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/start_comfyui", null, "GET");
                 break;
@@ -395,19 +378,8 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_comfyui_unload:
                 sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_free", null, "GET");
                 break;
-            case R.id.mi_sd_unload_checkpoint:
-                if (!validateSettings()) break;
-                sdApiHelper.sendPostRequest("unloadCheckpoint", "/sdapi/v1/unload-checkpoint", new JSONObject());
-                break;
-            case R.id.mi_vram:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("checkVRAM", "/sdapi/v1/memory");
-                break;
             case R.id.mi_dfl_api_address:
                 showTextInputDialog("dflApiAddress", "DFL API Address:", "http://192.168.1.101:7860", "");
-                break;
-            case R.id.mi_dfl_model:
-                showTextInputDialog("dflModel", "DFL Model:", "", "");
                 break;
             case R.id.mi_prompt_prefix:
                 showTextInputDialog("promptPrefix", "Prompt Prefix:", "Color drawing of ", "");
@@ -419,107 +391,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("negativePrompt", "Negative Prompt:", "nsfw, adult", "");
                 break;
             case R.id.mi_autocomplete_phrases:
-                if (DrawingActivity.loraList == null) {
-                    sdApiHelper.sendGetRequest("getLoras2", "/sdapi/v1/loras");
-                } else {
-                    showAutoCompleteDialog();
-                }
-                break;
-            case R.id.mi_mode_txt2img:
-                showTextInputDialog("modeTxt2img", "Parameters for txt2img with v1.5 model:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT));
-                break;
-            case R.id.mi_mode_sdxl:
-                showTextInputDialog("modeSDXL", "Parameters for txt2img with SDXL:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL));
-                break;
-            case R.id.mi_mode_sdxl_turbo:
-                showTextInputDialog("modeSDXLTurbo", "Parameters for txt2img with SDXL Turbo/Lightning:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SDXL_TURBO));
-                break;
-            case R.id.mi_mode_sd3:
-                showTextInputDialog("modeSD3", "Parameters for txt2img with SD3:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_TXT_SD3));
-                break;
-            case R.id.mi_mode_inpaint:
-                showTextInputDialog("modeInpaint", "Parameters for Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT));
-                break;
-            case R.id.mi_mode_inpaint_s:
-                showTextInputDialog("modeInpaintS", "Parameters for Inpainting with sketch:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT_SKETCH));
-                break;
-            case R.id.mi_mode_refine:
-                showTextInputDialog("modeRefiner", "Parameters for Refiner:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_REFINER));
-                break;
-            case R.id.mi_mode_p_inpaint:
-                showTextInputDialog("modePInpaint", "Parameters for Partial Inpainting on background:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_PARTIAL_INPAINT));
-                break;
-            case R.id.mi_mode_p_inpaint_s:
-                showTextInputDialog("modePInpaintS", "Parameters for Partial Inpainting with sketch:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_PARTIAL_INPAINT_SKETCH));
-                break;
-            case R.id.mi_mode_p_refine:
-                showTextInputDialog("modePRefiner", "Parameters for Partial Refiner:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_PARTIAL_REFINER));
-                break;
-            case R.id.mi_mode_outpaint:
-                showTextInputDialog("modeOutpaint", "Parameters for Outpainting:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_OUTPAINT));
-                break;
-            case R.id.mi_mode_merge:
-                showTextInputDialog("modeMerge", "Parameters for Merge with Reference:", "", Sketch.defaultJSON.get(Sketch.CN_MODE_INPAINT_MERGE));
-                break;
-            case R.id.mi_cn_scribble:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnScribble", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_depth:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnDepth", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_pose:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnPose", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_canny:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnCanny", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_normal:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnNormal", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_mlsd:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnMlsd", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_lineart:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnLineart", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_softedge:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnSoftedge", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_seg:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnSeg", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_tile:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnTile", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_ipadapter:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnIPAdapter", "/controlnet/model_list");
-                break;
-            case R.id.mi_cnxl_ipadapter:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnxlIPAdapter", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_other1:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnOther1", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_other2:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnOther2", "/controlnet/model_list");
-                break;
-            case R.id.mi_cn_other3:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setCnOther3", "/controlnet/model_list");
+                showAutoCompleteDialog();
                 break;
             case R.id.mi_sd_output_dim:
                 showOutputDimenDialog();
@@ -530,9 +402,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_steps:
                 showTextInputDialog("defaultSteps", "Steps:", "Integer from 1 to 150", "30");
                 break;
-            case R.id.mi_clip_skip:
-                showTextInputDialog("defaultClipSkip", "Clip skip:", "Integer from 1 to 12", "1");
-                break;
             case R.id.mi_batch_size:
                 showTextInputDialog("maxBatchSize", "Maximum Batch Size:", "Integer. Setting this value too high will lead to OOM.", "1");
                 break;
@@ -541,41 +410,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 break;
             case R.id.mi_mask_blur:
                 showTextInputDialog("inpaintMaskBlur", "Inpaint Mask Blur Pixels:", "Integer from 0 to 64", "10");
-                break;
-            case R.id.mi_sd_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSDModel", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sd_inpaint_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSDInpaintModel", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sdxl_base_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSDXLBaseModel", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sd3_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSD3Model", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sdxl_turbo_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSDXLTurboModel", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sdxl_inpaint_model:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSDXLInpaintModel", "/sdapi/v1/sd-models");
-                break;
-            case R.id.mi_sd_sampler:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setSampler", "/sdapi/v1/samplers");
-                break;
-            case R.id.mi_upscaler:
-                if (!validateSettings()) break;
-                sdApiHelper.sendGetRequest("setUpscaler", "/sdapi/v1/upscalers");
-                break;
-            case R.id.mi_upscaler_gfpgan:
-                showTextInputDialog("upscalerGFPGAN", "GFPGAN Visibility:", "Decimal from 0.0 to 1.0", "0.8");
                 break;
             case R.id.mi_about:
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -594,20 +428,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_import_setting:
                 pickJSONFile();
                 break;
-            case R.id.mi_sd_refresh_loras:
-                if (!validateSettings()) break;
-                sdApiHelper.sendPostRequest("refreshLoras", "/sdapi/v1/refresh-loras", new JSONObject());
-                break;
-            case R.id.mi_sd_refresh_ckpt:
-                if (!validateSettings()) break;
-                sdApiHelper.sendPostRequest("refreshCheckpoints", "/sdapi/v1/refresh-checkpoints", new JSONObject());
-                break;
             default:
-                if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
-                    int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
-                    showTextInputDialog("modeCustom" + i, "Parameters for Custom Mode "+ i +":", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                } else if (item.getItemId() > MI_CUSTOM_MODE_BASE + Sketch.customModeCount && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount + Sketch.comfyuiModes.length()) {
-                    int i = item.getItemId() - MI_CUSTOM_MODE_BASE - Sketch.customModeCount - 1;
+                if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.comfyuiModes.length()) {
+                    int i = item.getItemId() - MI_CUSTOM_MODE_BASE - 1;
                     try {
                         JSONObject modeConfig = Sketch.comfyuiModes.getJSONObject(i);
                         showTextInputDialog("modeComyui" + modeConfig.getString("name"), "Parameters for " + modeConfig.getString("title") +  ":", "", modeConfig.getJSONObject("default").toString());
@@ -735,9 +558,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         final RadioGroup rgSdMode = dialogView.findViewById(R.id.radio_sdmode);
         rgSdMode.setVisibility(View.GONE);
         List<String> acList = new ArrayList<>();
-        if (DrawingActivity.loraList != null) {
-            acList.addAll(DrawingActivity.loraList);
-        }
         String autoCompletePhrases = sharedPreferences.getString("autoCompletePhrases", "[]");
         try {
             JSONArray jsonArray = new JSONArray(autoCompletePhrases);
@@ -808,17 +628,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        Spinner sdStyle = dialogView.findViewById(R.id.sd_style);
-        List<String> sdStyleList = new ArrayList<>();
-        sdStyleList.add("--None--");
-        for (int i=0;i<DrawingActivity.styleList.size();i++) {
-            sdStyleList.add(DrawingActivity.styleList.get(i).name);
-        }
-        ArrayAdapter<String> sdStyleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdStyleList);
-        sdStyleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sdStyle.setAdapter(sdStyleAdapter);
-        sdStyle.setSelection(lastStyleSelection);
-
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             String negPromptText = negPromptTV.getText().toString();
@@ -831,15 +640,12 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             lastModeSelection = sdMode.getSelectedItemPosition();
             String selectAspectRatio = sdAspectRatio.getSelectedItem().toString();
             lastAspectSelection = sdAspectRatio.getSelectedItemPosition();
-            String selectStyle = sdStyle.getSelectedItem().toString();
-            lastStyleSelection = sdStyle.getSelectedItemPosition();
             Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
             intent.putExtra("sketchId", -3);
             intent.putExtra("cnMode", txt2imgModeMap.get(selectMode));
             intent.putExtra("prompt", promptText);
             intent.putExtra("negPrompt", negPromptText);
             intent.putExtra("aspectRatio", aspectRatioMap.get(selectAspectRatio));
-            intent.putExtra("style", selectStyle);
             int numGen = sdNumGen.getProgress();
             intent.putExtra("numGen", numGen);
             gotoDrawingActivity(intent);
@@ -849,8 +655,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        txtVRAM = dialogView.findViewById(R.id.sd_vram_txt);
-        sdApiHelper.sendGetRequest("getVRAM", "/sdapi/v1/memory");
     }
 
     private void showTextInputDialog(String key, String title, String hint, String defaultValue) {
@@ -872,14 +676,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         editText.setText(defaultText);
 
         if (key.startsWith("mode")) {
-            if (SdParam.cnModelList == null || SdParam.cnModulesResponse == null || SdParam.samplerList == null) {
-                t_key = key;
-                t_title = title;
-                t_hint = hint;
-                t_defaultValue = defaultValue;
-                sdApiHelper.sendGetRequest("getCnModel", "/controlnet/model_list?update=true");
-                return;
-            }
             ArrayAdapter<String> modeKeyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, SdParam.getModelKeyList());
             editText.setAdapter(modeKeyAdapter);
             editText.setThreshold(2);
@@ -940,13 +736,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         final MultiAutoCompleteTextView newStringInput = dialogView.findViewById(R.id.new_string_input);
         Button addButton = dialogView.findViewById(R.id.add_button);
 
-        if (DrawingActivity.loraList != null) {
-            ArrayAdapter<String> loraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, DrawingActivity.loraList);
-            newStringInput.setAdapter(loraAdapter);
-            newStringInput.setThreshold(1);
-            newStringInput.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-        }
-
         List<String> stringList;
         String listString = sharedPreferences.getString("autoCompletePhrases", "[]");
 
@@ -998,14 +787,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     private void addTxt2img() {
         if (!validateSettings()) return;
-
-        if (DrawingActivity.loraList == null) {
-            sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
-        } else if (DrawingActivity.styleList == null) {
-            sdApiHelper.sendGetRequest("getStyles", "/sdapi/v1/prompt-styles");
-        } else {
-            showPromptDialog();
-        }
+        showPromptDialog();
     }
 
     private void launchCamera() {
@@ -1182,92 +964,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     @Override
     public void onSdApiResponse(String requestType, String responseBody) {
         try {
-            if ("setSDModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SD 1.5 Model", "sdModelCheckpoint", "", "");
-            } else if ("setSDInpaintModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SD 1.5 Inpaint Model", "sdInpaintModel", "", "inpainting.");
-            } else if ("setSDXLBaseModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Model", "sdxlBaseModel", "", "");
-            } else if ("setSD3Model".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SD3 Model", "sd3Model", "", "");
-            } else if ("setSDXLTurboModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Turbo Model", "sdxlTurboModel", "", "");
-            } else if ("setSDXLInpaintModel".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "title", "SDXL Inpaint Model", "sdxlInpaintModel", "", "");
-            } else if ("setSampler".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "name", "Default Sampling Method", "sdSampler", "Euler a", "");
-            } else if ("setUpscaler".equals(requestType)) {
-                showSpinnerDialog(new JSONArray(responseBody), "name", "Upscaler", "sdUpscaler", "R-ESRGAN General 4xV3", "");
-            } else if ("setCnScribble".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Scribble Model", "cnScribbleModel", "control_v11p_sd15_scribble [d4ba51ff]", "scribble");
-            } else if ("setCnDepth".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Depth Model", "cnDepthModel", "control_v11f1p_sd15_depth [cfd03158]", "depth");
-            } else if ("setCnPose".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Pose Model", "cnPoseModel", "control_v11p_sd15_openpose [cab727d4]", "pose");
-            } else if ("setCnCanny".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Canny Model", "cnCannyModel", "control_v11p_sd15_canny [d14c016b]", "canny");
-            } else if ("setCnTile".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Tile Model", "cnTileModel", "control_v11f1e_sd15_tile [a371b31b]", "tile");
-            } else if ("setCnNormal".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Normal Model", "cnNormalModel", "control_v11p_sd15_normalbae [316696f1]", "normal");
-            } else if ("setCnMlsd".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet MLSD Model", "cnMlsdModel", "control_v11p_sd15_mlsd [aca30ff0]", "mlsd");
-            } else if ("setCnLineart".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Line Art Model", "cnLineartModel", "control_v11p_sd15s2_lineart_anime [3825e83e]", "lineart");
-            } else if ("setCnSoftedge".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Soft Edge Model", "cnSoftedgeModel", "control_v11p_sd15_softedge [a8575a2a]", "softedge");
-            } else if ("setCnSeg".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet Seg Model", "cnSegModel", "control_v11p_sd15_seg [e1f51eb9]", "seg");
-            } else if ("setCnIPAdapter".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet IP Adapter Model", "cnIPAdapterModel", "", "ip-adapter");
-            } else if ("setCnxlIPAdapter".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "ControlNet IP Adapter SDXL Model", "cnxlIPAdapterModel", "", "ip-adapter");
-            } else if ("setCnOther1".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 1", "cnOther1Model", "", "");
-            } else if ("setCnOther2".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 2", "cnOther2Model", "", "");
-            } else if ("setCnOther3".equals(requestType)) {
-                showSpinnerDialog((new JSONObject(responseBody)).getJSONArray("model_list"), null, "Other ControlNet Model 3", "cnOther3Model", "", "");
-            } else if ("getCnModel".equals(requestType)) {
-                SdParam.cnModelList = sdApiHelper.getCnModel(responseBody);
-                sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
-            } else if ("getCnModule".equals(requestType)) {
-                SdParam.cnModulesResponse = responseBody;
-                sdApiHelper.sendGetRequest("getSampler", "/sdapi/v1/samplers");
-            } else if ("getSampler".equals(requestType)) {
-                SdParam.samplerList = sdApiHelper.getSampler(responseBody);
-                showTextInputDialog(t_key, t_title, t_hint, t_defaultValue);
-            } else if ("getLoras".equals(requestType)) {
-                DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
-                addTxt2img();
-            } else if ("getStyles".equals(requestType)) {
-                DrawingActivity.styleList = sdApiHelper.getStyles(responseBody);
-                addTxt2img();
-            } else if ("getLoras2".equals(requestType)) {
-                DrawingActivity.loraList = sdApiHelper.getLoras(responseBody);
-                showAutoCompleteDialog();
-            } else if ("refreshLoras".equals(requestType)) {
-                DrawingActivity.loraList = null;
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Refresh LORAs Command sent.")
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            } else if ("refreshCheckpoints".equals(requestType)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Refresh Checkpoints Command sent.")
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            } else if ("getVRAM".equals(requestType)) {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String message = "";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB";
-                txtVRAM.setText(message);
-            } else if ("getVersionCode".equals(requestType)) {
+            if ("getVersionCode".equals(requestType)) {
                 int appVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
                 JSONObject jsonObject = new JSONObject(responseBody);
                 int latestVersionCode = jsonObject.getInt("versionCode");
@@ -1289,38 +986,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                     alert.show();
                 }
                 updateChecked = true;
-            } else if ("unloadCheckpoint".equals(requestType)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("All Checkpoint unloaded.")
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            } else if ("checkVRAM".equals(requestType)) {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String message = "RAM: ";
-                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("ram").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
-                message += "VRAM: ";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "\n";
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Memory Usage")
-                        .setMessage(message)
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            } else if ("restart_Server".equals(requestType)) {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Service Command sent.")
-                        .setMessage(jsonObject.getString("message"))
-                        .setPositiveButton("OK", (dialog, id) -> {
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
             } else if ("getComfyuiMode".equals(requestType)) {
                 JSONArray jsonArray = new JSONArray(responseBody);
                 Sketch.comfyuiModes = jsonArray;

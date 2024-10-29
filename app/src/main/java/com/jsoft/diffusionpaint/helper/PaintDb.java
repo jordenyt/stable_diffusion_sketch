@@ -211,7 +211,6 @@ public class PaintDb {
                         + ", " + SketchEntry.MASK
                         + ", " + SketchEntry.PROMPT
                         + ", " + SketchEntry.NEG_PROMPT
-                        + ", " + SketchEntry.STYLE
                         + ", " + SketchEntry.CN_MODE
                         + ", " + SketchEntry.EXIF
                         + " FROM " + SketchEntry.TABLE_NAME
@@ -226,7 +225,6 @@ public class PaintDb {
             sketch.setLastUpdateDate(PaintDbHelper.parseDateTime(c.getString(c.getColumnIndexOrThrow(SketchEntry.LAST_UPDATE_DATE))));
             sketch.setPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.PROMPT)));
             sketch.setNegPrompt(c.getString(c.getColumnIndexOrThrow(SketchEntry.NEG_PROMPT)));
-            sketch.setStyle(c.getString(c.getColumnIndexOrThrow(SketchEntry.STYLE)));
             sketch.setCnMode(c.getString(c.getColumnIndexOrThrow(SketchEntry.CN_MODE)));
             sketch.setImgPreview(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PREVIEW))));
             //sketch.setImgPaint(Utils.base64String2Bitmap(c.getString(c.getColumnIndexOrThrow(SketchEntry.PAINT))));
@@ -287,7 +285,6 @@ public class PaintDb {
         values.put(SketchEntry.LAST_UPDATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.PROMPT, sketch.getPrompt());
         values.put(SketchEntry.NEG_PROMPT, sketch.getNegPrompt());
-        values.put(SketchEntry.STYLE, sketch.getStyle());
         values.put(SketchEntry.CN_MODE, sketch.getCnMode());
         values.put(SketchEntry.PREVIEW, Utils.jpg2Base64String(sketch.getImgPreview()));
         values.put(SketchEntry.BACKGROUND, Utils.jpg2Base64String(sketch.getImgBackground()));
@@ -303,7 +300,6 @@ public class PaintDb {
         values.put(SketchEntry.LAST_UPDATE_DATE, PaintDbHelper.getDateTime(new Date()));
         values.put(SketchEntry.PROMPT, sketch.getPrompt());
         values.put(SketchEntry.NEG_PROMPT, sketch.getNegPrompt());
-        values.put(SketchEntry.STYLE, sketch.getStyle());
         values.put(SketchEntry.CN_MODE, sketch.getCnMode());
         values.put(SketchEntry.PREVIEW, Utils.jpg2Base64String(sketch.getImgPreview()));
         values.put(SketchEntry.BACKGROUND, Utils.jpg2Base64String(sketch.getImgBackground()));

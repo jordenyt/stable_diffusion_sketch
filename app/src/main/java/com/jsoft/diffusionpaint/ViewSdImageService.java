@@ -123,16 +123,7 @@ public class ViewSdImageService extends Service {
         ViewSdImageActivity.rtBitmap = null;
         ViewSdImageActivity.rtInfotext = null;
         ViewSdImageActivity.rtErrMsg = null;
-        if (requestType.equals("txt2img")) {
-            ViewSdImageActivity.isCallingSD = true;
-            sendRequest("txt2img", sdBaseUrl,"/sdapi/v1/txt2img", requestJSON);
-        } else if (requestType.equals("img2img")){
-            ViewSdImageActivity.isCallingSD = true;
-            sendRequest("img2img", sdBaseUrl, "/sdapi/v1/img2img", requestJSON);
-        } else if (requestType.equals("deepFaceLab")){
-            ViewSdImageActivity.isCallingDFL = true;
-            sendRequest("deepFaceLab", sdBaseUrl, "/processimage", requestJSON);
-        } else if (requestType.equals("comfyui")){
+        if (requestType.equals("comfyui")){
             ViewSdImageActivity.isCallingDFL = true;
             sendRequest("comfyui", sdBaseUrl, "/comfyui_workflow", requestJSON);
         } else {
@@ -196,78 +187,6 @@ public class ViewSdImageService extends Service {
     private void onSdApiResponse(String requestType, String responseBody) {
         try {
             switch (requestType) {
-                case "txt2img":
-                case "img2img": {
-                    ViewSdImageActivity.isCallingSD = false;
-                    JSONObject jsonObject = new JSONObject(responseBody);
-                    JSONArray images = jsonObject.getJSONArray("images");
-                    String info = jsonObject.getString("info");
-                    JSONObject infoObject = new JSONObject(info);
-                    JSONArray infotextsArray = infoObject.getJSONArray("infotexts");
-
-                    if (images.length() > 0 && !ViewSdImageActivity.isInterrupted) {
-                        int numImage = 1;
-                        try {
-                            numImage = requestJSON.getInt("batch_size");
-                        } catch (JSONException ignored) {}
-                        for (int i=0;i<numImage;i++) {
-                            listInfotext.add(infotextsArray.getString(i).replaceAll("\\\\n","\n"));
-                            listBitmap.add(Utils.base64String2Bitmap((String) images.get(i)));
-                        }
-                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
-                            isRunning = false;
-                            stopForeground(true);
-                        } else {
-                            int nextBatchSize = Math.min(numGen - listBitmap.size(), Integer.parseInt(sharedPreferences.getString("maxBatchSize", "1")));
-                            if (nextBatchSize > 0 && requestJSON.has("batch_size")) {
-                                requestJSON.put("batch_size", nextBatchSize);
-                                callSD4Img(requestType);
-                            } else {
-                                ViewSdImageActivity.rtResultType = requestType;
-                                ViewSdImageActivity.rtBitmap = listBitmap;
-                                ViewSdImageActivity.rtInfotext = listInfotext;
-                                isRunning = false;
-                                stopForeground(true);
-                            }
-                        }
-                    } else if (!listBitmap.isEmpty() && ViewSdImageActivity.isInterrupted) {
-                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-                            activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, listInfotext));
-                        } else {
-                            ViewSdImageActivity.rtResultType = requestType;
-                            ViewSdImageActivity.rtBitmap = listBitmap;
-                            ViewSdImageActivity.rtInfotext = listInfotext;
-                        }
-                        isRunning = false;
-                        stopForeground(true);
-                    } else {
-                        ViewSdImageActivity.isInterrupted = false;
-                        if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-                            activity.runOnUiThread(() -> activity.updateScreen());
-                        }
-                        isRunning = false;
-                        stopForeground(true);
-                    }
-                    break;
-                }
-                case "extraSingleImage": {
-                    ViewSdImageActivity.isCallingAPI = false;
-                    JSONObject jsonObject = new JSONObject(responseBody);
-                    String imageStr = jsonObject.getString("image");
-                    List<Bitmap> listBitmap = new ArrayList<>();
-                    listBitmap.add(Utils.base64String2Bitmap(imageStr));
-                    if (activity != null && !activity.isDestroyed() && !activity.isFinishing() && activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-                        activity.runOnUiThread(() -> activity.processResultBitmap(requestType, listBitmap, null));
-                    } else {
-                        ViewSdImageActivity.rtResultType = requestType;
-                        ViewSdImageActivity.rtBitmap = listBitmap;
-                        ViewSdImageActivity.rtInfotext = null;
-                    }
-                    isRunning = false;
-                    stopForeground(true);
-                    break;
-                }
                 case "comfyui": {
                     JSONObject jsonObject = new JSONObject(responseBody);
                     if (jsonObject.has("status")) {
@@ -299,7 +218,6 @@ public class ViewSdImageService extends Service {
                     }
                     break;
                 }
-                case "deepFaceLab":
                 case "comfyuiResult": {
                     ViewSdImageActivity.isCallingDFL = false;
                     JSONObject jsonObject = new JSONObject(responseBody);
@@ -347,7 +265,6 @@ public class ViewSdImageService extends Service {
         }
         isRunning = false;
         stopForeground(true);
-        ViewSdImageActivity.isCallingSD = false;
         ViewSdImageActivity.isCallingAPI = false;
         ViewSdImageActivity.isInterrupted = false;
         ViewSdImageActivity.isCallingDFL = false;

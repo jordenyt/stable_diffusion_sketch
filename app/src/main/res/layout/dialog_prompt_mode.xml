@@ -57,25 +57,6 @@
             android:hint="What you don't want to see?"
             android:textColorHint="#FF666666" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/sd_style_txt"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="Style:"
-                android:textAppearance="?android:textAppearanceMedium" />
-
-            <Spinner
-                android:id="@+id/sd_style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -151,26 +132,8 @@
                 android:max="10"
                 android:min="1"
                 android:progress="1" />
-
-
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:text="VRAM:"
-                android:textAppearance="?android:textAppearanceMedium" />
-            <TextView
-                android:id="@+id/sd_vram_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAppearance="?android:textAppearanceMedium" />
-        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

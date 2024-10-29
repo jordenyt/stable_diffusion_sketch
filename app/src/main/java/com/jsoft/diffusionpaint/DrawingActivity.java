@@ -85,8 +85,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     ImageView imgRef;
     Bitmap bmRef;
     private int startIntentSketchId;
-    public static List<String> loraList;
-    public static List<SdStyle> styleList;
     public static ArrayList<Path> mPaths = new ArrayList<>();
     public static ArrayList<Paint> mPaints = new ArrayList<>();
     public static ArrayList<Path> mUndonePaths = new ArrayList<>();
@@ -102,15 +100,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sdApiHelper = new SdApiHelper(this, this);
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
-        if (loraList == null) {
-            sdApiHelper.sendGetRequest("getLoras", "/sdapi/v1/loras");
-        }
-        if (styleList == null) {
-            sdApiHelper.sendGetRequest("getStyles", "/sdapi/v1/prompt-styles");
-        }
-        if (SdParam.cnModulesResponse == null) {
-            sdApiHelper.sendGetRequest("getCnModule", "/controlnet/module_list?alias_names=false");
-        }
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
         if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
             sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
@@ -148,7 +137,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setParentId(parentId);
             mCurrentSketch.setPrompt(i.getStringExtra("prompt"));
             mCurrentSketch.setNegPrompt(i.getStringExtra("negPrompt"));
-            mCurrentSketch.setStyle(i.getStringExtra("style"));
 
             mCurrentSketch.setExif(Utils.getImageExif(bitmapPath));
             if (!i.hasExtra("prompt")) {
@@ -332,11 +320,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         sdButton = findViewById(R.id.fab_stable_diffusion);
         sdButton.setOnClickListener(view -> {
-            if (loraList != null) {
-                showInputDialog();
-            } else {
-                sdApiHelper.sendGetRequest("getLoras2", "/sdapi/v1/loras");
-            }
+            showInputDialog();
         });
 
         circleView.setOnClickListener(view -> {
@@ -441,9 +425,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         promptTV.setText(mCurrentSketch.getPrompt());
         negPromptTV.setText(mCurrentSketch.getNegPrompt());
         List<String> acList = new ArrayList<>();
-        if (DrawingActivity.loraList != null) {
-            acList.addAll(DrawingActivity.loraList);
-        }
         String autoCompletePhrases = sharedPreferences.getString("autoCompletePhrases", "[]");
         try {
             JSONArray jsonArray = new JSONArray(autoCompletePhrases);
@@ -489,15 +470,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         Map<String, String> cnModeMap = Sketch.cnModeMap();
         for (String mode : cnModeMap.keySet()) {
             String modeDisplayName = mode;
-            if (cnModeMap.get(mode).startsWith(CN_MODE_CUSTOM)) {
-                String jsonMode = sharedPreferences.getString("modeCustom" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()), Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                try {
-                    JSONObject jsonObjectMode = new JSONObject(jsonMode);
-                    if (jsonObjectMode.has("name")) {
-                        modeDisplayName = "CM" + cnModeMap.get(mode).substring(Sketch.CN_MODE_CUSTOM.length()) + " - " + jsonObjectMode.getString("name");
-                    }
-                } catch (Exception ignored) {}
-            }
             modeMap.put(modeDisplayName, cnModeMap.get(mode));
         }
 
@@ -552,21 +524,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        Spinner sdStyle = dialogView.findViewById(R.id.sd_style);
-        List<String> sdStyleList = new ArrayList<>();
-        sdStyleList.add("--None--");
-        int selectedStyle = 0;
-        for (int i=0;i<styleList.size();i++) {
-            sdStyleList.add(styleList.get(i).name);
-            if (styleList.get(i).name.equals(mCurrentSketch.getStyle())) {
-                selectedStyle = i + 1;
-            }
-        }
-        ArrayAdapter<String> sdStyleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sdStyleList);
-        sdStyleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sdStyle.setAdapter(sdStyleAdapter);
-        sdStyle.setSelection(selectedStyle);
-
         builder.setPositiveButton("OK", (dialog, which) -> {
             String promptText = promptTV.getText().toString();
             mCurrentSketch.setPrompt(promptText);
@@ -574,8 +531,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             mCurrentSketch.setCnMode(modeMap.get(selectMode));
             String negPromptText = negPromptTV.getText().toString();
             mCurrentSketch.setNegPrompt(negPromptText);
-            String style = sdStyle.getSelectedItem().toString();
-            mCurrentSketch.setStyle(style);
             saveSketch();
             int numGen = sdNumGen.getProgress();
             if (mCurrentSketch.getCnMode().startsWith("inpaint") && mDrawingView.isEmpty() && Utils.isEmptyBitmap(mCurrentSketch.getImgPaint())) {
@@ -589,9 +544,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         AlertDialog dialog = builder.create();
         if(!isFinishing()) dialog.show();
-
-        txtVRAM = dialogView.findViewById(R.id.sd_vram_txt);
-        sdApiHelper.sendGetRequest("getVRAM", "/sdapi/v1/memory");
     }
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
@@ -713,16 +665,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     @Override
     public void onSdApiResponse(String requestType, String responseBody)  {
-        if ("getLoras".equals(requestType)) {
-            loraList = sdApiHelper.getLoras(responseBody);
-        } else if ("getLoras2".equals(requestType)) {
-            loraList = sdApiHelper.getLoras(responseBody);
-            showInputDialog();
-        } else if ("getStyles".equals(requestType)) {
-            styleList = sdApiHelper.getStyles(responseBody);
-        } else if ("getCnModule".equals(requestType)) {
-            SdParam.cnModulesResponse = responseBody;
-        } else if ("getComfyuiMode".equals(requestType)) {
+        if ("getComfyuiMode".equals(requestType)) {
             try {
                 Sketch.comfyuiModes = new JSONArray(responseBody);
             } catch (JSONException ignored) {}
@@ -730,14 +673,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 promptTextView.setText(jsonObject.getString("caption"));
-            } catch (JSONException ignored) {}
-        } else if ("getVRAM".equals(requestType)) {
-            try {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                String message = "";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("used") / 1024d / 1024d / 1024d * 10) / 10d) + "GB" + "/";
-                message += (Math.round(jsonObject.getJSONObject("cuda").getJSONObject("system").getDouble("total") / 1024d / 1024d / 1024d * 10) / 10d) + "GB";
-                txtVRAM.setText(message);
             } catch (JSONException ignored) {}
         }
     }
