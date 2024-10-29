@@ -234,7 +234,9 @@ public class SdApiHelper {
             String key = it.next();
             try {
                 String value = fields.getString(key);
-                if ("$positive".equals(value)) {
+                if (overrideParam.has(key)) {
+                    jsonObject.put(key, overrideParam.get(key));
+                } else if ("$positive".equals(value)) {
                     jsonObject.put(key, prompt);
                 } else if ("$negative".equals(value)) {
                     jsonObject.put(key, negPrompt);
@@ -262,8 +264,6 @@ public class SdApiHelper {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
                 } else if ("$paint".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgPaint()));
-                } else if (overrideParam.has(key)) {
-                    jsonObject.put(key, overrideParam.get(key));
                 } else if (modeJSON.has(key)) {
                     jsonObject.put(key, modeJSON.get(key));
                 } else {
