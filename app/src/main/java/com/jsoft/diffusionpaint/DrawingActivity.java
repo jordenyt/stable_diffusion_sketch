@@ -461,13 +461,14 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         promptTextView = promptTV;
 
         Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
+
         if (mCurrentSketch.getImgBackground()==null) {
             btnInterrogate.setVisibility(View.GONE);
         } else {
             btnInterrogate.setOnClickListener(view -> {
-               JSONObject jsonObject = sdApiHelper.getInterrogateJSON(mCurrentSketch.getImgBackground());
-               sdApiHelper.sendPostRequest("interrogate", "/tagger/v1/interrogate", jsonObject);
-               btnInterrogate.setEnabled(false);
+                JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "tag");
+                sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
+                btnInterrogate.setEnabled(false);
             });
         }
 
@@ -476,7 +477,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             btnCaption.setVisibility(View.GONE);
         } else {
             btnCaption.setOnClickListener(view -> {
-                JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground());
+                JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "caption");
                 sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
                 btnCaption.setEnabled(false);
             });
@@ -724,23 +725,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else if ("getComfyuiMode".equals(requestType)) {
             try {
                 Sketch.comfyuiModes = new JSONArray(responseBody);
-            } catch (JSONException ignored) {}
-        } else if ("interrogate".equals(requestType)) {
-            try {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                JSONObject tagObject = jsonObject.getJSONObject("caption").getJSONObject("tag");
-                String tag = "";
-                for (Iterator<String> it = tagObject.keys(); it.hasNext(); ) {
-                    String m = it.next();
-                    double c = tagObject.getDouble(m);
-                    if (c>=0.7) {
-                        tag += "(" + m.replace("_", " ") + "), ";
-                    } else {
-                        tag += m.replace("_", " ") + ", ";
-                    }
-                }
-                promptTextView.setText(tag);
-                //promptTextView.setText(jsonObject.getString("caption"));
             } catch (JSONException ignored) {}
         } else if ("caption".equals(requestType)) {
             try {

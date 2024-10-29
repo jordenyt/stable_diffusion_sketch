@@ -34,7 +34,7 @@
                 android:textSize="12dp"
                 android:layout_height="40dp"
                 android:layout_weight="0"
-                android:text="Interrogate" />
+                android:text="Tag" />
         </LinearLayout>
 
         <MultiAutoCompleteTextView

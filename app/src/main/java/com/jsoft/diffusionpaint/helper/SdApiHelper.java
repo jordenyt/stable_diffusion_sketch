@@ -303,10 +303,14 @@ public class SdApiHelper {
         return new JSONObject();
     }
 
-    public JSONObject getComfyuiCaptionJSON(Bitmap bitmap) {
+    public JSONObject getComfyuiCaptionJSON(Bitmap bitmap, String mode) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("workflow", "caption");
+            if ("tag".equals(mode)) {
+                jsonObject.put("workflow", "tag");
+            } else {
+                jsonObject.put("workflow", "caption");
+            }
             double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
             Bitmap resultBm = bitmap;
             if (scale > 1) {
@@ -344,23 +348,6 @@ public class SdApiHelper {
             jsonObject.put("extras_upscaler_2_visibility", 0);
             jsonObject.put("upscale_first", true);
             jsonObject.put("image", Utils.jpg2Base64String(bitmap));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
-    public JSONObject getInterrogateJSON(Bitmap bitmap) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("model", "wd-v1-4-moat-tagger.v2");
-            jsonObject.put("threshold", 0.25);
-            double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
-            Bitmap resultBm = bitmap;
-            if (scale > 1) {
-                resultBm = Bitmap.createScaledBitmap(bitmap, (int) round(bitmap.getWidth() / scale), (int) round(bitmap.getHeight() / scale), true);
-            }
-            jsonObject.put("image", Utils.jpg2Base64String(resultBm));
         } catch (JSONException e) {
             e.printStackTrace();
         }
