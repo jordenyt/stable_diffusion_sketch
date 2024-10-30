@@ -62,7 +62,7 @@ public class Sketch implements Serializable {
                 try {
                     JSONObject cfMode = comfyuiModes.getJSONObject(i);
                     if (cfMode.getBoolean("show")) {
-                        cnMode.put("ComfyUI: " + cfMode.getString("title"), CN_MODE_COMFYUI + cfMode.getString("name"));
+                        cnMode.put(cfMode.getString("title"), CN_MODE_COMFYUI + cfMode.getString("name"));
                     }
                 } catch (JSONException ignored) {
                 }
@@ -79,7 +79,7 @@ public class Sketch implements Serializable {
                 try {
                     JSONObject cfMode = comfyuiModes.getJSONObject(i);
                     if (cfMode.getBoolean("showT2I")) {
-                        mode.put("ComfyUI: " + cfMode.getString("title"), CN_MODE_COMFYUI + cfMode.getString("name"));
+                        mode.put(cfMode.getString("title"), CN_MODE_COMFYUI + cfMode.getString("name"));
                     }
                 } catch (JSONException ignored) {
                 }

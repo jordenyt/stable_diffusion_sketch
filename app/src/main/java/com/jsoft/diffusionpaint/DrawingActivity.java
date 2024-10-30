@@ -71,7 +71,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private SeekBar seekBlur;
     private TextView tvWidth;
     private TextView tvBlur;
-    private TextView txtVRAM;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
     FloatingActionButton paletteButton;
