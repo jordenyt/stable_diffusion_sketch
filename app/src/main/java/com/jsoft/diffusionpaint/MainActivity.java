@@ -383,8 +383,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_sd_server_address:
                 showServerAddressInput();
                 break;
-            case R.id.mi_restart_a1111:
-                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/restart_a1111", null, "GET");
+            case R.id.mi_start_a1111:
+                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/start_a1111", null, "GET");
+                break;
+            case R.id.mi_stop_a1111:
+                sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/stop_a1111", null, "GET");
                 break;
             case R.id.mi_start_comfyui:
                 sdApiHelper.sendRequest("restart_Server", sharedPreferences.getString("dflApiAddress", ""), "/start_comfyui", null, "GET");
