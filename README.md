@@ -58,5 +58,19 @@ Here's how to use Stable Diffusion Sketch:
    - You can test the server by checking `http://[serverIP:serverPort]/docs` on Android device's web browser.  If it is valid, then you will see FastAPI's Swagger UI. 
 4. Start sketching and let Stable Diffusion do the magic!
 
+## Passing Parameters to ComfyUI workflows
+
+There are four levels of config to control the parameters in the ComfyUI workflow. 
+1. ComfyUI workflow `.json` file in ComfyuiGW **(workflow level)**
+   - Put the parameter in the workflow json file for those parameters which doesn't change much, e.g. Model, VAE, ControlNet module...
+2. `mode_config.json` file in ComfyuiGW **(server level)**
+   - Parameter putting here will be the default values to be used in the workflow if the keys are mapped in `workflows_config.json`
+   - When calling a workflow, the app will use the related JSON object in this file to generate a POST request body, and initiates a Restful API call to the ComfyuiGW.
+   - When the value of mode/`fields`/`key` is a String type and started with `$`, then the value of this key will be filled in during runtimes, which may be from the "App Default value", "Mode JSON", or `<key:value>` in prompt.
+3. Mode JSON in the client app **(app level)**
+   - If the mode defined in `mode_config.json` has mode/`configurable`=true, then you may define the default value (when using the app on this device) in the app menu in the format of JSON.
+4. Putting `<key:value>` in prompt **(prompt level)**
+   - During runtime, in each call to ComfyuiGW, you can put `<key1:value1>` in the prompt and it will override the value of the `key1` defined in `mode_config.json` with `value1`.
+  
 ## License
 Stable Diffusion Sketch is licensed under the [GNU General Public License v3.0](https://github.com/jordenyt/stable_diffusion_sketch/blob/main/LICENSE).
