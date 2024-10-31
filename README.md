@@ -49,10 +49,10 @@ Here's how to use Stable Diffusion Sketch:
 
 1. Start the [ComfyuiGW](https://github.com/jordenyt/ComfyuiGW) on your server.
 2. Download and install the Stable Diffusion Sketch APK on your Android device.
-3. Open the app and input the network address of your ComfyuiGW in the "SD Server Address" field, which is default set to `[SERVER_IP]:5000`.
+3. Open the app and input the network address of your ComfyuiGW in the "SD Server Address" field, which is default set to `http://[SERVER_IP]:5000`.
    - If both of your Android device and Server are on the same intranet, you can use the intranet IP, i.e. 192.168.xxx.xxx / 10.xxx.xxx.xxx.  You can get this IP by running `ipconfig /all` on Windows or `ifconfig --all` on MacOS/Linux.
    - If your Android device is on public internet, and your server is on intranet, you need to config your router NAT/Firewall and DDNS. In this case, use the internet IP and translated port number as the server address.
-   - You can test the server address by using it on Android device's web browser.  If it is valid, then you will see automatic1111's webui running on your web browser. 
+   - You can test the server by checking `http://[serverIP:serverPort]/docs` on Android device's web browser.  If it is valid, then you will see FastAPI's Swagger UI. 
 4. Start sketching and let Stable Diffusion do the magic!
 
 ## License
