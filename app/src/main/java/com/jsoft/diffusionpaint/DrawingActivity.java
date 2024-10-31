@@ -416,10 +416,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         final MultiAutoCompleteTextView promptTV = dialogView.findViewById(R.id.sd_prompt);
         final MultiAutoCompleteTextView negPromptTV = dialogView.findViewById(R.id.sd_negative_prompt);
         final RadioGroup radioGroupMode = dialogView.findViewById(R.id.radio_sdmode);
-        final RadioButton radioAll = dialogView.findViewById(R.id.radio_all);
-        //final RadioButton radioTxt2img = dialogView.findViewById(R.id.radio_txt2img);
-        //final RadioButton radioImg2img = dialogView.findViewById(R.id.radio_img2img);
-        //final RadioButton radioInpaint = dialogView.findViewById(R.id.radio_inpaint);
 
         promptTV.setText(mCurrentSketch.getPrompt());
         negPromptTV.setText(mCurrentSketch.getNegPrompt());

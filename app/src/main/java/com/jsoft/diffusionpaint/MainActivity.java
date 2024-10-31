@@ -715,8 +715,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
     }
 
-
-
     private void addTxt2img() {
         if (!validateSettings()) return;
         showPromptDialog();
