@@ -164,15 +164,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             createComfyuiModeConfig();
         }
 
-        /*CompletableFuture.supplyAsync(() -> {
+        CompletableFuture.supplyAsync(() -> {
             try {
                 int verCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;//Version Code
-                sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info?v=" + verCode, null, "GET");
+                sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info?v=" + verCode + "&s=comfyui", null, "GET");
                 return "";
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        });*/
+        });
     }
 
     private void createComfyuiModeConfig() {
