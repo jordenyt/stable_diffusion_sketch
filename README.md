@@ -1,6 +1,10 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.3-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
+### Please **[click here](https://github.com/jordenyt/stable_diffusion_sketch/tree/comfyui)** to check out the new version for ComfyUI
+
+
 ### Notes
 - A1111 SD-webui start support on SD3 in 1.10.0.
 - A1111 SD-webui 1.8.0 and prior does not support separate sampler and scheduler. When you update your SD-webui to 1.9.x, please also update the custom mode JSON and default sampler in the app.
