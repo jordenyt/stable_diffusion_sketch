@@ -1,6 +1,11 @@
 #  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.3-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [ComfyUI](https://github.com/comfyanonymous/ComfyUI) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
+
+### (Important) Version
+Since A1111's sd-webui has not updated to support new model, this project is switched to use ComfyUI as the main SD platform. <br/>
+For the A1111 version, please check out the branch [a1111](https://github.com/jordenyt/stable_diffusion_sketch/tree/a1111).
+
 ### Notes
 - The ComfyUI version requires [ComfyUI Restful API Gateway](https://github.com/jordenyt/ComfyuiGW) to work.
 - You can add your own workflows in the ComfyuiGW and use it in the app.
