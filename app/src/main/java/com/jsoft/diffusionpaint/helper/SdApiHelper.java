@@ -218,13 +218,11 @@ public class SdApiHelper {
             }
         }
 
-        String prompt = getCleanString(mCurrentSketch.getPrompt());
-        String negPrompt = getCleanString(mCurrentSketch.getNegPrompt());
-
+        String prompt = getPrompt(sdParam, getCleanString(mCurrentSketch.getPrompt()));
+        String negPrompt = getNegPrompt(sdParam, getCleanString(mCurrentSketch.getNegPrompt()));
         JSONObject overrideParam = getEmbeddedJSONObject(mCurrentSketch.getPrompt());
 
-
-        JSONObject modeJSON = null;
+        JSONObject modeJSON;
         try {
             modeJSON = new JSONObject(getSdParmJSON(mCurrentSketch.getCnMode()));
         } catch (JSONException e) {
@@ -474,18 +472,18 @@ public class SdApiHelper {
         return setConfigRequest;
     }
 
-    private String getPrompt(SdParam param, Sketch mCurrentSketch) {
+    private String getPrompt(SdParam param, String prompt) {
         String promptPrefix = sharedPreferences.getString("promptPrefix", "");
         String promptPostfix = sharedPreferences.getString("promptPostfix", "");
         return (promptPrefix.length() > 0 ? promptPrefix + ", " : "") +
-                (mCurrentSketch.getPrompt().length() > 0 ? mCurrentSketch.getPrompt() + ", " : "") +
+                (prompt.length() > 0 ? prompt + ", " : "") +
                 (param.prompt.length() > 0 ? param.prompt + ", " : "") +
                 (promptPostfix.length() > 0 ? promptPostfix : "");
     }
 
-    private String getNegPrompt(SdParam param, Sketch mCurrentSketch) {
+    private String getNegPrompt(SdParam param, String negPrompt) {
         String promptNeg = sharedPreferences.getString("negativePrompt", "");
-        return (mCurrentSketch.getNegPrompt().length() > 0 ? mCurrentSketch.getNegPrompt() + ", " : "") +
+        return (negPrompt.length() > 0 ? negPrompt + ", " : "") +
                 (param.negPrompt.length() > 0 ? param.negPrompt + ", " : "") +
                 (promptNeg.length() > 0 ? promptNeg : "");
     }
@@ -493,8 +491,8 @@ public class SdApiHelper {
     public JSONObject getControlnetTxt2imgJSON(SdParam param, Sketch mCurrentSketch, int batchSize) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("prompt", getPrompt(param, mCurrentSketch));
-            jsonObject.put("negative_prompt", getNegPrompt(param, mCurrentSketch));
+            jsonObject.put("prompt", getPrompt(param, mCurrentSketch.getPrompt()));
+            jsonObject.put("negative_prompt", getNegPrompt(param, mCurrentSketch.getNegPrompt()));
             if (mCurrentSketch.getStyle() != null) {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
@@ -579,8 +577,8 @@ public class SdApiHelper {
         try {
             JSONArray init_images = new JSONArray();
 
-            jsonObject.put("prompt", getPrompt(param, mCurrentSketch));
-            jsonObject.put("negative_prompt", getNegPrompt(param, mCurrentSketch));
+            jsonObject.put("prompt", getPrompt(param, mCurrentSketch.getPrompt()));
+            jsonObject.put("negative_prompt", getNegPrompt(param, mCurrentSketch.getNegPrompt()));
             if (mCurrentSketch.getStyle() != null) {
                 jsonObject.put("styles", (new JSONArray()).put(mCurrentSketch.getStyle()));
             }
