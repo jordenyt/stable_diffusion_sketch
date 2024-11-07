@@ -191,13 +191,11 @@ public class SdApiHelper {
             }
         }
 
-        String prompt = getCleanString(mCurrentSketch.getPrompt());
-        String negPrompt = getCleanString(mCurrentSketch.getNegPrompt());
-
+        String prompt = getPrompt(sdParam, getCleanString(mCurrentSketch.getPrompt()));
+        String negPrompt = getNegPrompt(sdParam, getCleanString(mCurrentSketch.getNegPrompt()));
         JSONObject overrideParam = getEmbeddedJSONObject(mCurrentSketch.getPrompt());
 
-
-        JSONObject modeJSON = null;
+        JSONObject modeJSON;
         try {
             modeJSON = new JSONObject(getSdParmJSON(mCurrentSketch.getCnMode()));
         } catch (JSONException e) {
@@ -326,18 +324,18 @@ public class SdApiHelper {
         return param;
     }
 
-    private String getPrompt(SdParam param, Sketch mCurrentSketch) {
+    private String getPrompt(SdParam param, String prompt) {
         String promptPrefix = sharedPreferences.getString("promptPrefix", "");
         String promptPostfix = sharedPreferences.getString("promptPostfix", "");
         return (promptPrefix.length() > 0 ? promptPrefix + ", " : "") +
-                (mCurrentSketch.getPrompt().length() > 0 ? mCurrentSketch.getPrompt() + ", " : "") +
+                (prompt.length() > 0 ? prompt + ", " : "") +
                 (param.prompt.length() > 0 ? param.prompt + ", " : "") +
                 (promptPostfix.length() > 0 ? promptPostfix : "");
     }
 
-    private String getNegPrompt(SdParam param, Sketch mCurrentSketch) {
+    private String getNegPrompt(SdParam param, String negPrompt) {
         String promptNeg = sharedPreferences.getString("negativePrompt", "");
-        return (mCurrentSketch.getNegPrompt().length() > 0 ? mCurrentSketch.getNegPrompt() + ", " : "") +
+        return (negPrompt.length() > 0 ? negPrompt + ", " : "") +
                 (param.negPrompt.length() > 0 ? param.negPrompt + ", " : "") +
                 (promptNeg.length() > 0 ? promptNeg : "");
     }
