@@ -3,7 +3,7 @@
     <item android:title="Settings">
         <menu>
             <item android:id="@+id/mi_sd_server_address" android:title="A1111 SD-webui Address"/>
-            <item android:id="@+id/mi_dfl_api_address" android:title="DFL API Address"/>
+            <item android:id="@+id/mi_dfl_api_address" android:title="ComfyUI GW Address"/>
             <item android:title="Default Parameters">
                 <menu>
                     <item android:id="@+id/mi_sd_output_dim" android:title="Default SD Output Dimension"/>

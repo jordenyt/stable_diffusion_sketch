@@ -59,8 +59,9 @@ public class SdApiHelper {
     public void setListener(SdApiResponseListener listener) { this.listener  = listener;}
 
     public boolean isValid() {
-        String sdAddress = sharedPreferences.getString("dflApiAddress", "");
-        return Utils.isValidServerURL(sdAddress);
+        String comfyuiAddress = sharedPreferences.getString("dflApiAddress", "");
+        String sdAddress = sharedPreferences.getString("sdServerAddress", "");
+        return Utils.isValidServerURL(comfyuiAddress) && Utils.isValidServerURL(sdAddress);
     }
 
     public void sendGetRequest(String requestType, String url) {

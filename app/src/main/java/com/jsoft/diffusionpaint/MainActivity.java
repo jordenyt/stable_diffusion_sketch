@@ -206,9 +206,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.app_not_configured_title);
             builder.setMessage(R.string.app_not_configured_message);
-            builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-            builder.setPositiveButton(R.string.configure, (dialog, which) -> {
-                showServerAddressInput();
+            //builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+            builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+                //showServerAddressInput();
+                //showTextInputDialog("dflApiAddress", "ComfyUI GW Address:", "http://192.168.1.101:5000", "");
                 dialog.dismiss();
             });
 
@@ -920,6 +921,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(key, inputText);
                 editor.apply();
+                if ("dflApiAddress".equals(key)) {
+                    if (Utils.isValidServerURL(inputText)) {
+                        sdApiHelper.sendRequest("getComfyuiMode", inputText, "/mode_config", null, "GET");
+                    }
+                }
                 dialog.dismiss();
             } else {
                 Toast.makeText(getApplicationContext(), "Invalid JSON", Toast.LENGTH_SHORT).show();
