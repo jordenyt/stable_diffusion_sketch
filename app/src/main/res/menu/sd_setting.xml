@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Settings">
         <menu>
-            <item android:id="@+id/mi_dfl_api_address" android:title="SD Server Address"/>
+            <item android:id="@+id/mi_dfl_api_address" android:title="ComfyUI GW Address"/>
             <item android:title="Default Parameters">
                 <menu>
                     <item android:id="@+id/mi_sd_output_dim" android:title="Default SD Output Dimension"/>
