@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         PopupMenu popupMenu = new PopupMenu(this, menuButton);
         popupMenu.getMenuInflater().inflate(R.menu.sd_setting, popupMenu.getMenu());
         mainMenu = popupMenu.getMenu();
-        MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(1);
+        MenuItem submenuItem = popupMenu.getMenu().getItem(3).getSubMenu().getItem(2);
         if (submenuItem.hasSubMenu()) {
             SubMenu subMenu = submenuItem.getSubMenu();
             for (int i=1;i<=Sketch.customModeCount;i++) {
