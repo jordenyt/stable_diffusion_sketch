@@ -1,5 +1,5 @@
 
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.3-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.18.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
 Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 ### Please **[click here](https://github.com/jordenyt/stable_diffusion_sketch/tree/comfyui)** to check out the new version for ComfyUI
