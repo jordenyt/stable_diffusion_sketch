@@ -1,13 +1,14 @@
-#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.17.2-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
-Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
+#  Stable Diffusion Sketch [![Version](https://img.shields.io/badge/Version-0.18.0-blue)](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)
+Do more and simpler with your [A1111 SD-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) and [ComfyUI](https://github.com/comfyanonymous/ComfyUI) on your Android device.  Inpainting / txt2img / img2img on your sketches and photos with just a few clicks.<br/><br/>
 **[Download APK](https://github.com/jordenyt/stable_diffusion_sketch/releases/latest)**
 ### Notes
 - A1111 SD-webui start support on SD3 in 1.10.0.
 - A1111 SD-webui 1.8.0 and prior does not support separate sampler and scheduler. When you update your SD-webui to 1.9.x, please also update the custom mode JSON and default sampler in the app.
 - A1111 SD-webui 1.7.0 and prior does not support SDXL Inpainiting model.  Please update to latest release.
 - There are several SDXL Inpainting models on [Civitai](https://civitai.com/). For your instance, [JuggerXL_inpaint](https://civitai.com/models/245423/juggerxlinpaint) and [RealVisXL V3.0](https://civitai.com/models/139562?modelVersionId=297320) may be a good choice.
-
-
+- The ComfyUI version requires [ComfyUI Restful API Gateway](https://github.com/jordenyt/ComfyuiGW) to work.
+- You can add your own workflows in the ComfyuiGW and use it in the app.
+- You may also find / share some workflows in the **Disussions** section of this repo.
 
 ## Screenshots
 <img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/50681a65-53a9-4368-87ec-571fc773b674" height="450"> 
