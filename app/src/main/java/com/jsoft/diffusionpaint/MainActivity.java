@@ -429,7 +429,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 pickJSONFile();
                 break;
             default:
-                if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.comfyuiModes.length()) {
+                int numComfyUIMode = 0;
+                if (Sketch.comfyuiModes != null) {
+                    numComfyUIMode = Sketch.comfyuiModes.length();
+                }
+                if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + numComfyUIMode) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE - 1;
                     try {
                         JSONObject modeConfig = Sketch.comfyuiModes.getJSONObject(i);
