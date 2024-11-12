@@ -606,10 +606,14 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 sdApiHelper.sendPostRequest("refreshCheckpoints", "/sdapi/v1/refresh-checkpoints", new JSONObject());
                 break;
             default:
+                int numComfyUIMode = 0;
+                if (Sketch.comfyuiModes != null) {
+                    numComfyUIMode = Sketch.comfyuiModes.length();
+                }
                 if (item.getItemId() > MI_CUSTOM_MODE_BASE && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE;
                     showTextInputDialog("modeCustom" + i, "Parameters for Custom Mode "+ i +":", "", Sketch.defaultJSON.get(Sketch.CN_MODE_CUSTOM));
-                } else if (item.getItemId() > MI_CUSTOM_MODE_BASE + Sketch.customModeCount && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount + Sketch.comfyuiModes.length()) {
+                } else if (item.getItemId() > MI_CUSTOM_MODE_BASE + Sketch.customModeCount && item.getItemId() <= MI_CUSTOM_MODE_BASE + Sketch.customModeCount + numComfyUIMode) {
                     int i = item.getItemId() - MI_CUSTOM_MODE_BASE - Sketch.customModeCount - 1;
                     try {
                         JSONObject modeConfig = Sketch.comfyuiModes.getJSONObject(i);
