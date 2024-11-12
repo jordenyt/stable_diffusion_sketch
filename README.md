@@ -9,6 +9,7 @@ For the A1111 version, please check out the branch [a1111](https://github.com/jo
 ### Notes
 - The ComfyUI version requires [ComfyUI Restful API Gateway](https://github.com/jordenyt/ComfyuiGW) to work.
 - You can add your own workflows in the ComfyuiGW and use it in the app.
+- You may also find / share some workflows in the **Disussions** section of this repo.
 
 
 ## Screenshots
