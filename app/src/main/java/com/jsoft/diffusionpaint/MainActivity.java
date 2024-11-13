@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.CursorWindow;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -66,6 +67,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -162,6 +164,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         isPermissionGranted();
 
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            try {
+                Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+                field.setAccessible(true);
+                field.set(null, 100 * 1024 * 1024); //the 100MB is the new size
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         sdApiHelper = new SdApiHelper(this, this);
 
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
