@@ -18,6 +18,10 @@ For the A1111 version, please check out the branch [a1111](https://github.com/jo
 <img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/a83524c2-f12d-498b-8643-dccddcc89088" height="450">
 <img src="https://github.com/jordenyt/stable_diffusion_sketch/assets/5007252/7cebca43-0745-4547-8b1c-70a95a65bce5" height="450"> 
 
+## Demo
+Click below image to view the demo of making this:<br/>
+[<img src="https://github.com/user-attachments/assets/141ff9c5-23f3-4f7e-bdc6-a31d03bdf073" height="450" />](https://www.youtube.com/watch?v=5jq17L05kl8)
+
 ## Supported Features
 
 - Autocomplete Phrase setup
