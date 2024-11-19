@@ -282,7 +282,7 @@ public class Sketch implements Serializable {
 
     private RectF getInpaintRect(int sdSize) {
         int inpaintMargin = max(imgBackground.getWidth(), imgBackground.getHeight()) / 24;
-        int sdBlockSize = 64;
+        int sdBlockSize = 8;
         if (imgBackground == null) {
             return null;
         }

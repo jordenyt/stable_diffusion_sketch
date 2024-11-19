@@ -402,10 +402,11 @@ public class Utils {
     }
 
     public static long getShortSize(Bitmap bm, int longSize) {
+        int blockSize = 8;
         if (bm.getWidth() >= bm.getHeight()) {
-            return round((double)bm.getHeight() / (double)bm.getWidth() * longSize  / 64d) * 64;
+            return round((double)bm.getHeight() / (double)bm.getWidth() * longSize  / blockSize) * blockSize;
         } else {
-            return round((double)bm.getWidth() / (double)bm.getHeight() * longSize  / 64d) * 64;
+            return round((double)bm.getWidth() / (double)bm.getHeight() * longSize  / blockSize) * blockSize;
         }
     }
 
