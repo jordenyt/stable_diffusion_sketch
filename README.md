@@ -105,7 +105,7 @@ There are five levels of config to control the parameters in the ComfyUI workflo
 | `inpaintPartial` | `1` / `0` | Inidicate the inpainting should work on the whole image (if set to `0`) or over the painted area only (if set to `1`).  Default value is `0`. |
 | `baseImage` | `sketch` / `background` | If `sketch`, fill `$background` with background image WITH paint; if `background`, fill `$background` with only background image. |
 | `denoise` | 0.0 to 1.0 | Denoise Strength, used to fill `$denoise`. |
-| `cfgScale` | 0.1 to 30.0 | Denoise Strength, used to fill `$cfg`. |
+| `cfgScale` | 0.1 to 30.0 | CFG scale, used to fill `$cfg`. |
 | `steps` | integer from 1 to 120 | Number of steps, used to fill `$steps`. |
 | `sdSize` | Integer larger than 512 | Longer size of the output image, the app will use this value to calculate and fill in `$size`, `$width` and `$height`. |
 | `maskBlur` | integer from 1 to 200 | radius of the mask blur, used to fill `$maskBlur`.  For inpaint, will also use this value to calculate how replace the masked area with workflow output.  |
