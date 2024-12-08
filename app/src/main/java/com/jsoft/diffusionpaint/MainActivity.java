@@ -419,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 break;
             case R.id.mi_folder:
                 File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                showTextInputDialog("picFolder", "Picture folder:", "Name of folder under " + picturesDirectory.toString() + " which images are saved to", "sdSketch");
+                showTextInputDialog("picFolder", "Picture folder:", "Name of folder under /Pictures", "sdSketch");
                 break;
             case R.id.mi_cfg_scale:
                 showTextInputDialog("defaultCfgScale", "CFG Scale:", "Decimal from 1.0 to 30.0", "7.0");
