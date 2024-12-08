@@ -144,10 +144,10 @@ public class Utils {
         }
     }
 
-    public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String filename, String exifJson) {
+    public static void saveBitmapToExternalStorage(Activity a, Bitmap bitmap, String foldername, String filename, String exifJson) {
         // Get the directory for the user's public pictures directory.
         File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File sdSketchFolder = new File(picturesDirectory, "sdSketch");
+        File sdSketchFolder = new File(picturesDirectory, foldername);
         if (!sdSketchFolder.exists()) {
             sdSketchFolder.mkdirs();
         }
