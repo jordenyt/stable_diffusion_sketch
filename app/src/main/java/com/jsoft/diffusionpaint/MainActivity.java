@@ -495,6 +495,10 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             case R.id.mi_batch_size:
                 showTextInputDialog("maxBatchSize", "Maximum Batch Size:", "Integer. Setting this value too high will lead to OOM.", "1");
                 break;
+            case R.id.mi_folder:
+                File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                showTextInputDialog("picFolder", "Picture folder:", "Name of folder under /Pictures", "sdSketch");
+                break;
             case R.id.mi_cfg_scale:
                 showTextInputDialog("defaultCfgScale", "CFG Scale:", "Decimal from 1.0 to 30.0", "7.0");
                 break;
