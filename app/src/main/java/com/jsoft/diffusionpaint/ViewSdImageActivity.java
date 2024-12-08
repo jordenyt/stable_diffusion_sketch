@@ -289,7 +289,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Image saved successfully", Toast.LENGTH_SHORT).show();
                     File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                    File sdSketchFolder = new File(picturesDirectory, "sdSketch");
+                    File sdSketchFolder = new File(picturesDirectory, sharedPreferences.getString("picFolder", "sdSketch"));
                     File file = new File(sdSketchFolder, savedImageName);
                     Intent intent = new Intent(ViewSdImageActivity.this, DrawingActivity.class);
                     intent.putExtra("sketchId", -2);
@@ -390,7 +390,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     exif = jsonExif.toString();
                 } catch (JSONException ignored) {}
             }
-            Utils.saveBitmapToExternalStorage(this, mBitmap, savedImageName, exif);
+            Utils.saveBitmapToExternalStorage(this, mBitmap, sharedPreferences.getString("picFolder", "sdSketch"), savedImageName, exif);
             apiResultList.get(currentResult).savedImageName = savedImageName;
         }
     }
