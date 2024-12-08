@@ -3,6 +3,7 @@
     <item android:title="Settings">
         <menu>
             <item android:id="@+id/mi_dfl_api_address" android:title="ComfyUI GW Address"/>
+            <item android:id="@+id/mi_folder" android:title="Pictures folder" />
             <item android:title="Default Parameters">
                 <menu>
                     <item android:id="@+id/mi_sd_output_dim" android:title="Default SD Output Dimension"/>
@@ -11,7 +12,6 @@
                     <item android:id="@+id/mi_cfg_scale" android:title="Default CFG Scale" />
                     <item android:id="@+id/mi_mask_blur" android:title="Inpaint Mask Blur Pixels" />
                     <item android:id="@+id/mi_batch_size" android:title="Maximum batch size" />
-                    <item android:id="@+id/mi_folder" android:title="Pictures folder" />
                 </menu>
             </item>
             <item android:id="@+id/mi_export_setting" android:title="Export Settings"/>
