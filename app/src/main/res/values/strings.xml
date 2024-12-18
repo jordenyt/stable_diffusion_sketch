@@ -30,7 +30,7 @@
     <string name="my_images">My images</string>
     <string name="no_recent_immages">No recent images</string>
     <string name="app_not_configured_title">App not configured</string>
-    <string name="app_not_configured_message">Before using the app you have to configure A1111's sd-webui and ComfyUI GW address.</string>
+    <string name="app_not_configured_message">Before using the app you have to configure A1111\'s sd-webui and ComfyUI GW address.</string>
 
 
     <string-array name="sd_size_options">
