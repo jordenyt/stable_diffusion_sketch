@@ -418,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 showTextInputDialog("maxBatchSize", "Maximum Batch Size:", "Integer. Setting this value too high will lead to OOM.", "1");
                 break;
             case R.id.mi_folder:
-                File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                //File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                 showTextInputDialog("picFolder", "Picture folder:", "Name of folder under /Pictures", "sdSketch");
                 break;
             case R.id.mi_cfg_scale:
@@ -945,6 +945,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 JSONArray jsonArray = new JSONArray(responseBody);
                 Sketch.comfyuiModes = jsonArray;
                 createComfyuiModeConfig();
+            } else if ("restart_Server".equals(requestType)) {
+                JSONObject jsonObject = new JSONObject(responseBody);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Service Command sent.")
+                        .setMessage(jsonObject.getString("message"))
+                        .setPositiveButton("OK", (dialog, id) -> {
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
