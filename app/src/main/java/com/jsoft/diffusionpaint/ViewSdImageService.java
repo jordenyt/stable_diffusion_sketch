@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.app.PendingIntent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Binder;
@@ -100,10 +101,15 @@ public class ViewSdImageService extends Service {
     }
 
     private void showForegroundNotification() {
+        Intent intent = new Intent(this, ViewSdImageActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         notification = new NotificationCompat.Builder(this, ViewSdImageActivity.CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_magic_pen)
                 .setContentTitle("API Call Running")
                 .setContentText("Calling API in background...")
                 .setOngoing(true)
+                .setContentIntent(pendingIntent)
                 .build();
 
         startForeground(FOREGROUND_ID, notification);
@@ -206,6 +212,20 @@ public class ViewSdImageService extends Service {
                         if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
                             activity.runOnUiThread(() -> activity.updateStatus(progress + "\n" + step));
                         }
+
+                        // Update notification with progress and step
+                        Intent intent = new Intent(this, ViewSdImageActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                        notification = new NotificationCompat.Builder(this, ViewSdImageActivity.CHANNEL_ID)
+                                .setSmallIcon(R.mipmap.ic_magic_pen)
+                                .setContentTitle("ComfyUI Status")
+                                .setContentText("Progress: " + progress + " | Step: " + step)
+                                .setOngoing(true)
+                                .setContentIntent(pendingIntent)
+                                .build();
+                        startForeground(FOREGROUND_ID, notification);
+
                         if ("Done".equals(progress)) {
                             sendRequest("comfyuiResult", sdBaseUrl, "/comfyui_result");
                         } else {
