@@ -230,6 +230,13 @@ public class SdApiHelper {
                 } else if ("$background".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(backgroundImage));
                 } else if ("$mask".equals(value)) {
+                    if (maskImage == null) {
+                        double ratio = (double) max(backgroundImage.getWidth(), backgroundImage.getHeight()) / sdParam.sdSize;
+                        int boundary = (int) round(sdParam.maskBlur * (sdParam.baseImage.equals(SdParam.SD_INPUT_IMAGE_SKETCH) ? 1 : 0) * ratio);
+                        maskImage = Sketch.getInpaintMaskFromPaint(mCurrentSketch, boundary, false);
+                        mCurrentSketch.setImgInpaintMask(maskImage);
+                        jsonObject.put(key, Utils.jpg2Base64String(maskImage));
+                    }
                     jsonObject.put(key, Utils.jpg2Base64String(maskImage));
                 } else if ("$reference".equals(value)) {
                     jsonObject.put(key, Utils.jpg2Base64String(mCurrentSketch.getImgReference()));
