@@ -172,7 +172,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
         if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
             sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
-        } else if (Sketch.comfyuiModes != null) {
+        }
+        if (Utils.isValidServerURL(dflApiAddress) && Sketch.loraList == null) {
+            sdApiHelper.sendRequest("getLoras", dflApiAddress, "/loras", null, "GET");
+        }
+        if (Sketch.comfyuiModes != null) {
             createComfyuiModeConfig();
         }
 
@@ -516,6 +520,11 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             for (int i = 0; i < jsonArray.length(); i++) {
                 acList.add(jsonArray.getString(i));
             }
+            if (Sketch.loraList != null) {
+                for (int i = 0; i < Sketch.loraList.length(); i++) {
+                    acList.add("<lora:" + Sketch.loraList.getString(i).replace("/", "\\") + ">");
+                }
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -664,6 +673,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 if ("dflApiAddress".equals(key)) {
                     if (Utils.isValidServerURL(inputText)) {
                         sdApiHelper.sendRequest("getComfyuiMode", inputText, "/mode_config", null, "GET");
+                        sdApiHelper.sendRequest("getLoras", inputText, "/loras", null, "GET");
                     }
                 }
                 dialog.dismiss();
@@ -945,6 +955,9 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 JSONArray jsonArray = new JSONArray(responseBody);
                 Sketch.comfyuiModes = jsonArray;
                 createComfyuiModeConfig();
+            } else if ("getLoras".equals(requestType)) {
+                JSONArray jsonArray = new JSONArray(responseBody);
+                Sketch.loraList = jsonArray;
             } else if ("restart_Server".equals(requestType)) {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

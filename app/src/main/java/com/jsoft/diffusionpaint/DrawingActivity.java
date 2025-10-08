@@ -100,8 +100,13 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         String dflApiAddress = sharedPreferences.getString("dflApiAddress", "");
-        if (Utils.isValidServerURL(dflApiAddress) && Sketch.comfyuiModes == null) {
-            sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
+        if (Utils.isValidServerURL(dflApiAddress)) {
+            if (Sketch.comfyuiModes == null) {
+                sdApiHelper.sendRequest("getComfyuiMode", dflApiAddress, "/mode_config", null, "GET");
+            }
+            if (Sketch.loraList == null) {
+                sdApiHelper.sendRequest("getLoras", dflApiAddress, "/loras", null, "GET");
+            }
         }
         loadSketch(getIntent());
     }
@@ -426,6 +431,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             for (int i = 0; i < jsonArray.length(); i++) {
                 acList.add(jsonArray.getString(i));
             }
+            if (Sketch.loraList != null) {
+                for (int i = 0; i < Sketch.loraList.length(); i++) {
+                    acList.add("<lora:" + Sketch.loraList.getString(i).replace("/", "\\") + ">");
+                }
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -663,6 +673,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         if ("getComfyuiMode".equals(requestType)) {
             try {
                 Sketch.comfyuiModes = new JSONArray(responseBody);
+            } catch (JSONException ignored) {
+            }
+        } else if ("getLoras".equals(requestType)) {
+            try {
+                Sketch.loraList = new JSONArray(responseBody);
             } catch (JSONException ignored) {}
         } else if ("caption".equals(requestType)) {
             try {

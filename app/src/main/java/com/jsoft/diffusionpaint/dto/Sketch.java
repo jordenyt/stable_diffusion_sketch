@@ -39,6 +39,7 @@ public class Sketch implements Serializable {
     private String exif;
     private List<Sketch> children;
     public static JSONArray comfyuiModes;
+    public static JSONArray loraList;
     public static final String CN_MODE_COMFYUI = "comfyui";
     public static final String CN_MODE_ORIGIN = "original";
     public static final String ASPECT_RATIO_LANDSCAPE = "landscape";
