@@ -73,6 +73,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private TextView tvBlur;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
+    private Button btnInterrogate;
+    private Button btnCaption;
     FloatingActionButton paletteButton;
     FloatingActionButton undoButton;
     FloatingActionButton redoButton;
@@ -446,7 +448,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         promptTextView = promptTV;
 
-        Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
+        btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
+        btnCaption = dialogView.findViewById(R.id.btnCaption);
 
         if (mCurrentSketch.getImgBackground()==null) {
             btnInterrogate.setVisibility(View.GONE);
@@ -455,10 +458,10 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "tag");
                 sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
                 btnInterrogate.setEnabled(false);
+                btnCaption.setEnabled(false);
             });
         }
 
-        Button btnCaption = dialogView.findViewById(R.id.btnCaption);
         if (mCurrentSketch.getImgBackground()==null) {
             btnCaption.setVisibility(View.GONE);
         } else {
@@ -466,6 +469,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
                 JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "caption");
                 sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
                 btnCaption.setEnabled(false);
+                btnInterrogate.setEnabled(false);
             });
         }
 
@@ -683,6 +687,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
             try {
                 JSONObject jsonObject = new JSONObject(responseBody);
                 promptTextView.setText(jsonObject.getString("caption"));
+                btnInterrogate.setEnabled(true);
+                btnCaption.setEnabled(true);
             } catch (JSONException ignored) {}
         }
     }
