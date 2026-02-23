@@ -220,7 +220,7 @@ public class ViewSdImageService extends Service {
                         notification = new NotificationCompat.Builder(this, ViewSdImageActivity.CHANNEL_ID)
                                 .setSmallIcon(R.mipmap.ic_magic_pen)
                                 .setContentTitle("ComfyUI Status")
-                                .setContentText("Progress: " + progress + " | Step: " + step)
+                                .setContentText(progress + " | " + step)
                                 .setOngoing(true)
                                 .setContentIntent(pendingIntent)
                                 .build();
