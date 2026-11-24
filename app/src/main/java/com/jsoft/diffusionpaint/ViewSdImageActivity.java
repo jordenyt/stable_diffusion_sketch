@@ -357,39 +357,63 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             savedImageName = "sdsketch_" + (mCurrentSketch.getId() >= 0 ? (mCurrentSketch.getId() + "_") : "") + dateFormat.format(new Date()) + ".jpg";
             String exif = mCurrentSketch.getExif();
             if (exif == null || exif.length() < 2) { exif = "{}"; }
-            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-            if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN) && param.type.equals(SdParam.SD_MODE_TYPE_TXT2IMG)) {
-                try {
-                    JSONObject jsonExif = new JSONObject();
-                    String userComment = apiResultList.get(currentResult).infoTexts;
-                    if (userComment == null || userComment.equals("")) {
-                        userComment = mCurrentSketch.getPrompt() + "\nNegative prompt: " + mCurrentSketch.getNegPrompt() + "\nSteps: " + param.steps;
-                    }
-                    jsonExif.put("UserComment", userComment);
-                    Date date = new Date();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+            try {
+                JSONObject jsonExif = new JSONObject(exif);
+                Date date = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+                if (!jsonExif.has("DateTimeOriginal")) {
                     jsonExif.put("DateTimeOriginal", sdf.format(date));
+                }
+                if (!jsonExif.has("CreateDate")) {
                     jsonExif.put("CreateDate", sdf.format(date));
-                    exif = jsonExif.toString();
-                } catch (JSONException ignored) {}
-            } else if (!mCurrentSketch.getCnMode().equals(Sketch.CN_MODE_ORIGIN)) {
-                try {
-                    JSONObject jsonExif = new JSONObject(exif);
-                    if (!jsonExif.has("UserComment")) {
-                        String userComment = apiResultList.get(currentResult).infoTexts;
-                        if (userComment == null || userComment.equals("")) {
-                            userComment = mCurrentSketch.getPrompt() + "\nNegative prompt: " + mCurrentSketch.getNegPrompt() + "\nSteps: " + param.steps;
-                        }
-                        jsonExif.put("UserComment", userComment);
-                    }
-                    if (!jsonExif.has("DateTimeOriginal")) {
-                        Date date = new Date();
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
-                        jsonExif.put("DateTimeOriginal", sdf.format(date));
-                    }
-                    exif = jsonExif.toString();
-                } catch (JSONException ignored) {}
-            }
+                }
+                if (!jsonExif.has("Make")) {
+                    jsonExif.put("Make", "samsung");
+                }
+                if (!jsonExif.has("Model")) {
+                    jsonExif.put("Model", "SM-S916B");
+                }
+                if (!jsonExif.has("Software")) {
+                    jsonExif.put("Software", "S916BXXU5CWL5");
+                }
+                if (!jsonExif.has("ExposureTime")) {
+                    jsonExif.put("ExposureTime", "0.005");
+                }
+                if (!jsonExif.has("FNumber")) {
+                    jsonExif.put("FNumber", "1.8");
+                }
+                if (!jsonExif.has("ISOSpeedRatings")) {
+                    jsonExif.put("ISOSpeedRatings", "200");
+                }
+                if (!jsonExif.has("FocalLength")) {
+                    jsonExif.put("FocalLength", "5.4 mm");
+                }
+                if (!jsonExif.has("FocalLengthIn35mmFilm")) {
+                    jsonExif.put("FocalLengthIn35mmFilm", "23 mm");
+                }
+                if (!jsonExif.has("MaxApertureValue")) {
+                    jsonExif.put("MaxApertureValue", "1.8");
+                }
+                if (!jsonExif.has("ExposureProgram")) {
+                    jsonExif.put("ExposureProgram", "2");
+                }
+                if (!jsonExif.has("ExposureBiasValue")) {
+                    jsonExif.put("ExposureBiasValue", "0");
+                }
+                if (!jsonExif.has("MeteringMode")) {
+                    jsonExif.put("MeteringMode", "5");
+                }
+                if (!jsonExif.has("WhiteBalance")) {
+                    jsonExif.put("WhiteBalance", "0");
+                }
+                if (!jsonExif.has("Flash")) {
+                    jsonExif.put("Flash", "0");
+                }
+                if (!jsonExif.has("SceneCaptureType")) {
+                    jsonExif.put("SceneCaptureType", "0");
+                }
+                exif = jsonExif.toString();
+            } catch (JSONException ignored) {}
             Utils.saveBitmapToExternalStorage(this, mBitmap, sharedPreferences.getString("picFolder", "sdSketch"), savedImageName, exif);
             apiResultList.get(currentResult).savedImageName = savedImageName;
         }
