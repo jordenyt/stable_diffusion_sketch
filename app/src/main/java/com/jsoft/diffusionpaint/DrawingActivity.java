@@ -6,6 +6,9 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -238,6 +241,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
         initButtons();
 
+        applyImmersiveMode();
+
         if (sketchId == -2) {
             mDrawingView.setmBaseBitmap(rotatedBitmap);
             mDrawingView.prepareBitmap(mCurrentSketch, null);
@@ -254,6 +259,28 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
 
     public void goBack() {
         gotoMainActivity();
+    }
+
+    /**
+     * Hide the system bars (status + navigation / soft key panel) while this fullscreen
+     * editor is in the foreground, so the panel never covers the bottom controls.
+     * The bars reappear transiently when the user swipes from the screen edge.
+     */
+    private void applyImmersiveMode() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            applyImmersiveMode();
+        }
     }
 
     protected void initButtons() {
@@ -456,7 +483,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else {
             btnInterrogate.setOnClickListener(view -> {
                 JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "tag");
-                sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
+                sdApiHelper.sendLongRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
                 btnInterrogate.setEnabled(false);
                 btnCaption.setEnabled(false);
             });
@@ -467,7 +494,7 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else {
             btnCaption.setOnClickListener(view -> {
                 JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "caption");
-                sdApiHelper.sendRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
+                sdApiHelper.sendLongRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
                 btnCaption.setEnabled(false);
                 btnInterrogate.setEnabled(false);
             });

@@ -5,6 +5,9 @@ import static java.lang.Math.round;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -168,6 +171,7 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         }
 
         initUI(cnMode);
+        applyImmersiveMode();
 
         if (isFirstCall) {
             apiResultList = new ArrayList<>();
@@ -191,6 +195,28 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             }
         }
         updateScreen();
+    }
+
+    /**
+     * Hide the system bars (status + navigation / soft key panel) while this fullscreen
+     * viewer is in the foreground, so the panel never covers the floating buttons.
+     * The bars reappear transiently when the user swipes from the screen edge.
+     */
+    private void applyImmersiveMode() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.hide(WindowInsetsCompat.Type.systemBars());
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            applyImmersiveMode();
+        }
     }
 
     private Bitmap partialInpaintPreview(Sketch mCurrentSketch) {
@@ -422,7 +448,14 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     public void goBack() {
         if (isCallingDFL) {
             String sdBaseUrl = sharedPreferences.getString("dflApiAddress", "");
-            sdApiHelper.sendRequest("interrupt", sdBaseUrl, "/comfyui_interrupt", null, "GET");
+            String runningJobId = (mBound && mService != null) ? mService.getJobId() : null;
+            if (runningJobId != null && !runningJobId.isEmpty()) {
+                // Cancel this job only - other jobs in the queue keep running.
+                sdApiHelper.cancelJob(sdBaseUrl, runningJobId);
+            } else {
+                // No job id known (very old gateway): fall back to the global interrupt.
+                sdApiHelper.sendRequest("interrupt", sdBaseUrl, "/comfyui_interrupt", null, "GET");
+            }
             isInterrupted = true;
         } else if (isCallingAPI) {
             // do Nothing

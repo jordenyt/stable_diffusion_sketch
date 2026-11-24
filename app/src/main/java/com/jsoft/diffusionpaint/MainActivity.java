@@ -9,6 +9,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.Manifest;
 import android.app.Activity;
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         }
 
         setContentView(R.layout.activity_main);
+        applySystemBarInsets();
         if (mImageFile==null) mImageFile = new File(getExternalFilesDir(null), "captured_image.jpg");
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -189,6 +193,25 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    /**
+     * Keep the content clear of the status bar and the navigation bar.
+     * On Android 15+ (targetSdk 35+) windows are edge-to-edge by default, so the
+     * top menu button would otherwise be drawn under the status bar.
+     */
+    private void applySystemBarInsets() {
+        final View root = findViewById(R.id.main_root);
+        if (root == null) {
+            return;
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+            Insets bars = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void createComfyuiModeConfig() {

@@ -3,6 +3,13 @@
     <style name="Base.Theme.DiffusionPaint" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/light_blue_900</item>
+        <!-- The window is edge-to-edge, so the system bars are drawn over the
+             activity background. Draw them transparent and use dark icons so
+             the status bar and the navigation bar stay readable. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <style name="Theme.DiffusionPaint" parent="Base.Theme.DiffusionPaint" />

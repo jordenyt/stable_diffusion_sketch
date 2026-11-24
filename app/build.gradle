@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'com.jsoft.diffusionpaint'
-    compileSdk 34
+    compileSdk 37
 
     defaultConfig {
         applicationId "com.jsoft.diffusionpaint"
         minSdk 26
-        targetSdk 34
-        versionCode 61
-        versionName "v0.18.1"
+        targetSdk 37
+        versionCode 62
+        versionName "v0.19.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

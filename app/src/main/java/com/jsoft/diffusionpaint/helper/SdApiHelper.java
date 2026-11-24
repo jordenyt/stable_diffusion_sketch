@@ -39,16 +39,20 @@ public class SdApiHelper {
     private Activity activity;
     private SdApiResponseListener listener;
     private OkHttpClient client;
+    private OkHttpClient longTimeoutClient;
 
     public SdApiHelper(Activity activity, SdApiResponseListener listener) {
         this.activity  = activity;
         this.listener = listener;
         sharedPreferences = activity.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         client = getClient(10, 120);
+        // Captions and other blocking calls may have to wait for their turn in
+        // the gateway queue, so they need a much longer read timeout.
+        longTimeoutClient = getClient(10, 900);
     }
 
     public void setActivity(Activity activity) { this.activity  = activity;}
-    public void setListener(SdApiResponseListener listener) { this.listener  = listener;}
+    public void setListener(SdApiResponseListener listener) { this.listener = listener;}
 
     public boolean isValid() {
         String sdAddress = sharedPreferences.getString("dflApiAddress", "");
@@ -57,6 +61,27 @@ public class SdApiHelper {
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod) {
         sendRequest(requestType, baseUrl, url, jsonObject, httpMethod, this.client);
+    }
+
+    /** A request that may block for a long time (caption, upscale, ...). */
+    public void sendLongRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String httpMethod) {
+        sendRequest(requestType, baseUrl, url, jsonObject, httpMethod, this.longTimeoutClient);
+    }
+
+    /** Cancel one job on the gateway. Only that job is stopped. */
+    public void cancelJob(String baseUrl, String jobId) {
+        if (baseUrl == null || jobId == null || jobId.isEmpty()) {
+            return;
+        }
+        sendRequest("cancel", baseUrl, "/comfyui_cancel/" + jobId, null, "POST");
+    }
+
+    /** Build a url that addresses one job. */
+    public static String withJobId(String url, String jobId) {
+        if (jobId == null || jobId.isEmpty()) {
+            return url;
+        }
+        return url + (url.contains("?") ? "&" : "?") + "job_id=" + jobId;
     }
 
     public static OkHttpClient getClient(long connectTimeout, long readTimeout) {
@@ -74,8 +99,9 @@ public class SdApiHelper {
             requestBuilder.get();
         } else {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");
-            RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
-            requestBuilder.post(body);
+            String body = (jsonObject == null) ? "{}" : jsonObject.toString();
+            RequestBody requestBody = RequestBody.create(body, JSON);
+            requestBuilder.post(requestBody);
         }
         Request request = requestBuilder.build();
 
@@ -90,7 +116,12 @@ public class SdApiHelper {
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, "Response Code: " + response.code()));
+                        String errorBody = "";
+                        try {
+                            errorBody = (responseBody == null) ? "" : responseBody.string();
+                        } catch (IOException ignored) {}
+                        final String message = buildErrorMessage(response.code(), errorBody);
+                        activity.runOnUiThread(() -> listener.onSdApiFailure(requestType, message));
                         return;
                     }
 
@@ -109,6 +140,27 @@ public class SdApiHelper {
                 }
             }
         });
+    }
+
+    /** Turn an error response into a readable message, keeping the server's detail. */
+    private static String buildErrorMessage(int code, String errorBody) {
+        String detail = null;
+        if (errorBody != null && !errorBody.isEmpty()) {
+            try {
+                JSONObject json = new JSONObject(errorBody);
+                if (json.has("detail")) {
+                    detail = json.get("detail").toString();
+                } else if (json.has("error")) {
+                    detail = json.get("error").toString();
+                }
+            } catch (JSONException ignored) {
+                detail = errorBody;
+            }
+        }
+        if (detail == null || detail.isEmpty()) {
+            return "Response Code: " + code;
+        }
+        return "Response Code: " + code + " - " + detail;
     }
 
     private String getCleanString(String input) {
