@@ -66,7 +66,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
     private LinearLayout spinner_bg;
     private FloatingActionButton sdButton;
     private FloatingActionButton saveButton;
-    private FloatingActionButton expandButton;
     private FloatingActionButton editButton;
     private FloatingActionButton prevButton;
     private FloatingActionButton nextButton;
@@ -250,7 +249,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         backButton = findViewById(R.id.fab_back);
         prevButton = findViewById(R.id.fab_prev);
         nextButton = findViewById(R.id.fab_next);
-        expandButton = findViewById(R.id.fab_expand);
         editButton = findViewById(R.id.fab_paint_again);
         txtSdStatus = findViewById(R.id.txtSdStatus);
 
@@ -282,28 +280,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                     saveButton.setVisibility(View.GONE);
                 });
             });
-        });
-
-        expandButton.setOnClickListener(view -> {
-            JSONObject jsonObject;
-            SdParam param = sdApiHelper.getSdCnParm(mCurrentSketch.getCnMode());
-            if (param.type.equals(SdParam.SD_MODE_TYPE_INPAINT) && inpaintBitmap != null) {
-                if (param.inpaintPartial == SdParam.INPAINT_PARTIAL) {
-                    int upscaledSize = Math.round(Math.max(mCurrentSketch.getRectInpaint(param.sdSize).height(), inpaintBitmap.getHeight()));
-                    jsonObject = sdApiHelper.getUpscaleImageJSON(inpaintBitmap, upscaledSize);
-                } else {
-                    jsonObject = sdApiHelper.getUpscaleImageJSON(inpaintBitmap);
-                }
-            } else {
-                jsonObject = sdApiHelper.getUpscaleImageJSON(mBitmap);
-            }
-            clearStaticVar();
-            if (mBound) {
-                mService.setObject(sharedPreferences.getString("dflApiAddress", ""), jsonObject);
-                Intent intent = new Intent(this, ViewSdImageService.class);
-                intent.putExtra("requestType", "comfyui");
-                startService(intent);
-            }
         });
 
         editButton.setOnClickListener(view -> {
@@ -457,6 +433,9 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
                 sdApiHelper.sendRequest("interrupt", sdBaseUrl, "/comfyui_interrupt", null, "GET");
             }
             isInterrupted = true;
+            // The workflow is interrupted: drop the spinner overlay and show the
+            // page that was underneath it again.
+            restoreScreen();
         } else if (isCallingAPI) {
             // do Nothing
         } else {
@@ -468,6 +447,31 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
             setResult(Activity.RESULT_CANCELED, intent);
             finish();
         }
+    }
+
+    /**
+     * Remove the spinner overlay and restore the screen that was visible before
+     * the job started. Used when a running job is interrupted.
+     */
+    private void restoreScreen() {
+        runOnUiThread(() -> {
+            if (isFinishing()) {
+                return;
+            }
+            isCallingDFL = false;
+            isCallingAPI = false;
+            txtSdStatus.setText("Cancelled.");
+            updateScreen();
+        });
+    }
+
+    /**
+     * The running job was interrupted (cancelled from here or from the gateway).
+     * The spinner overlay is removed so the user sees the screen that was
+     * underneath it again instead of an endless loading screen.
+     */
+    public void onJobInterrupted() {
+        restoreScreen();
     }
 
     @Override
@@ -542,7 +546,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         backButton.setVisibility(View.GONE);
         prevButton.setVisibility(View.GONE);
         nextButton.setVisibility(View.GONE);
-        expandButton.setVisibility(View.GONE);
         editButton.setVisibility(View.GONE);
     }
 
@@ -556,7 +559,6 @@ public class ViewSdImageActivity extends AppCompatActivity implements SdApiRespo
         prevButton.setVisibility((apiResultList.size() > 1) ? View.VISIBLE : View.GONE);
         nextButton.setVisibility((apiResultList.size() > 1) ? View.VISIBLE : View.GONE);
         
-        expandButton.setVisibility((apiResultList.size() > 0) ? View.VISIBLE : View.GONE);
         editButton.setVisibility((apiResultList.size() > 0) ? View.VISIBLE : View.GONE);
     }
 

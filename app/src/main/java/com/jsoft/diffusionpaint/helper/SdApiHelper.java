@@ -333,24 +333,6 @@ public class SdApiHelper {
         return new JSONObject();
     }
 
-    public JSONObject getUpscaleImageJSON(Bitmap bitmap) {
-        int canvasDim = 3840;
-        try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}
-        return getUpscaleImageJSON(bitmap, canvasDim);
-    }
-
-    public JSONObject getUpscaleImageJSON(Bitmap bitmap, int size) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("workflow", "upscale");
-            jsonObject.put("size", size);
-            jsonObject.put("background", Utils.jpg2Base64String(bitmap));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
     public String getSdParmJSON(String cnMode) {
         return cnMode.startsWith(Sketch.CN_MODE_COMFYUI) ? sharedPreferences.getString("modeComyui" + getComfyuiModeName(cnMode), getComfyuiDefault(cnMode)) :
                 Sketch.defaultJSON.get(cnMode) != null ? Sketch.defaultJSON.get(cnMode) : Sketch.defaultJSON.get(CN_MODE_ORIGIN);

@@ -352,12 +352,16 @@ public class ViewSdImageService extends Service {
                             clearJobState();
                             onSdApiFailure(requestType, error.isEmpty() ? "ComfyUI job failed." : error);
                         } else if ("cancelled".equals(state)) {
-                            // The user cancelled the job - stop quietly.
+                            // The user cancelled the job - stop quietly and restore
+                            // the screen that was underneath the loading overlay.
                             isRunning = false;
                             stopForeground(true);
                             clearJobState();
                             ViewSdImageActivity.isCallingDFL = false;
                             ViewSdImageActivity.isInterrupted = true;
+                            if (activity != null && !activity.isDestroyed() && !activity.isFinishing()) {
+                                activity.runOnUiThread(() -> activity.onJobInterrupted());
+                            }
                         } else if ("done".equals(state) || (state.isEmpty() && "Done".equals(progress))) {
                             sendRequest("comfyuiResult", sdBaseUrl, resultUrl());
                         } else {

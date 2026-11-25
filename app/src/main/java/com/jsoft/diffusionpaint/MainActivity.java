@@ -54,8 +54,12 @@ import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.jsoft.diffusionpaint.adapter.GridViewImageAdapter;
+import com.jsoft.diffusionpaint.dto.PromptTool;
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.helper.PaintDb;
+import com.jsoft.diffusionpaint.helper.PromptGenService;
+import com.jsoft.diffusionpaint.helper.PromptGenStore;
+import com.jsoft.diffusionpaint.helper.PromptToolCatalog;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.dto.Sketch;
@@ -67,9 +71,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,6 +107,15 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     public static boolean isViewingSDImage = false;
     private static Menu mainMenu;
     private TextView txtVRAM;
+
+    /** The prompt field of the "Generate image" dialog. */
+    private MultiAutoCompleteTextView txt2imgPromptView;
+    private Button btnCaption;
+    private Button btnStop;
+    private String shownPromptGenError = "";
+
+    private final PromptGenStore.Listener promptGenListener =
+            store -> runOnUiThread(this::onPromptGenChanged);
 
 
     @Override
@@ -252,6 +268,16 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
     public void onResume() {
         super.onResume();
         showGrid(-1);
+        PromptGenStore.setAppContext(this);
+        PromptGenStore.get().restore(this);
+        PromptGenStore.get().addListener(promptGenListener);
+        onPromptGenChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        PromptGenStore.get().removeListener(promptGenListener);
+        super.onPause();
     }
 
     public Intent getIntentFromImage(Intent intent) {
@@ -539,11 +565,23 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
 
-        Button btnCaption = dialogView.findViewById(R.id.btnCaption);
-        btnCaption.setVisibility(View.GONE);
+        txt2imgPromptView = promptTV;
+
+        btnCaption = dialogView.findViewById(R.id.btnCaption);
+        btnCaption.setVisibility(View.VISIBLE);
+        // "AI Prompt" asks the gateway for a text generating workflow. Only the
+        // workflows that do not need an image can run here - there is no
+        // background image yet.
+        btnCaption.setOnClickListener(view -> choosePromptTool());
+
+        btnStop = dialogView.findViewById(R.id.btnStop);
+        btnStop.setOnClickListener(view -> {
+            PromptGenService.cancel(MainActivity.this);
+            Toast.makeText(MainActivity.this, "Stopping...", Toast.LENGTH_SHORT).show();
+        });
+        updatePromptGenButtons();
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
-
         List<String> filteredModes = new ArrayList<>();
         Map<String, String> txt2imgModeMap = Sketch.txt2imgModeMap();
         filteredModes.addAll(txt2imgModeMap.keySet());
@@ -615,8 +653,147 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
+        dialog.setOnDismissListener(d -> txt2imgPromptView = null);
         dialog.show();
 
+    }
+
+    // ------------------------------------------------------------------
+    // Prompt generation: text -> text
+    // ------------------------------------------------------------------
+
+    /** The state of the request changed. */
+    private void onPromptGenChanged() {
+        updatePromptGenButtons();
+        applyPromptGenResult();
+
+        PromptGenStore store = PromptGenStore.get();
+        if (PromptGenStore.STATE_ERROR.equals(store.getState())) {
+            String message = store.getError();
+            if (!message.isEmpty() && !message.equals(shownPromptGenError)) {
+                shownPromptGenError = message;
+                showMessage(message);
+            }
+        }
+    }
+
+    /** Put a generated prompt into the "Generate image" dialog. */
+    private void applyPromptGenResult() {
+        String text = PromptGenStore.get().takeResult();
+        if (text == null) {
+            return;
+        }
+        if (txt2imgPromptView != null) {
+            txt2imgPromptView.setText(text);
+        }
+        sharedPreferences.edit().putString("txt2imgPrompt", text).apply();
+        Toast.makeText(this, "Prompt generated.", Toast.LENGTH_SHORT).show();
+    }
+
+    /** Show the state of the request on the buttons. */
+    private void updatePromptGenButtons() {
+        boolean running = PromptGenStore.get().isRunning();
+        if (btnCaption != null) {
+            btnCaption.setEnabled(!running);
+            btnCaption.setText(running ? "Running..." : "AI Prompt");
+        }
+        if (btnStop != null) {
+            btnStop.setVisibility(running ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /** Ask the gateway which text generating workflows it offers. */
+    private void choosePromptTool() {
+        String baseUrl = sharedPreferences.getString("dflApiAddress", "");
+        PromptToolCatalog.load(this, baseUrl, new PromptToolCatalog.Callback() {
+            @Override
+            public void onTools(List<PromptTool> tools) {
+                runOnUiThread(() -> showToolPicker(tools));
+            }
+
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> showMessage(message));
+            }
+        });
+    }
+
+    /** Let the user pick one of the offered workflows. */
+    private void showToolPicker(List<PromptTool> tools) {
+        if (isFinishing()) {
+            return;
+        }
+        // There is no image yet, so only the workflows that do not need one
+        // can run.
+        List<PromptTool> usable = PromptTool.usableFor(tools, false, false);
+        if (usable.isEmpty()) {
+            showMessage("The gateway offers no workflow that works without an image.");
+            return;
+        }
+        String[] labels = new String[usable.size()];
+        for (int i = 0; i < usable.size(); i++) {
+            labels[i] = usable.get(i).label();
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Generate a prompt")
+                .setItems(labels, (dialog, which) -> startPromptGen(usable.get(which)))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /** Send the request to the gateway. */
+    private void startPromptGen(PromptTool tool) {
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("workflow", tool.workflow);
+            if (!tool.promptKey.isEmpty()) {
+                String prompt = currentPrompt();
+                if (!prompt.isEmpty()) {
+                    payload.put(tool.promptKey, prompt);
+                }
+            }
+        } catch (JSONException e) {
+            showMessage("Cannot build the request: " + e.getMessage());
+            return;
+        }
+
+        File file;
+        try {
+            file = File.createTempFile("promptgen", ".json", getCacheDir());
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                out.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (IOException e) {
+            showMessage("Cannot store the request: " + e.getMessage());
+            return;
+        }
+
+        PromptGenService.start(this, file.getAbsolutePath(), tool.workflow, tool.label(), -1);
+        shownPromptGenError = "";
+        Toast.makeText(this, "Generating...", Toast.LENGTH_SHORT).show();
+        updatePromptGenButtons();
+    }
+
+    /** The prompt of the "Generate image" dialog. */
+    private String currentPrompt() {
+        if (txt2imgPromptView != null) {
+            CharSequence text = txt2imgPromptView.getText();
+            if (text != null && !text.toString().trim().isEmpty()) {
+                return text.toString();
+            }
+        }
+        String prompt = sharedPreferences.getString("txt2imgPrompt", "");
+        return prompt == null ? "" : prompt;
+    }
+
+    private void showMessage(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     private void showTextInputDialog(String key, String title, String hint, String defaultValue) {

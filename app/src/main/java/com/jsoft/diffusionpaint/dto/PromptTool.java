@@ -133,6 +133,32 @@ public class PromptTool {
     }
 
     /**
+     * The workflows that can run with the images the app has.
+     *
+     * @param tools        every text producing workflow of the gateway
+     * @param hasBackground true when a background image is available
+     * @param hasReference  true when a reference image is available
+     */
+    public static List<PromptTool> usableFor(List<PromptTool> tools, boolean hasBackground, boolean hasReference) {
+        List<PromptTool> usable = new ArrayList<>();
+        for (PromptTool tool : tools) {
+            // A workflow that wants an image the app does not have cannot run.
+            if (!hasBackground && !tool.image1Key.isEmpty()) {
+                continue;
+            }
+            if (!hasReference && !tool.image2Key.isEmpty()) {
+                continue;
+            }
+            // There is no third image to give.
+            if (!tool.image3Key.isEmpty()) {
+                continue;
+            }
+            usable.add(tool);
+        }
+        return usable;
+    }
+
+    /**
      * Every text producing workflow of the gateway.
      *
      * @param all the body of GET /api/workflows

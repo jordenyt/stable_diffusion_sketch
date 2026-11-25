@@ -686,21 +686,11 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         // one that needs a third image cannot run with only the background and
         // the reference.
         Bitmap reference = currentReference();
-        List<PromptTool> usable = new ArrayList<>();
-        for (PromptTool tool : tools) {
-            if (reference == null && !tool.image2Key.isEmpty()) {
-                continue;
-            }
-            if (reference != null && !tool.image3Key.isEmpty()) {
-                continue;
-            }
-            usable.add(tool);
-        }
+        List<PromptTool> usable = PromptTool.usableFor(tools, true, reference != null);
         if (usable.isEmpty()) {
             showMessage("No workflow fits the images of this sketch.");
             return;
-        }
-        String[] labels = new String[usable.size()];
+        }        String[] labels = new String[usable.size()];
         for (int i = 0; i < usable.size(); i++) {
             labels[i] = usable.get(i).label();
         }

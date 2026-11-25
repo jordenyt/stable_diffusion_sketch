@@ -10,7 +10,6 @@
     <string name="eraser">Eraser</string>
     <string name="sdAction">Diffuse now</string>
     <string name="refImg">Reference Image</string>
-    <string name="super_resolution">Super Resolution</string>
     <string name="save_sketch">Save Sketch</string>
     <string name="edit_result">Edit Result</string>
     <string name="delete_sketch">Delete Sketch</string>
