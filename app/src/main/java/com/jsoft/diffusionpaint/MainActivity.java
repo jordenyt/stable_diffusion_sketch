@@ -195,25 +195,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         });
     }
 
-    /**
-     * Keep the content clear of the status bar and the navigation bar.
-     * On Android 15+ (targetSdk 35+) windows are edge-to-edge by default, so the
-     * top menu button would otherwise be drawn under the status bar.
-     */
-    private void applySystemBarInsets() {
-        final View root = findViewById(R.id.main_root);
-        if (root == null) {
-            return;
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
-            Insets bars = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-            return WindowInsetsCompat.CONSUMED;
-        });
-        ViewCompat.requestApplyInsets(root);
-    }
-
     private void createComfyuiModeConfig() {
         MenuItem submenuItem = mainMenu.getItem(2).getSubMenu().getItem(0);
         if (submenuItem.hasSubMenu()) {
@@ -557,9 +538,6 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
         promptTV.setThreshold(1);
         promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
-
-        Button btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
-        btnInterrogate.setVisibility(View.GONE);
 
         Button btnCaption = dialogView.findViewById(R.id.btnCaption);
         btnCaption.setVisibility(View.GONE);

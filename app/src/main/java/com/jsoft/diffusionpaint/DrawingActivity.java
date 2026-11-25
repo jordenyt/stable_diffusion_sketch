@@ -33,17 +33,24 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.jsoft.diffusionpaint.component.DrawingView;
 import com.jsoft.diffusionpaint.component.DrawingViewListener;
 import com.jsoft.diffusionpaint.component.CircleView;
+import com.jsoft.diffusionpaint.dto.PromptTool;
 import com.jsoft.diffusionpaint.dto.SdParam;
 import com.jsoft.diffusionpaint.dto.SdStyle;
 import com.jsoft.diffusionpaint.helper.PaintDb;
 import com.jsoft.diffusionpaint.dto.Sketch;
+import com.jsoft.diffusionpaint.helper.PromptGenService;
+import com.jsoft.diffusionpaint.helper.PromptGenStore;
+import com.jsoft.diffusionpaint.helper.PromptToolCatalog;
 import com.jsoft.diffusionpaint.helper.SdApiHelper;
 import com.jsoft.diffusionpaint.helper.SdApiResponseListener;
 import com.jsoft.diffusionpaint.helper.Utils;
@@ -52,6 +59,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -76,8 +87,8 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
     private TextView tvBlur;
     private String aspectRatio;
     private SdApiHelper sdApiHelper;
-    private Button btnInterrogate;
     private Button btnCaption;
+    private Button btnStop;
     FloatingActionButton paletteButton;
     FloatingActionButton undoButton;
     FloatingActionButton redoButton;
@@ -475,30 +486,20 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         promptTV.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
         promptTextView = promptTV;
 
-        btnInterrogate = dialogView.findViewById(R.id.btnInterrogate);
         btnCaption = dialogView.findViewById(R.id.btnCaption);
+        btnStop = dialogView.findViewById(R.id.btnStop);
 
-        if (mCurrentSketch.getImgBackground()==null) {
-            btnInterrogate.setVisibility(View.GONE);
-        } else {
-            btnInterrogate.setOnClickListener(view -> {
-                JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "tag");
-                sdApiHelper.sendLongRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
-                btnInterrogate.setEnabled(false);
-                btnCaption.setEnabled(false);
-            });
-        }
+        // "AI Prompt" asks the gateway which text generating workflows it
+        // offers and lets the user pick one of them.
+        btnCaption.setOnClickListener(view -> choosePromptTool());
 
-        if (mCurrentSketch.getImgBackground()==null) {
-            btnCaption.setVisibility(View.GONE);
-        } else {
-            btnCaption.setOnClickListener(view -> {
-                JSONObject jsonObject = sdApiHelper.getComfyuiCaptionJSON(mCurrentSketch.getImgBackground(), "caption");
-                sdApiHelper.sendLongRequest("caption", sharedPreferences.getString("dflApiAddress", ""), "/comfyui_caption", jsonObject, "POST");
-                btnCaption.setEnabled(false);
-                btnInterrogate.setEnabled(false);
-            });
-        }
+        // "Stop" ends the request that is running.
+        btnStop.setOnClickListener(view -> {
+            PromptGenService.cancel(DrawingActivity.this);
+            Toast.makeText(DrawingActivity.this, "Stopping...", Toast.LENGTH_SHORT).show();
+        });
+
+        updatePromptGenButtons();
 
         Spinner sdMode = dialogView.findViewById(R.id.sd_mode_selection);
         
@@ -579,7 +580,232 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
+        dialog.setOnDismissListener(d -> promptTextView = null);
         if(!isFinishing()) dialog.show();
+    }
+
+    // ------------------------------------------------------------------
+    // Prompt generation: image (+ text) -> text
+    // ------------------------------------------------------------------
+
+    private final PromptGenStore.Listener promptGenListener =
+            store -> runOnUiThread(this::onPromptGenChanged);
+
+    /** The last error and state that were shown, so they are not shown twice. */
+    private String shownPromptGenError = "";
+    private String shownPromptGenState = "";
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PromptGenStore.setAppContext(this);
+        PromptGenStore.get().restore(this);
+        PromptGenStore.get().addListener(promptGenListener);
+        onPromptGenChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PromptGenStore.get().removeListener(promptGenListener);
+    }
+
+    /** The state of the request changed. */
+    private void onPromptGenChanged() {
+        updatePromptGenButtons();
+        applyPromptGenResult();
+
+        PromptGenStore store = PromptGenStore.get();
+        String state = store.getState();
+        if (PromptGenStore.STATE_ERROR.equals(state)) {
+            String message = store.getError();
+            if (!message.isEmpty() && !message.equals(shownPromptGenError)) {
+                shownPromptGenError = message;
+                showMessage(message);
+            }
+        } else if (PromptGenStore.STATE_CANCELLED.equals(state)
+                && !PromptGenStore.STATE_CANCELLED.equals(shownPromptGenState)) {
+            Toast.makeText(this, "The request was stopped.", Toast.LENGTH_SHORT).show();
+        }
+        shownPromptGenState = state;
+    }
+
+    /**
+     * Put a generated prompt into the sketch.
+     *
+     * The result is picked up when it arrives - also when the app was in the
+     * background while the request was running.
+     */
+    private void applyPromptGenResult() {
+        String text = PromptGenStore.get().takeResult();
+        if (text == null) {
+            return;
+        }
+        if (promptTextView != null) {
+            promptTextView.setText(text);
+        }
+        mCurrentSketch.setPrompt(text);
+        saveSketch();
+        Toast.makeText(this, "Prompt generated.", Toast.LENGTH_SHORT).show();
+    }
+
+    /** Show the state of the request on the buttons. */
+    private void updatePromptGenButtons() {
+        boolean running = PromptGenStore.get().isRunning();
+        if (btnCaption != null) {
+            btnCaption.setEnabled(!running);
+            btnCaption.setText(running ? "Running..." : "AI Prompt");
+        }
+        if (btnStop != null) {
+            btnStop.setVisibility(running ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /** Ask the gateway which text generating workflows it offers. */
+    private void choosePromptTool() {
+        String baseUrl = sharedPreferences.getString("dflApiAddress", "");
+        PromptToolCatalog.load(this, baseUrl, new PromptToolCatalog.Callback() {
+            @Override
+            public void onTools(List<PromptTool> tools) {
+                runOnUiThread(() -> showToolPicker(tools));
+            }
+
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> showMessage(message));
+            }
+        });
+    }
+
+    /** Let the user pick one of the offered workflows. */
+    private void showToolPicker(List<PromptTool> tools) {
+        if (isFinishing()) {
+            return;
+        }
+        // A workflow that needs a reference image cannot run without one, and
+        // one that needs a third image cannot run with only the background and
+        // the reference.
+        Bitmap reference = currentReference();
+        List<PromptTool> usable = new ArrayList<>();
+        for (PromptTool tool : tools) {
+            if (reference == null && !tool.image2Key.isEmpty()) {
+                continue;
+            }
+            if (reference != null && !tool.image3Key.isEmpty()) {
+                continue;
+            }
+            usable.add(tool);
+        }
+        if (usable.isEmpty()) {
+            showMessage("No workflow fits the images of this sketch.");
+            return;
+        }
+        String[] labels = new String[usable.size()];
+        for (int i = 0; i < usable.size(); i++) {
+            labels[i] = usable.get(i).label();
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Generate a prompt")
+                .setItems(labels, (dialog, which) -> startPromptGen(usable.get(which)))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Send the request to the gateway.
+     *
+     * The images and the text are filled in by the app: "image1" gets the
+     * background of the sketch, "image2" the reference image and "prompt" the
+     * positive prompt. A workflow only receives the keys it declares.
+     *
+     * The payload is written to a file: a request with several images is too
+     * big for an intent extra.
+     */
+    private void startPromptGen(PromptTool tool) {
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("workflow", tool.workflow);
+
+            if (!tool.image1Key.isEmpty()) {
+                Bitmap background = mCurrentSketch.getImgBackground() != null
+                        ? mCurrentSketch.getImgBackground() : mCurrentSketch.getImgPreview();
+                if (background != null) {
+                    payload.put(tool.image1Key, Utils.jpg2Base64String(scaleForPrompt(background)));
+                }
+            }
+            if (!tool.image2Key.isEmpty()) {
+                Bitmap reference = currentReference();
+                if (reference != null) {
+                    payload.put(tool.image2Key, Utils.jpg2Base64String(scaleForPrompt(reference)));
+                }
+            }
+            if (!tool.promptKey.isEmpty()) {
+                String prompt = currentPrompt();
+                if (!prompt.isEmpty()) {
+                    payload.put(tool.promptKey, prompt);
+                }
+            }
+        } catch (JSONException e) {
+            showMessage("Cannot build the request: " + e.getMessage());
+            return;
+        }
+
+        File file;
+        try {
+            file = File.createTempFile("promptgen", ".json", getCacheDir());
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                out.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (IOException e) {
+            showMessage("Cannot store the request: " + e.getMessage());
+            return;
+        }
+
+        PromptGenService.start(this, file.getAbsolutePath(), tool.workflow, tool.label(),
+                mCurrentSketch.getId());
+        shownPromptGenError = "";
+        shownPromptGenState = "";
+        Toast.makeText(this, "Generating...", Toast.LENGTH_SHORT).show();
+        updatePromptGenButtons();
+    }
+
+    /** The reference image of the sketch, the one just picked or the saved one. */
+    private Bitmap currentReference() {
+        return bmRef != null ? bmRef : mCurrentSketch.getImgReference();
+    }
+
+    /** The positive prompt of the sketch, as typed in the prompt dialog. */
+    private String currentPrompt() {
+        if (promptTextView != null) {
+            CharSequence text = promptTextView.getText();
+            if (text != null && !text.toString().trim().isEmpty()) {
+                return text.toString();
+            }
+        }
+        String prompt = mCurrentSketch.getPrompt();
+        return prompt == null ? "" : prompt;
+    }
+
+    /** Smaller images are enough for the vision models and keep the request small. */
+    private static Bitmap scaleForPrompt(Bitmap bitmap) {
+        int maxSide = Math.max(bitmap.getWidth(), bitmap.getHeight());
+        if (maxSide <= 1280) {
+            return bitmap;
+        }
+        double scale = maxSide / 1280d;
+        return Bitmap.createScaledBitmap(bitmap,
+                (int) Math.round(bitmap.getWidth() / scale),
+                (int) Math.round(bitmap.getHeight() / scale), true);
+    }
+
+    private void showMessage(String message) {
+        if (isFinishing()) {
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     ActivityResultLauncher<Intent> sdViewerActivityResultLauncher = registerForActivityResult(
@@ -709,13 +935,6 @@ public class DrawingActivity extends AppCompatActivity implements ColorPickerDia
         } else if ("getLoras".equals(requestType)) {
             try {
                 Sketch.loraList = new JSONArray(responseBody);
-            } catch (JSONException ignored) {}
-        } else if ("caption".equals(requestType)) {
-            try {
-                JSONObject jsonObject = new JSONObject(responseBody);
-                promptTextView.setText(jsonObject.getString("caption"));
-                btnInterrogate.setEnabled(true);
-                btnCaption.setEnabled(true);
             } catch (JSONException ignored) {}
         }
     }

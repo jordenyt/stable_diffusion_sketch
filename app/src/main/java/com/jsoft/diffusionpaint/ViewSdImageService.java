@@ -253,7 +253,9 @@ public class ViewSdImageService extends Service {
 
     public void sendRequest(String requestType, String baseUrl, String url, JSONObject jsonObject, String method) {
         Request.Builder requestBuilder = new Request.Builder()
-                .url(baseUrl + url);
+                .url(baseUrl + url)
+                // The gateway answers with a job id only when JSON is accepted.
+                .header("Accept", "application/json");
 
         if ("POST".equals(method)) {
             MediaType JSON = MediaType.get("application/json; charset=utf-8");

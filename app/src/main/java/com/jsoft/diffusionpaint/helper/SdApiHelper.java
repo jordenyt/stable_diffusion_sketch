@@ -333,26 +333,6 @@ public class SdApiHelper {
         return new JSONObject();
     }
 
-    public JSONObject getComfyuiCaptionJSON(Bitmap bitmap, String mode) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if ("tag".equals(mode)) {
-                jsonObject.put("workflow", "tag");
-            } else {
-                jsonObject.put("workflow", "caption");
-            }
-            double scale = (double) max(bitmap.getHeight(), bitmap.getWidth()) / 1280;
-            Bitmap resultBm = bitmap;
-            if (scale > 1) {
-                resultBm = Bitmap.createScaledBitmap(bitmap, (int) round(bitmap.getWidth() / scale), (int) round(bitmap.getHeight() / scale), true);
-            }
-            jsonObject.put("background", Utils.jpg2Base64String(resultBm));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
     public JSONObject getUpscaleImageJSON(Bitmap bitmap) {
         int canvasDim = 3840;
         try {canvasDim = Integer.parseInt(sharedPreferences.getString("canvasDim", "3840")); } catch (Exception ignored) {}

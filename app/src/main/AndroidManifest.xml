@@ -34,6 +34,11 @@
             android:enabled="true"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
+        <service
+            android:name=".helper.PromptGenService"
+            android:enabled="true"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
 
         <activity
             android:name=".ViewSdImageActivity"

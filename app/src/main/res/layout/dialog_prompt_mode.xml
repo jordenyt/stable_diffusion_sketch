@@ -26,15 +26,16 @@
                 android:textSize="12dp"
                 android:layout_height="40dp"
                 android:layout_weight="0"
-                android:text="Caption" />
+                android:text="AI Prompt" />
 
             <Button
-                android:id="@+id/btnInterrogate"
+                android:id="@+id/btnStop"
                 android:layout_width="wrap_content"
                 android:textSize="12dp"
                 android:layout_height="40dp"
                 android:layout_weight="0"
-                android:text="Tag" />
+                android:text="Stop"
+                android:visibility="gone" />
         </LinearLayout>
 
         <MultiAutoCompleteTextView
