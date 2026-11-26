@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             createComfyuiModeConfig();
         }
 
-        CompletableFuture.supplyAsync(() -> {
+        /*CompletableFuture.supplyAsync(() -> {
             try {
                 int verCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;//Version Code
                 sdApiHelper.sendRequest("getVersionCode", "https://sdsketch.web.app", "/version-info?v=" + verCode + "&s=comfyui", null, "GET");
@@ -208,7 +208,26 @@ public class MainActivity extends AppCompatActivity implements SdApiResponseList
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        });*/
+    }
+
+    /**
+     * Keep the content clear of the status bar and the navigation bar.
+     * On Android 15+ (targetSdk 35+) windows are edge-to-edge by default, so the
+     * top menu button would otherwise be drawn under the status bar.
+     */
+    private void applySystemBarInsets() {
+        final View root = findViewById(R.id.main_root);
+        if (root == null) {
+            return;
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+            Insets bars = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return WindowInsetsCompat.CONSUMED;
         });
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void createComfyuiModeConfig() {
